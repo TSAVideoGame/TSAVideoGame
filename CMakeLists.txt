@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/driver.c
   ${CMAKE_CURRENT_LIST_DIR}/src/resource_manager/resm.c
   ${CMAKE_CURRENT_LIST_DIR}/src/sound/snd.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/sound/wav_loader.c
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC openal)
