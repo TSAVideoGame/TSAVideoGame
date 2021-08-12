@@ -57,12 +57,14 @@ int JIN_wav_load(const char *fpath, char **buffer, uint8_t *channels, int32_t *s
   *buffer = malloc(*size * sizeof(char));
   READ(*buffer, *size);
 
+  fclose(file);
+
   return 0;
 }
 
-int JIN_wav_unload(char *buffer)
+int JIN_wav_unload(char **buffer)
 {
-  free(buffer);
+  free(*buffer);
 
   return 0;
 }

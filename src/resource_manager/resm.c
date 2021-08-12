@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+/* Sound */
+#include "../sound/snd.h"
+
 #define GROWTH_FACTOR 2
 #define INITIAL_COUNT 8
 
@@ -48,7 +51,7 @@ int JIN_resm_create(struct JIN_Resm *resm)
   if (!(resm->types     = malloc(INITIAL_COUNT * sizeof(enum JIN_Rest)))) return -1;
 
   resm->count = 0;
-  resm->allocated = 0;
+  resm->allocated = INITIAL_COUNT;
 
   return 0;
 }
@@ -68,7 +71,10 @@ void JIN_resm_destroy(struct JIN_Resm *resm)
     switch (resm->types[i]) {
       case JIN_RES_PNG:
         break;
-      case JIN_RES_WAV:
+      case JIN_RES_SFX:
+        JIN_sndsfx_destroy(resm->resources[resm->count]);
+        break;
+      case JIN_RES_BGM:
         break;
     }
   }
@@ -103,7 +109,11 @@ int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enu
   switch (type) {
     case JIN_RES_PNG:
       break;
-    case JIN_RES_WAV:
+    case JIN_RES_SFX:
+      resm->resources[resm->count] = malloc(sizeof(struct JIN_Sndsfx));
+      JIN_sndsfx_create((struct JIN_Sndsfx *) resm->resources[resm->count], fpath);
+      break;
+    case JIN_RES_BGM:
       break;
   }
 

@@ -19,8 +19,11 @@
  */
 
 enum JIN_Rest {
+  /* Image */
   JIN_RES_PNG,
-  JIN_RES_WAV
+  /* Sound */
+  JIN_RES_SFX,
+  JIN_RES_BGM
 };
 
 struct JIN_Resm {

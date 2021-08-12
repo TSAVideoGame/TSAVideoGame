@@ -1,6 +1,8 @@
 #ifndef JIN_SND_H
 #define JIN_SND_H
 
+#include <AL/al.h>
+
 /*
  * SOUND
  *
@@ -12,10 +14,15 @@
  * tasty tutorial: http://www.david-amador.com/2011/06/playing-sound-using-openal/
  *
  * TYPES:
- * struct JIN_Sndd | Sound data
+ * struct JIN_Sndsfx | Sound effects (OpenAL buffer, not source)
+ * struct JIN_Sndbgm | Background music
  */
 
-struct JIN_Sndd {
+struct JIN_Sndsfx {
+  ALuint buffer; 
+};
+
+struct JIN_Sndbgm {
 };
 
 /*
@@ -25,9 +32,15 @@ int JIN_snd_init(void);
 int JIN_snd_quit(void);
 
 /*
- * Sound data functions
+ * Sfx functions
  */
-int JIN_sndd_create (struct JIN_Sndd *);
-int JIN_sndd_destroy(struct JIN_Sndd *);
+int JIN_sndsfx_create (struct JIN_Sndsfx *, const char *fpath);
+int JIN_sndsfx_destroy(struct JIN_Sndsfx *);
+
+/*
+ * Bgm functions
+ */
+int JIN_sndbgm_create (struct JIN_Sndbgm *);
+int JIN_sndsbgm_destroy(struct JIN_Sndbgm *);
 
 #endif
