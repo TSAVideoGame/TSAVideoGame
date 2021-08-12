@@ -130,16 +130,13 @@ int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enu
  * @param name
  * @return
  */
-unsigned int JIN_resm_get(struct JIN_Resm *resm, const char *name)
+void * JIN_resm_get(struct JIN_Resm *resm, const char *name)
 {
-  unsigned int index = 0;
-
   for (unsigned int i = 0; i < resm->count; ++i) {
     if (!strcmp(resm->names[i], name)) {
-      index = i;
-      break;
+      return resm->resources[i];
     }
   }
 
-  return index;
+  return NULL;
 }

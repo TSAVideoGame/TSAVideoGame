@@ -42,9 +42,9 @@ struct JIN_Resm {
  * add     | Add a resource
  * get     | Get a resource
  */
-int          JIN_resm_create (struct JIN_Resm *resm);
-void         JIN_resm_destroy(struct JIN_Resm *resm);
-int          JIN_resm_add    (struct JIN_Resm *resm, const char *name, const char *fpath, enum JIN_Rest type);
-unsigned int JIN_resm_get    (struct JIN_Resm *resm, const char *name);
+int    JIN_resm_create (struct JIN_Resm *resm);
+void   JIN_resm_destroy(struct JIN_Resm *resm);
+int    JIN_resm_add    (struct JIN_Resm *resm, const char *name, const char *fpath, enum JIN_Rest type);
+void * JIN_resm_get    (struct JIN_Resm *resm, const char *name);
 
 #endif

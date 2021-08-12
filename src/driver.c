@@ -19,8 +19,7 @@ int main(int argc, char *args[])
   alSource3f(source, AL_POSITION, 0, 0, 0);
   alSource3f(source, AL_VELOCITY, 0, 0, 0);
   alSourcei(source, AL_LOOPING, AL_FALSE);
-  /* TODO: Change API so get returns a void * resource, not an id */
-  alSourcei(source, AL_BUFFER, ((struct JIN_Sndsfx *) resm.resources[JIN_resm_get(&resm, "L")])->buffer);
+  alSourcei(source, AL_BUFFER, ((struct JIN_Sndsfx *) JIN_resm_get(&resm, "L"))->buffer);
 
   alSourcePlay(source);
 
