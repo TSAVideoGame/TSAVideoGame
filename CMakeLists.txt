@@ -9,9 +9,12 @@ project(jin)
 
 add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/driver.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/resource_manager/resm.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/sound/snd.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/sound/wav_loader.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/globals.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/resm/resm.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/snd/snd.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/snd/wav_loader.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/stm/stm.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/stm/states.c
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC openal)

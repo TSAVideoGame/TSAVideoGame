@@ -1,35 +1,30 @@
-#include "resource_manager/resm.h"
-#include "sound/snd.h"
-
-#include <stdio.h>
+#include "snd/snd.h"
+#include "stm/stm.h"
+#include "stm/states.h"
+#include "globals.h"
 
 int main(int argc, char *args[])
 {
+  /* Init libraries */
   JIN_snd_init();
+ 
+  /* Init singletons/globals */
+  JIN_resm_create(&JIN_resm);
+  STM_stack_create(&JIN_states);
 
-  struct JIN_Resm resm;
-  JIN_resm_create(&resm);
+  /* Create states */
+  struct STM_State test;
+  JIN_states_test_create(&test);
+  STM_stack_push(&JIN_states, &test);
 
-  JIN_resm_add(&resm, "L", "res/L.wav", JIN_RES_SFX); 
-  
-  ALuint source;
-  alGenSources(1, &source);
-  alSourcef(source, AL_PITCH, 1);
-  alSourcef(source, AL_GAIN, 1.0f);
-  alSource3f(source, AL_POSITION, 0, 0, 0);
-  alSource3f(source, AL_VELOCITY, 0, 0, 0);
-  alSourcei(source, AL_LOOPING, AL_FALSE);
-  alSourcei(source, AL_BUFFER, ((struct JIN_Sndsfx *) JIN_resm_get(&resm, "L"))->buffer);
+  /* "Game loop" */
+  STM_stack_update(&JIN_states);
 
-  alSourcePlay(source);
+  /* Clean singletons/globals */
+  STM_stack_destroy(&JIN_states);
+  JIN_resm_destroy(&JIN_resm);
 
-  ALint state = AL_PLAYING;
-  while (state == AL_PLAYING)
-    alGetSourcei(source, AL_SOURCE_STATE, &state);
-
-  alDeleteSources(1, &source);
-
-  JIN_resm_destroy(&resm);
+  /* Clean libraries */
   JIN_snd_quit();
   
   return 0;

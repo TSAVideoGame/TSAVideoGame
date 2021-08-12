@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 /* Sound */
-#include "../sound/snd.h"
+#include "../snd/snd.h"
 
 #define GROWTH_FACTOR 2
 #define INITIAL_COUNT 8
@@ -72,11 +72,13 @@ void JIN_resm_destroy(struct JIN_Resm *resm)
       case JIN_RES_PNG:
         break;
       case JIN_RES_SFX:
-        JIN_sndsfx_destroy(resm->resources[resm->count]);
+        JIN_sndsfx_destroy(resm->resources[i]);
         break;
       case JIN_RES_BGM:
         break;
     }
+
+    free(resm->resources[i]);
   }
 
   free(resm->resources);

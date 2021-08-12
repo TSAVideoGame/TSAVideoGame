@@ -11,8 +11,6 @@
  * There is background music (bgm) and
  * sound effects (sfx)
  *
- * tasty tutorial: http://www.david-amador.com/2011/06/playing-sound-using-openal/
- *
  * TYPES:
  * struct JIN_Sndsfx | Sound effects (OpenAL buffer, not source)
  * struct JIN_Sndbgm | Background music
