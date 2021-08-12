@@ -26,7 +26,6 @@ static int test_fn_update(struct STM_State *state)
   alSourcei(source, AL_LOOPING, AL_FALSE);
   alSourcei(source, AL_BUFFER, ((struct JIN_Sndsfx *) JIN_resm_get(&JIN_resm, "L"))->buffer);
 
-  /*
   alSourcePlay(source);
 
   ALint status = AL_PLAYING;
@@ -34,7 +33,6 @@ static int test_fn_update(struct STM_State *state)
     alGetSourcei(source, AL_SOURCE_STATE, &status);
 
   alDeleteSources(1, &source);
-  */
 
   return 0;
 }
