@@ -75,6 +75,7 @@ void JIN_resm_destroy(struct JIN_Resm *resm)
         JIN_sndsfx_destroy(resm->resources[i]);
         break;
       case JIN_RES_BGM:
+        JIN_sndbgm_destroy(resm->resources[i]);
         break;
     }
 
@@ -110,10 +111,12 @@ int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enu
 
   switch (type) {
     case JIN_RES_PNG:
+      resm->resources[resm->count] = malloc(sizeof(struct JIN_Sndbgm));
+      JIN_sndbgm_create(resm->resources[resm->count], fpath);
       break;
     case JIN_RES_SFX:
       resm->resources[resm->count] = malloc(sizeof(struct JIN_Sndsfx));
-      JIN_sndsfx_create((struct JIN_Sndsfx *) resm->resources[resm->count], fpath);
+      JIN_sndsfx_create(resm->resources[resm->count], fpath);
       break;
     case JIN_RES_BGM:
       break;
