@@ -110,7 +110,7 @@ int STM_stack_create(struct STM_Stack *stack)
 int STM_stack_destroy(struct STM_Stack *stack)
 {
   for (size_t i = 0; i < stack->count; ++i) {
-    free(stack->states[i]->data);
+    STM_state_destroy(stack->states[i]);
   }
   free(stack->states);
 
@@ -193,6 +193,15 @@ int STM_stack_draw(struct STM_Stack *stack)
   }
 
   if (STATE_FN(0, draw)) return -1;
+
+  return 0;
+}
+
+/* JIN FUNCTIONS */
+#include "../core/globals.h"
+int JIN_state_push(struct STM_State *state)
+{
+  STM_stack_push(&JIN_states, state);
 
   return 0;
 }

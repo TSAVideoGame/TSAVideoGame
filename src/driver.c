@@ -1,31 +1,35 @@
-#include "snd/snd.h"
-#include "stm/stm.h"
 #include "stm/states.h"
-#include "globals.h"
+#include "core/core.h"
+
+#define FPS 30
+#define FRAME_DELAY (1000 / FPS)
 
 int main(int argc, char *args[])
 {
-  /* Init libraries */
-  JIN_snd_init();
- 
-  /* Init singletons/globals */
-  JIN_resm_create(&JIN_resm);
-  STM_stack_create(&JIN_states);
+  JIN_core_init();
 
   /* Create states */
   struct STM_State test;
   JIN_states_test_create(&test);
-  STM_stack_push(&JIN_states, &test);
+  JIN_state_push(&test);
 
   /* "Game loop" */
-  STM_stack_update(&JIN_states);
+  /* STM_stack_update(&JIN_states); */
+  while (JIN_core_active()) {
+    double frame_start = glfwGetTime() / 1000;
 
-  /* Clean singletons/globals */
-  STM_stack_destroy(&JIN_states);
-  JIN_resm_destroy(&JIN_resm);
+    JIN_core_input();
+    JIN_core_update();
+    JIN_core_draw();
 
-  /* Clean libraries */
-  JIN_snd_quit();
+    double frame_time = glfwGetTime() / 1000 - frame_start;
+
+    if (FRAME_DELAY > frame_time) {
+      JIN_sleep(FRAME_DELAY - frame_time);
+    }
+  }
+
+  JIN_core_quit();
   
   return 0;
 }

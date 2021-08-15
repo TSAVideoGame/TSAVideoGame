@@ -4,22 +4,11 @@
 
 As usual this isn't finished yet, here is a todo
 
-## Todo
-PNG loading
-Animations
-Game loop
-
-## Next step
-Bgm music
-
-## Finished
-States
-Resource Manager
-Sfx loading
-
 ## Big thanks to these libraries
 OpenAL
-OpenGL (nothing in rn, but will be used for graphics when I get there)
+OpenGL
+glfw
+GLEW
 
 ## Memory leaks
 I am using valgrind on linux (Ubuntu) to check for leaks

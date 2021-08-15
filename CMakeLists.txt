@@ -9,7 +9,8 @@ project(jin)
 
 add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/driver.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/globals.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/core/core.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/core/globals.c
   ${CMAKE_CURRENT_LIST_DIR}/src/resm/resm.c
   ${CMAKE_CURRENT_LIST_DIR}/src/snd/snd.c
   ${CMAKE_CURRENT_LIST_DIR}/src/snd/wav_loader.c
@@ -17,7 +18,7 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/stm/states.c
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC openal)
+target_link_libraries(${PROJECT_NAME} PUBLIC openal glfw GL GLEW)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/src

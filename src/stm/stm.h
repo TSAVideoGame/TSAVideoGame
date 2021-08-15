@@ -108,4 +108,9 @@ int STM_stack_pop    (struct STM_Stack *stack);
 int STM_stack_update (struct STM_Stack *stack);
 int STM_stack_draw   (struct STM_Stack *stack);
 
+/*
+ * JIN functions
+ */
+int JIN_state_push(struct STM_State *state);
+
 #endif

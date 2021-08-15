@@ -1,11 +1,11 @@
 #include "states.h"
 #include "../resm/resm.h"
-#include "../globals.h"
+#include "../core/globals.h"
 #include "snd/snd.h"
 
 static int test_fn_create(struct STM_State *state)
 {
-  JIN_resm_add(&JIN_resm, "L", "res/L.wav", JIN_RES_BGM); 
+  //JIN_resm_add(&JIN_resm, "L", "res/L.wav", JIN_RES_BGM); 
   
   return 0;
 }
@@ -17,8 +17,8 @@ static int test_fn_destroy(struct STM_State *state)
 
 static int test_fn_update(struct STM_State *state)
 {
-  JIN_sndbgm_set(JIN_resm_get(&JIN_resm, "L"));
-  JIN_sndbgm_play();
+  //JIN_sndbgm_set(JIN_resm_get(&JIN_resm, "L"));
+  /* JIN_sndbgm_play(); */
 
   return 0;
 }
