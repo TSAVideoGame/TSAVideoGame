@@ -2,6 +2,7 @@
 #include <AL/alc.h>
 #include <AL/al.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "wav_loader.h"
 
@@ -10,15 +11,11 @@
  *
  * context      | Global ALCcontext
  * device       | Global ALCdevice
- * bgm_source   | Global ALC source for bgm
- * bgm_current  | Pointer to the set bgm struct
  * BUFFERS_NUM  | Buffers for bgm
  * BUFFERS_SIZE | Size of a bgm buffer
  */
 static ALCcontext        *context;
 static ALCdevice         *device;
-static ALuint             bgm_source;
-static struct JIN_Sndbgm *bgm_current;
 
 #define BUFFERS_NUM 4
 #define BUFFERS_SIZE 32768
@@ -39,14 +36,6 @@ int JIN_snd_init(void)
 
   alcMakeContextCurrent(context);
 
-  /* BGM source */
-  alGenSources(1, &bgm_source);
-  alSourcef(bgm_source, AL_PITCH, 1);
-  alSourcef(bgm_source, AL_GAIN, 1.0f);
-  alSource3f(bgm_source, AL_POSITION, 0, 0, 0);
-  alSource3f(bgm_source, AL_VELOCITY, 0, 0, 0);
-  alSourcei(bgm_source, AL_LOOPING, AL_FALSE);
-  
   return 0;
 }
 
@@ -58,8 +47,6 @@ int JIN_snd_init(void)
  */
 int JIN_snd_quit(void)
 {
-  alDeleteSources(1, &bgm_source);
-  
   alcMakeContextCurrent(NULL);
   alcDestroyContext(context);
   alcCloseDevice(device);
@@ -122,6 +109,8 @@ int JIN_sndsfx_destroy(struct JIN_Sndsfx *sfx)
 
 /* BGM FUNCTIONS */
 
+#include "../core/globals.h"
+
 /*
  * JIN_sndbgm_update
  *
@@ -131,6 +120,36 @@ int JIN_sndsfx_destroy(struct JIN_Sndsfx *sfx)
  */
 int JIN_sndbgm_update(struct JIN_Sndbgm *bgm)
 {
+  ALint buffers_processed = 0;
+  alGetSourcei(bgm->source, AL_BUFFERS_PROCESSED, &buffers_processed);
+
+  if (buffers_processed <= 0) return 0;
+
+  while (buffers_processed--) {
+    ALuint buffer;
+    alSourceUnqueueBuffers(bgm->source, 1, &buffer);
+
+    char data[BUFFERS_SIZE];
+
+    size_t copy_size = BUFFERS_SIZE;
+    if (bgm->cursor + BUFFERS_SIZE > bgm->data_size) {
+      copy_size = bgm->data_size - bgm->cursor;
+    }
+
+    memcpy(data, &bgm->data[bgm->cursor], copy_size);
+    bgm->cursor += copy_size;
+
+    /* Ensure no empty space, will loop immediately */
+    if (copy_size < BUFFERS_SIZE) {
+      bgm->cursor = 0;
+      memcpy(&data[copy_size], &bgm->data[bgm->cursor], BUFFERS_SIZE - copy_size);
+      bgm->cursor = BUFFERS_SIZE - copy_size;
+    }
+
+    alBufferData(buffer, bgm->format, data, BUFFERS_SIZE, bgm->sample_rate);
+    alSourceQueueBuffers(bgm->source, 1, &buffer);
+  }
+
   return 0;
 }
 
@@ -146,9 +165,8 @@ int JIN_sndbgm_create(struct JIN_Sndbgm *bgm, const char *fpath)
 {
   uint8_t  channels;
   uint8_t  bits_per_sample;
-  int32_t  size;
 
-  if (JIN_wav_load(fpath, &bgm->data, &channels, &bgm->sample_rate, &bits_per_sample, &size)) return -1;
+  if (JIN_wav_load(fpath, &bgm->data, &channels, &bgm->sample_rate, &bits_per_sample, &bgm->data_size)) return -1;
 
   if (!(bgm->buffers = malloc(BUFFERS_NUM * sizeof(ALuint)))) return -1;
   alGenBuffers(BUFFERS_NUM, bgm->buffers);
@@ -165,10 +183,21 @@ int JIN_sndbgm_create(struct JIN_Sndbgm *bgm, const char *fpath)
     return -1; /* Unknown format */
 
   /* Audio data must be bigger than BUFFERS_NUM * BUFFERS_SIZE */
-  if (size < BUFFERS_NUM * BUFFERS_SIZE) return -1;
+  if (bgm->data_size < BUFFERS_NUM * BUFFERS_SIZE) return -1;
   for (int i = 0; i < BUFFERS_NUM; ++i) {
     alBufferData(bgm->buffers[i], bgm->format, &bgm->data[i * BUFFERS_SIZE], BUFFERS_SIZE, bgm->sample_rate);
   }
+
+  alGenSources(1, &bgm->source);
+  alSourcef(bgm->source, AL_PITCH, 1);
+  alSourcef(bgm->source, AL_GAIN, 1.0f);
+  alSource3f(bgm->source, AL_POSITION, 0, 0, 0);
+  alSource3f(bgm->source, AL_VELOCITY, 0, 0, 0);
+  alSourcei(bgm->source, AL_LOOPING, AL_FALSE);
+
+  alSourceQueueBuffers(JIN_sndbgm.source, BUFFERS_NUM, JIN_sndbgm.buffers);
+
+  bgm->cursor = BUFFERS_SIZE * BUFFERS_NUM;
 
   return 0;
 }
@@ -182,6 +211,8 @@ int JIN_sndbgm_create(struct JIN_Sndbgm *bgm, const char *fpath)
  */
 int JIN_sndbgm_destroy(struct JIN_Sndbgm *bgm)
 {
+  alDeleteSources(1, &bgm->source);
+
   JIN_wav_unload(&bgm->data);
   alDeleteBuffers(BUFFERS_NUM, bgm->buffers);
   free(bgm->buffers);
@@ -195,9 +226,10 @@ int JIN_sndbgm_destroy(struct JIN_Sndbgm *bgm)
  * @param bgm
  * @return
  */
-int JIN_sndbgm_set(struct JIN_Sndbgm *bgm)
+int JIN_sndbgm_set(const char *fpath)
 {
-  alSourceQueueBuffers(bgm_source, BUFFERS_NUM, bgm->buffers);
+  JIN_sndbgm_destroy(&JIN_sndbgm);
+  JIN_sndbgm_create(&JIN_sndbgm, fpath);
   
   return 0;
 }
@@ -210,6 +242,8 @@ int JIN_sndbgm_set(struct JIN_Sndbgm *bgm)
  */
 int JIN_sndbgm_play(void)
 {
+  alSourcePlay(JIN_sndbgm.source);
+
   return 0;
 }
 
@@ -221,5 +255,7 @@ int JIN_sndbgm_play(void)
  */
 int JIN_sndbgm_stop()
 {
+  alSourcePause(JIN_sndbgm.source);
+
   return 0;
 }

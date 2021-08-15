@@ -13,8 +13,7 @@ int main(int argc, char *args[])
   JIN_states_test_create(&test);
   JIN_state_push(&test);
 
-  /* "Game loop" */
-  /* STM_stack_update(&JIN_states); */
+  /* Game loop */
   while (JIN_core_active()) {
     double frame_start = glfwGetTime() / 1000;
 

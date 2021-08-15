@@ -23,9 +23,16 @@ int JIN_wav_load(const char *fpath, char **buffer, uint8_t *channels, int32_t *s
   READ(temp, 4); /* File format */
   CHECK("WAVE", 4);
 
-  /* Read fmt */
+  /* Read fmt (some files have JUNK after RIFF) */
   READ(temp, 4); /* Chunk id */
-  if (CHECK("fmt", 3)) return -1;
+  if (CHECK("fmt", 3)) {
+    while (CHECK("fmt", 3)) {
+      READ(temp, 4); /* Chunk size */
+      uint32_t offset = *(uint32_t *) temp;
+      if (fseek(file, offset, SEEK_CUR)) return -1; /* Skip past the chunk */
+      READ(temp, 4); /* Chunk id */
+    }
+  }
   READ(temp, 4); /* Chunk size */
   uint32_t fmt_end = ftell(file) + *(uint32_t *) temp;
   READ(temp, 2); /* PCM */

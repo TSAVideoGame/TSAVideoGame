@@ -6,19 +6,6 @@
 #include <stdlib.h>
 
 /*
- * TODO
- *
- * Change BGM API a lot
- *
- * Don't make BGM a resource, make all
- * the stuff BGM uses global, until I can
- * write an update buffers function without
- * a tutorial
- *
- * Possibly make bgm on a different thread
- */
-
-/*
  * SOUND
  *
  * Plays audio
@@ -40,7 +27,9 @@ struct JIN_Sndbgm {
   ALenum  format;
   int32_t sample_rate;
   char   *data;
+  int32_t data_size;
   size_t  cursor;
+  ALuint  source;
 };
 
 /*
@@ -75,7 +64,7 @@ int JIN_sndsfx_destroy(struct JIN_Sndsfx *);
 int JIN_sndbgm_update (struct JIN_Sndbgm *);
 int JIN_sndbgm_create (struct JIN_Sndbgm *, const char *fpath);
 int JIN_sndbgm_destroy(struct JIN_Sndbgm *);
-int JIN_sndbgm_set    (struct JIN_Sndbgm *);
+int JIN_sndbgm_set    (const char *fpath);
 int JIN_sndbgm_play   (void);
 int JIN_sndbgm_stop   (void);
 

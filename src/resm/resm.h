@@ -23,7 +23,6 @@ enum JIN_Rest {
   JIN_RES_PNG,
   /* Sound */
   JIN_RES_SFX,
-  JIN_RES_BGM
 };
 
 struct JIN_Resm {

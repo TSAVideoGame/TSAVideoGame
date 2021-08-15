@@ -58,6 +58,7 @@ int JIN_core_init(void)
 
   JIN_resm_create(&JIN_resm);
   STM_stack_create(&JIN_states);
+  JIN_sndbgm_create(&JIN_sndbgm, "res/L.wav");
 
   return 0;
 }
@@ -70,6 +71,7 @@ int JIN_core_init(void)
  */
 int JIN_core_quit(void)
 {
+  JIN_sndbgm_destroy(&JIN_sndbgm);
   JIN_window_destroy(&JIN_window);
   STM_stack_destroy(&JIN_states);
   JIN_resm_destroy(&JIN_resm);
@@ -105,6 +107,9 @@ int JIN_core_input(void)
  */
 int JIN_core_update(void)
 {
+  JIN_sndbgm_update(&JIN_sndbgm);
+  STM_stack_update(&JIN_states);
+
   return 0;
 }
 
