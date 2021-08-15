@@ -1,16 +1,28 @@
-#include "wav_loader.h"
+#include "wav_util.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 /*
+ * JIN_wav_load
+ *
  * @desc
  *   Load a wav into a char buffer.
  *   Wav spec from http://soundfile.sapp.org/doc/WaveFormat/
+ * @param fpath
+ *   Path to the wav file
+ * @param data
+ *   A struct holding the wav format data and how big the data is
+ * @param buffer [optional]
+ *   Buffer to store all the data in
+ * @param data_start [optional]
+ *   Where the data in the data chunk starts
+ * @return
  */
+#include <stdio.h>
 #define READ(var, count) if (fread(var, sizeof(*var), count, file) != count) return -1;
 #define CHECK(text, count) (strncmp(temp, text, count))
-int JIN_wav_load(const char *fpath, char **buffer, uint8_t *channels, int32_t *sample_rate, uint8_t *bits_per_sample, int32_t *size)
+int JIN_wav_load(const char *fpath, struct JIN_Wavd *data, char **buffer, int32_t *data_start)
 {
   FILE    *file;
   char     temp[4];
@@ -37,13 +49,13 @@ int JIN_wav_load(const char *fpath, char **buffer, uint8_t *channels, int32_t *s
   uint32_t fmt_end = ftell(file) + *(uint32_t *) temp;
   READ(temp, 2); /* PCM */
   READ(temp, 2); /* Channel num */
-  *channels = *(uint8_t *) temp;
+  data->channels = *(uint8_t *) temp;
   READ(temp, 4); /* Sample rate */
-  *sample_rate = *(int32_t *) temp;
+  data->sample_rate = *(int32_t *) temp;
   READ(temp, 4); /* Byte rate */
   READ(temp, 2); /* Block align */
   READ(temp, 2); /* Bits per sample */
-  *bits_per_sample = *(uint8_t *) temp;
+  data->bits_per_sample = *(uint8_t *) temp;
 
   if (ftell(file) != fmt_end)
     fseek(file, fmt_end, SEEK_SET);
@@ -59,19 +71,45 @@ int JIN_wav_load(const char *fpath, char **buffer, uint8_t *channels, int32_t *s
     }
   }
   READ(temp, 4); /* Chunk size */
-  *size = *(int32_t *) temp;
+  data->size = *(int32_t *) temp;
+  printf("Data size: %d\n", data->size);
 
-  *buffer = malloc(*size * sizeof(char));
-  READ(*buffer, *size);
+  if (data_start) {
+    *data_start = ftell(file);
+  }
+
+  if (buffer) {
+    *buffer = malloc(data->size * sizeof(char));
+    READ(*buffer, data->size);
+  }
 
   fclose(file);
 
   return 0;
 }
 
-int JIN_wav_unload(char **buffer)
+/*
+ * JIN_wav_format
+ *
+ * @desc
+ *   Gets the audio format
+ * @param data
+ *   Already initialized wav data
+ * @param format
+ *   Variable to hold the format
+ */
+int JIN_wav_format(struct JIN_Wavd *data, ALenum *format)
 {
-  free(*buffer);
+  if (data->channels == 1 && data->bits_per_sample == 8)
+    *format = AL_FORMAT_MONO8;
+  else if (data->channels == 1 && data->bits_per_sample == 16)
+    *format = AL_FORMAT_MONO16;
+  else if (data->channels == 2 && data->bits_per_sample == 8)
+    *format = AL_FORMAT_MONO8;
+  else if (data->channels == 2 && data->bits_per_sample == 16)
+    *format = AL_FORMAT_STEREO16;
+  else
+    return -1; /* Unknown format */
 
   return 0;
 }

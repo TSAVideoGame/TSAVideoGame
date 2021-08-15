@@ -4,6 +4,7 @@
 #include <AL/al.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /*
  * SOUND
@@ -23,12 +24,12 @@ struct JIN_Sndsfx {
 };
 
 struct JIN_Sndbgm {
+  FILE   *file;
   ALuint *buffers;
   ALenum  format;
   int32_t sample_rate;
-  char   *data;
   int32_t data_size;
-  size_t  cursor;
+  size_t  data_start;
   ALuint  source;
 };
 

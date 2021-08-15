@@ -3,8 +3,7 @@
 #include <AL/al.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "wav_loader.h"
+#include "wav_util.h"
 
 /*
  * GLOBALS AND MACROS
@@ -66,30 +65,18 @@ int JIN_snd_quit(void)
  */
 int JIN_sndsfx_create(struct JIN_Sndsfx *sfx, const char *fpath)
 {
-  uint8_t  channels;
-  int32_t  sample_rate;
-  uint8_t  bits_per_sample;
-  int32_t  size;
-  char    *data;
+  char           *data;
+  struct JIN_Wavd wav_data;
 
-  if (JIN_wav_load(fpath, &data, &channels, &sample_rate, &bits_per_sample, &size)) return -1;
+  if (JIN_wav_load(fpath, &wav_data, &data, NULL)) return -1;
 
   alGenBuffers(1, &sfx->buffer);
 
   ALenum format;
-  if (channels == 1 && bits_per_sample == 8)
-    format = AL_FORMAT_MONO8;
-  else if (channels == 1 && bits_per_sample == 16)
-    format = AL_FORMAT_MONO16;
-  else if (channels == 2 && bits_per_sample == 8)
-    format = AL_FORMAT_MONO8;
-  else if (channels == 2 && bits_per_sample == 16)
-    format = AL_FORMAT_STEREO16;
-  else
-    return -1; /* Unknown format */
+  JIN_wav_format(&wav_data, &format);
 
-  alBufferData(sfx->buffer, format, data, size, sample_rate);
-  JIN_wav_unload(&data);
+  alBufferData(sfx->buffer, format, data, wav_data.size, wav_data.sample_rate);
+  free(data);
 
   return 0;
 }
@@ -132,18 +119,18 @@ int JIN_sndbgm_update(struct JIN_Sndbgm *bgm)
     char data[BUFFERS_SIZE];
 
     size_t copy_size = BUFFERS_SIZE;
-    if (bgm->cursor + BUFFERS_SIZE > bgm->data_size) {
-      copy_size = bgm->data_size - bgm->cursor;
+    size_t current_pos;
+    if ((current_pos = ftell(bgm->file)) == -1) return -1;
+    if (current_pos + BUFFERS_SIZE > bgm->data_size) {
+      copy_size = bgm->data_size - current_pos;
     }
 
-    memcpy(data, &bgm->data[bgm->cursor], copy_size);
-    bgm->cursor += copy_size;
+    if (fread(data, sizeof(char), BUFFERS_SIZE, bgm->file) != BUFFERS_SIZE) return -1;
 
     /* Ensure no empty space, will loop immediately */
     if (copy_size < BUFFERS_SIZE) {
-      bgm->cursor = 0;
-      memcpy(&data[copy_size], &bgm->data[bgm->cursor], BUFFERS_SIZE - copy_size);
-      bgm->cursor = BUFFERS_SIZE - copy_size;
+      if (fseek(bgm->file, bgm->data_start, SEEK_CUR)) return -1;
+      if (fread(&data[copy_size], sizeof(char), BUFFERS_SIZE - copy_size, bgm->file) != BUFFERS_SIZE - copy_size) return -1;
     }
 
     alBufferData(buffer, bgm->format, data, BUFFERS_SIZE, bgm->sample_rate);
@@ -163,29 +150,26 @@ int JIN_sndbgm_update(struct JIN_Sndbgm *bgm)
  */
 int JIN_sndbgm_create(struct JIN_Sndbgm *bgm, const char *fpath)
 {
-  uint8_t  channels;
-  uint8_t  bits_per_sample;
+  struct JIN_Wavd wav_data;
+  
+  if (JIN_wav_load(fpath, &wav_data, NULL, &bgm->data_size)) return -1;
 
-  if (JIN_wav_load(fpath, &bgm->data, &channels, &bgm->sample_rate, &bits_per_sample, &bgm->data_size)) return -1;
-
+  if (!(bgm->file = fopen(fpath, "rb"))) return -1;
+  if (fseek(bgm->file, bgm->data_start, SEEK_SET)) return -1;
+  bgm->sample_rate = wav_data.sample_rate;
+  bgm->data_size = wav_data.size;
+    
   if (!(bgm->buffers = malloc(BUFFERS_NUM * sizeof(ALuint)))) return -1;
   alGenBuffers(BUFFERS_NUM, bgm->buffers);
 
-  if (channels == 1 && bits_per_sample == 8)
-    bgm->format = AL_FORMAT_MONO8;
-  else if (channels == 1 && bits_per_sample == 16)
-    bgm->format = AL_FORMAT_MONO16;
-  else if (channels == 2 && bits_per_sample == 8)
-    bgm->format = AL_FORMAT_MONO8;
-  else if (channels == 2 && bits_per_sample == 16)
-    bgm->format = AL_FORMAT_STEREO16;
-  else
-    return -1; /* Unknown format */
+  JIN_wav_format(&wav_data, &bgm->format);
 
   /* Audio data must be bigger than BUFFERS_NUM * BUFFERS_SIZE */
   if (bgm->data_size < BUFFERS_NUM * BUFFERS_SIZE) return -1;
   for (int i = 0; i < BUFFERS_NUM; ++i) {
-    alBufferData(bgm->buffers[i], bgm->format, &bgm->data[i * BUFFERS_SIZE], BUFFERS_SIZE, bgm->sample_rate);
+    char buffer[BUFFERS_SIZE];
+    if (fread(buffer, sizeof(char), BUFFERS_SIZE, bgm->file) != BUFFERS_SIZE) return -1;
+    alBufferData(bgm->buffers[i], bgm->format, buffer, BUFFERS_SIZE, bgm->sample_rate);
   }
 
   alGenSources(1, &bgm->source);
@@ -196,8 +180,6 @@ int JIN_sndbgm_create(struct JIN_Sndbgm *bgm, const char *fpath)
   alSourcei(bgm->source, AL_LOOPING, AL_FALSE);
 
   alSourceQueueBuffers(JIN_sndbgm.source, BUFFERS_NUM, JIN_sndbgm.buffers);
-
-  bgm->cursor = BUFFERS_SIZE * BUFFERS_NUM;
 
   return 0;
 }
@@ -213,9 +195,10 @@ int JIN_sndbgm_destroy(struct JIN_Sndbgm *bgm)
 {
   alDeleteSources(1, &bgm->source);
 
-  JIN_wav_unload(&bgm->data);
   alDeleteBuffers(BUFFERS_NUM, bgm->buffers);
   free(bgm->buffers);
+
+  fclose(bgm->file);
   return 0;
 }
 
