@@ -10,9 +10,19 @@ OpenGL
 glfw
 GLEW
 
-## Memory leaks
-I am using valgrind on linux (Ubuntu) to check for leaks
-
-There will be bytes in 'still reachable', but those are usually going
-to be because of libraries, the goal should be 0 bytes in 0 blocks for
-every other category.
+## Repo layout
+root
+- Not really code stuff
+- src
+- - driver
+- - - Runs the code
+- - core
+- - - Windowing, inputs, stuff for game loop
+- - gfx
+- - - Graphics
+- - resm
+- - - Resource manager
+- - snd
+- - - Sound
+- - stm
+- - - State manager
