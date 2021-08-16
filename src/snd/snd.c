@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wav_util.h"
+#include "../core/logger.h"
 
 /*
  * GLOBALS AND MACROS
@@ -30,7 +31,7 @@ static ALCdevice         *device;
 int JIN_snd_init(void)
 {
   /* Device and context */
-  if (!(device = alcOpenDevice(NULL))) return -1;
+  if (!(device = alcOpenDevice(NULL))) ERR_EXIT(-1, "Could not open an ALCdevice");
   context = alcCreateContext(device, NULL);
 
   alcMakeContextCurrent(context);
@@ -68,7 +69,7 @@ int JIN_sndsfx_create(struct JIN_Sndsfx *sfx, const char *fpath)
   char           *data;
   struct JIN_Wavd wav_data;
 
-  if (JIN_wav_load(fpath, &wav_data, &data, NULL)) return -1;
+  if (JIN_wav_load(fpath, &wav_data, &data, NULL)) ERR_EXIT(-1, "Could not load the wav file");
 
   alGenBuffers(1, &sfx->buffer);
 
@@ -120,17 +121,20 @@ int JIN_sndbgm_update(struct JIN_Sndbgm *bgm)
 
     size_t copy_size = BUFFERS_SIZE;
     size_t current_pos;
-    if ((current_pos = ftell(bgm->file)) == -1) return -1;
+    if ((current_pos = ftell(bgm->file)) == -1) ERR_EXIT(-1, "ftell failed");
+    /* There might be overflow, just very low chances and I'll just hope it doesn't happen */
     if (current_pos + BUFFERS_SIZE > bgm->data_size) {
       copy_size = bgm->data_size - current_pos;
     }
 
-    if (fread(data, sizeof(char), BUFFERS_SIZE, bgm->file) != BUFFERS_SIZE) return -1;
+    if (fread(data, sizeof(char), copy_size, bgm->file) != copy_size) ERR_EXIT(-1, "Cannot read wav file while updating buffers");
 
     /* Ensure no empty space, will loop immediately */
     if (copy_size < BUFFERS_SIZE) {
-      if (fseek(bgm->file, bgm->data_start, SEEK_CUR)) return -1;
-      if (fread(&data[copy_size], sizeof(char), BUFFERS_SIZE - copy_size, bgm->file) != BUFFERS_SIZE - copy_size) return -1;
+      if (fseek(bgm->file, bgm->data_start, SEEK_SET))
+        ERR_EXIT(-1, "Cannot seek wav file while updating buffers");
+      if (fread(&data[copy_size], sizeof(char), BUFFERS_SIZE - copy_size, bgm->file) != BUFFERS_SIZE - copy_size)
+        ERR_EXIT(-1, "Could not read wav while updating buffers");
     }
 
     alBufferData(buffer, bgm->format, data, BUFFERS_SIZE, bgm->sample_rate);
@@ -152,23 +156,23 @@ int JIN_sndbgm_create(struct JIN_Sndbgm *bgm, const char *fpath)
 {
   struct JIN_Wavd wav_data;
   
-  if (JIN_wav_load(fpath, &wav_data, NULL, &bgm->data_size)) return -1;
+  if (JIN_wav_load(fpath, &wav_data, NULL, &bgm->data_size)) ERR_EXIT(-1, "Could not load wav file");
 
-  if (!(bgm->file = fopen(fpath, "rb"))) return -1;
-  if (fseek(bgm->file, bgm->data_start, SEEK_SET)) return -1;
+  if (!(bgm->file = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open wav file");
+  if (fseek(bgm->file, bgm->data_start, SEEK_SET)) ERR_EXIT(-1, "Could not seek wav file");
   bgm->sample_rate = wav_data.sample_rate;
   bgm->data_size = wav_data.size;
     
-  if (!(bgm->buffers = malloc(BUFFERS_NUM * sizeof(ALuint)))) return -1;
+  if (!(bgm->buffers = malloc(BUFFERS_NUM * sizeof(ALuint)))) ERR_EXIT(-1, "Out of memory");
   alGenBuffers(BUFFERS_NUM, bgm->buffers);
 
   JIN_wav_format(&wav_data, &bgm->format);
 
   /* Audio data must be bigger than BUFFERS_NUM * BUFFERS_SIZE */
-  if (bgm->data_size < BUFFERS_NUM * BUFFERS_SIZE) return -1;
+  if (bgm->data_size < BUFFERS_NUM * BUFFERS_SIZE) ERR_EXIT(-1, "Out of memory");
   for (int i = 0; i < BUFFERS_NUM; ++i) {
     char buffer[BUFFERS_SIZE];
-    if (fread(buffer, sizeof(char), BUFFERS_SIZE, bgm->file) != BUFFERS_SIZE) return -1;
+    if (fread(buffer, sizeof(char), BUFFERS_SIZE, bgm->file) != BUFFERS_SIZE) ERR_EXIT(-1, "Could not read wav file");
     alBufferData(bgm->buffers[i], bgm->format, buffer, BUFFERS_SIZE, bgm->sample_rate);
   }
 

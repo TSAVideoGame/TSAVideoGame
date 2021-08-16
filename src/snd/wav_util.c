@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../core/logger.h"
 
 /*
  * JIN_wav_load
@@ -20,8 +21,9 @@
  * @return
  */
 #include <stdio.h>
-#define READ(var, count) if (fread(var, sizeof(*var), count, file) != count) return -1;
+#define READ(var, count) if (fread(var, sizeof(*var), count, file) != count) ERR_EXIT(-1, "Could not read in wav file");
 #define CHECK(text, count) (strncmp(temp, text, count))
+#define SEEK(var, loc) if (fseek(file, var, loc)) ERR_EXIT(-1, "Could not seek in wav file");
 int JIN_wav_load(const char *fpath, struct JIN_Wavd *data, char **buffer, int32_t *data_start)
 {
   FILE    *file;
@@ -41,7 +43,7 @@ int JIN_wav_load(const char *fpath, struct JIN_Wavd *data, char **buffer, int32_
     while (CHECK("fmt", 3)) {
       READ(temp, 4); /* Chunk size */
       uint32_t offset = *(uint32_t *) temp;
-      if (fseek(file, offset, SEEK_CUR)) return -1; /* Skip past the chunk */
+      SEEK(offset, SEEK_CUR); /* Skip past the chunk */
       READ(temp, 4); /* Chunk id */
     }
   }
@@ -58,7 +60,7 @@ int JIN_wav_load(const char *fpath, struct JIN_Wavd *data, char **buffer, int32_
   data->bits_per_sample = *(uint8_t *) temp;
 
   if (ftell(file) != fmt_end)
-    fseek(file, fmt_end, SEEK_SET);
+    SEEK(fmt_end, SEEK_SET);
 
   /* Data */
   READ(temp, 4); /* Chunk id */
@@ -66,20 +68,19 @@ int JIN_wav_load(const char *fpath, struct JIN_Wavd *data, char **buffer, int32_
     while (CHECK("data", 4)) {
       READ(temp, 4); /* Chunk size */
       uint32_t offset = *(uint32_t *) temp;
-      if (fseek(file, offset, SEEK_CUR)) return -1; /* Skip past the chunk */
+      SEEK(offset, SEEK_CUR); /* Skip past the chunk */
       READ(temp, 4); /* Chunk id */
     }
   }
   READ(temp, 4); /* Chunk size */
   data->size = *(int32_t *) temp;
-  printf("Data size: %d\n", data->size);
 
   if (data_start) {
     *data_start = ftell(file);
   }
 
   if (buffer) {
-    *buffer = malloc(data->size * sizeof(char));
+    if(!(*buffer = malloc(data->size * sizeof(char)))) ERR_EXIT(-1, "Wav load: Out of memory");
     READ(*buffer, data->size);
   }
 
@@ -109,7 +110,7 @@ int JIN_wav_format(struct JIN_Wavd *data, ALenum *format)
   else if (data->channels == 2 && data->bits_per_sample == 16)
     *format = AL_FORMAT_STEREO16;
   else
-    return -1; /* Unknown format */
+    ERR_EXIT(-1, "Wav file has unrecognized audio format");
 
   return 0;
 }

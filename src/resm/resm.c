@@ -1,6 +1,7 @@
 #include "resm.h"
 #include <string.h>
 #include <stdlib.h>
+#include "../core/logger.h"
 
 /* Sound */
 #include "../snd/snd.h"
@@ -19,7 +20,7 @@
 #define ALLOC_VAR(type, name) \
   { \
     type name; \
-    if (!(name = malloc(count * sizeof(*name)))) return -1; \
+    if (!(name = malloc(count * sizeof(*name)))) ERR_EXIT(-1, "Allocate resm: Out of memory"); \
     memcpy(name, resm->name, resm->count * sizeof(*name)); \
     free(resm->name); \
     resm->name = name; \
@@ -46,9 +47,9 @@ static int JIN_resm_allocate(struct JIN_Resm *resm, unsigned int count)
  */
 int JIN_resm_create(struct JIN_Resm *resm)
 {
-  if (!(resm->resources = malloc(INITIAL_COUNT * sizeof(void *       )))) return -1;
-  if (!(resm->names     = malloc(INITIAL_COUNT * sizeof(char *       )))) return -1;
-  if (!(resm->types     = malloc(INITIAL_COUNT * sizeof(enum JIN_Rest)))) return -1;
+  if (!(resm->resources = malloc(INITIAL_COUNT * sizeof(void *       )))) ERR_EXIT(-1, "Create resm: Out of memory");
+  if (!(resm->names     = malloc(INITIAL_COUNT * sizeof(char *       )))) ERR_EXIT(-1, "Create resm: Out of memory");
+  if (!(resm->types     = malloc(INITIAL_COUNT * sizeof(enum JIN_Rest)))) ERR_EXIT(-1, "Create resm: Out of memory");
 
   resm->count = 0;
   resm->allocated = INITIAL_COUNT;
@@ -97,7 +98,7 @@ void JIN_resm_destroy(struct JIN_Resm *resm)
 int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enum JIN_Rest type)
 {
   if (resm->allocated <= resm->count) {
-    if (JIN_resm_allocate(resm, resm->count * GROWTH_FACTOR)) return -1;
+    if (JIN_resm_allocate(resm, resm->count * GROWTH_FACTOR)) ERR_EXIT(-1, "Could not allocate resm");
   }
 
   size_t name_size = strlen(name) + 1;

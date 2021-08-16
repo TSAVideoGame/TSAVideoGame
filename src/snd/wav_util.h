@@ -1,5 +1,5 @@
-#ifndef JIN_WAV_LOADER_H
-#define JIN_WAV_LOADER_H
+#ifndef JIN_WAV_UTIL_H
+#define JIN_WAV_UTIL_H
 
 #include <stdint.h>
 #include <AL/al.h>

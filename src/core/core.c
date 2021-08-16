@@ -1,6 +1,7 @@
 #include "core.h"
 #include "../snd/snd.h"
 #include "globals.h"
+#include "logger.h"
 
 /* WINDOW FUNCTIONS */
 
@@ -18,7 +19,7 @@ int JIN_window_create(struct JIN_Window *window)
 
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-  if (!(window->window = glfwCreateWindow(window_width, window_height, "Window", NULL, NULL))) return -1;
+  if (!(window->window = glfwCreateWindow(window_width, window_height, "Window", NULL, NULL))) ERR_EXIT(-1, "Could not create a window");
   window->active = 1;
 
   glfwMakeContextCurrent(window->window);
@@ -50,15 +51,19 @@ int JIN_window_destroy(struct JIN_Window *window)
  */
 int JIN_core_init(void)
 {
-  if (!glfwInit()) return -1;
-  JIN_window_create(&JIN_window);
-  if (glewInit() != GLEW_OK) return -1;
+  /* 'Libraries' */
+  if (JIN_logger_init(JIN_LOGGER_LOG | JIN_LOGGER_ERR)) return -1;
+  LOG(LOG, "Initializing libraries");
+  if (!glfwInit())                    ERR_EXIT(-1, "Could not initialize GLFW");
+  if (JIN_window_create(&JIN_window)) ERR_EXIT(-1, "Could not create a window");
+  if (glewInit() != GLEW_OK)          ERR_EXIT(-1, "Could not initialize GLEW");
+  if (JIN_snd_init())                 ERR_EXIT(-1, "Could not initialize Sound");
 
-  if (JIN_snd_init()) return -1;
-
-  JIN_resm_create(&JIN_resm);
-  STM_stack_create(&JIN_states);
-  JIN_sndbgm_create(&JIN_sndbgm, "res/L.wav");
+  /* Singletons */
+  LOG(LOG, "Creating singletons");
+  if (JIN_resm_create(&JIN_resm))                  ERR_EXIT(-1, "Could not create a resource manager");
+  if (STM_stack_create(&JIN_states))               ERR_EXIT(-1, "Could not create a state stack");
+  if (JIN_sndbgm_create(&JIN_sndbgm, "res/L.wav")) ERR_EXIT(-1, "Could not create background music");
 
   return 0;
 }
@@ -71,15 +76,16 @@ int JIN_core_init(void)
  */
 int JIN_core_quit(void)
 {
+  LOG(LOG, "Quitting core (closing libraries and singletons)");
   JIN_sndbgm_destroy(&JIN_sndbgm);
   JIN_window_destroy(&JIN_window);
   STM_stack_destroy(&JIN_states);
   JIN_resm_destroy(&JIN_resm);
 
   JIN_snd_quit();
-
   glfwTerminate();
-
+  JIN_logger_quit();
+  
   return 0;
 }
 

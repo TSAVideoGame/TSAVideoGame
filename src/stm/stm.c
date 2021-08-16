@@ -1,5 +1,6 @@
 #include "stm.h"
 #include <string.h>
+#include "../core/logger.h"
 
 /*
  * STM_state_create
@@ -10,7 +11,7 @@
 int STM_state_create(struct STM_State *state, const char *name, size_t stack_size, uint8_t flags, STM_create fn_create, STM_destroy fn_destroy, STM_update fn_update, STM_draw fn_draw)
 {
   state->count = stack_size;
-  if (!(state->data  = malloc(stack_size * sizeof(STM_Data)))) return -1;
+  if (!(state->data  = malloc(stack_size * sizeof(STM_Data)))) ERR_EXIT(-1, "Out of memory");
   for (int i = 0; i < 16; ++i) {
     state->name[i] = *name++;
     if (!*name) break;
@@ -66,11 +67,11 @@ int STM_state_destroy(struct STM_State *state)
  */
 static int STM_stack_allocate(struct STM_Stack *stack, size_t count)
 {
-  if (count <= stack->allocated) return -1;
+  if (count <= stack->allocated) ERR_EXIT(-1, "Stack already has enough space");
 
   struct STM_State **states_new;
 
-  if (!(states_new = malloc(count * sizeof(struct STM_State)))) return -1;
+  if (!(states_new = malloc(count * sizeof(struct STM_State)))) ERR_EXIT(-1, "Out of memory");
 
   memcpy(states_new, stack->states, stack->count * sizeof(struct STM_State *));
   free(stack->states);
@@ -91,7 +92,7 @@ static int STM_stack_allocate(struct STM_Stack *stack, size_t count)
  */
 int STM_stack_create(struct STM_Stack *stack)
 {
-  if (!(stack->states = malloc(INITIAL_COUNT * sizeof(struct STM_State *)))) return -1;
+  if (!(stack->states = malloc(INITIAL_COUNT * sizeof(struct STM_State *)))) ERR_EXIT(-1, "Out of memory");
   stack->count = 0;
   stack->allocated = INITIAL_COUNT;
 
@@ -131,7 +132,7 @@ int STM_stack_destroy(struct STM_Stack *stack)
 int STM_stack_push(struct STM_Stack *stack, struct STM_State *state)
 {
   if (stack->allocated <= stack->count) {
-    if (STM_stack_allocate(stack, stack->count * GROWTH_FACTOR)) return -1;
+    if (STM_stack_allocate(stack, stack->count * GROWTH_FACTOR)) ERR_EXIT(-1, "Could not allocate STM_stack");
   }
 
   stack->states[stack->count++] = state;
@@ -152,7 +153,7 @@ int STM_stack_push(struct STM_Stack *stack, struct STM_State *state)
  */
 int STM_stack_pop(struct STM_Stack *stack)
 {
-  if (STATE_FN(0, destroy)) return -1;
+  if (STATE_FN(0, destroy)) ERR_EXIT(-1, "Could not properly destroy state");
   --stack->count;
 
   return 0;
@@ -169,7 +170,7 @@ int STM_stack_pop(struct STM_Stack *stack)
  */
 int STM_stack_update(struct STM_Stack *stack)
 {
-  if (STATE_FN(0, update)) return -1;
+  if (STATE_FN(0, update)) ERR_EXIT(-1, "Could not properly update");
 
   return 0;
 }
@@ -189,10 +190,10 @@ int STM_stack_update(struct STM_Stack *stack)
 int STM_stack_draw(struct STM_Stack *stack)
 {
   if (stack->states[stack->count - 1]->flags & STM_DRAW_PREV) {
-    if (STATE_FN(1, draw)) return -1;
+    if (STATE_FN(1, draw)) ERR_EXIT(-1, "Could not draw previous state properly");
   }
 
-  if (STATE_FN(0, draw)) return -1;
+  if (STATE_FN(0, draw)) ERR_EXIT(-1, "Could not draw properly");
 
   return 0;
 }
