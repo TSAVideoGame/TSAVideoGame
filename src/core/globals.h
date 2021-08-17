@@ -16,5 +16,7 @@ extern struct JIN_Resm   JIN_resm;
 extern struct STM_Stack  JIN_states;
 extern struct JIN_Window JIN_window;
 extern struct JIN_Sndbgm JIN_sndbgm;
+extern int WINDOW_WIDTH;
+extern int WINDOW_HEIGHT;
 
 #endif

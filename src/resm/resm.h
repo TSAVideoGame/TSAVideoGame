@@ -19,10 +19,11 @@
  */
 
 enum JIN_Rest {
-  /* Image */
-  JIN_RES_PNG,
+  /* Graphics */
+  JIN_RES_SHADER, /* OpenGL shader program */
+  JIN_RES_PNG,    /* OpenGL texture */
   /* Sound */
-  JIN_RES_SFX,
+  JIN_RES_SFX,    /* Sound effect */
 };
 
 struct JIN_Resm {

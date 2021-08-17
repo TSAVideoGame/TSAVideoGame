@@ -2,13 +2,15 @@
 
 2D game 'engine' framework thingy
 
-As usual this isn't finished yet, here is a todo
+As of rn it's still unfinished, probably never going to be but I'm gonna make some progress
 
 ## Big thanks to these libraries
-OpenAL
-OpenGL
-glfw
-GLEW
+- OpenAL
+- OpenGL
+- glfw
+- GLEW
+- cglm
+- lodepng
 
 ## Repo layout
 root

@@ -12,6 +12,10 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/core/core.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/globals.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/logger.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/gfx/gfx.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/gfx/shader.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/gfx/texture.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/gfx/lodepng/lodepng.c
   ${CMAKE_CURRENT_LIST_DIR}/src/resm/resm.c
   ${CMAKE_CURRENT_LIST_DIR}/src/snd/snd.c
   ${CMAKE_CURRENT_LIST_DIR}/src/snd/wav_util.c

@@ -1,5 +1,11 @@
 # Res folder
-res/
+#res/
+res/images/
+res/sounds/
+
+# Libraries
+cglm/
+lodepng/
 
 # Editor Stuff
 .clangd

@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include "../core/logger.h"
 
+/* Graphics */
+#include "../gfx/shader.h"
+#include "../gfx/texture.h"
+
 /* Sound */
 #include "../snd/snd.h"
 
@@ -70,7 +74,11 @@ void JIN_resm_destroy(struct JIN_Resm *resm)
     free(resm->names[i]);
 
     switch (resm->types[i]) {
+      case JIN_RES_SHADER:
+        JIN_shader_destory(resm->resources[i]);
+        break;
       case JIN_RES_PNG:
+        JIN_texture_destroy(resm->resources[i]);
         break;
       case JIN_RES_SFX:
         JIN_sndsfx_destroy(resm->resources[i]);
@@ -108,9 +116,13 @@ int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enu
   resm->types[resm->count] = type;
 
   switch (type) {
+    case JIN_RES_SHADER:
+      resm->resources[resm->count] = malloc(sizeof(unsigned int));
+      JIN_shader_create(resm->resources[resm->count], fpath);
+      break;
     case JIN_RES_PNG:
-      resm->resources[resm->count] = malloc(sizeof(struct JIN_Sndbgm));
-      JIN_sndbgm_create(resm->resources[resm->count], fpath);
+      resm->resources[resm->count] = malloc(sizeof(unsigned int));
+      JIN_texture_create(resm->resources[resm->count], fpath);
       break;
     case JIN_RES_SFX:
       resm->resources[resm->count] = malloc(sizeof(struct JIN_Sndsfx));

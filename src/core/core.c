@@ -23,7 +23,10 @@ int JIN_window_create(struct JIN_Window *window)
   window->active = 1;
 
   glfwMakeContextCurrent(window->window);
-  
+
+  WINDOW_WIDTH = window_width;
+  WINDOW_HEIGHT = window_height;
+
   return 0;
 }
 
@@ -61,9 +64,9 @@ int JIN_core_init(void)
 
   /* Singletons */
   LOG(LOG, "Creating singletons");
-  if (JIN_resm_create(&JIN_resm))                  ERR_EXIT(-1, "Could not create a resource manager");
-  if (STM_stack_create(&JIN_states))               ERR_EXIT(-1, "Could not create a state stack");
-  if (JIN_sndbgm_create(&JIN_sndbgm, "res/L.wav")) ERR_EXIT(-1, "Could not create background music");
+  if (JIN_resm_create(&JIN_resm))                         ERR_EXIT(-1, "Could not create a resource manager");
+  if (STM_stack_create(&JIN_states))                      ERR_EXIT(-1, "Could not create a state stack");
+  if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/L.wav")) ERR_EXIT(-1, "Could not create background music");
 
   return 0;
 }
@@ -127,6 +130,11 @@ int JIN_core_update(void)
  */
 int JIN_core_draw(void)
 {
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  STM_stack_draw(&JIN_states);
+
   glfwSwapBuffers(JIN_window.window);
 
   return 0;
