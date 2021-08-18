@@ -4,8 +4,7 @@
 #include "../core/logger.h"
 
 /* Graphics */
-#include "../gfx/shader.h"
-#include "../gfx/texture.h"
+#include "../gfx/gfx.h"
 
 /* Sound */
 #include "../snd/snd.h"
@@ -80,6 +79,9 @@ void JIN_resm_destroy(struct JIN_Resm *resm)
       case JIN_RES_PNG:
         JIN_texture_destroy(resm->resources[i]);
         break;
+      case JIN_RES_MODEL:
+        JIN_model_destory(resm->resources[i]);
+        break;
       case JIN_RES_SFX:
         JIN_sndsfx_destroy(resm->resources[i]);
         break;
@@ -123,6 +125,10 @@ int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enu
     case JIN_RES_PNG:
       resm->resources[resm->count] = malloc(sizeof(unsigned int));
       JIN_texture_create(resm->resources[resm->count], fpath);
+      break;
+    case JIN_RES_MODEL:
+      resm->resources[resm->count] = malloc(sizeof(struct JIN_Model));
+      JIN_model_create(resm->resources[resm->count], fpath);
       break;
     case JIN_RES_SFX:
       resm->resources[resm->count] = malloc(sizeof(struct JIN_Sndsfx));
