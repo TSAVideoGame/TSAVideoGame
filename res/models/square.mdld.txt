@@ -1,0 +1,25 @@
+DATA_START
+0.0, 1.0,   0.0, 1.0,
+1.0, 0.0,   1.0, 0.0,
+0.0, 0.0,   0.0, 0.0,
+
+0.0, 1.0,   0.0, 1.0,
+1.0, 1.0,   1.0, 1.0,
+1.0, 0.0,   1.0, 0.0,
+DATA_END
+FORMAT_START
+2, 4, 0
+2, 4, 2
+FORMAT_END
+COMMENT_START
+This is an example of model data in text form.
+There are blocks which have _START and _END
+Data has float data of all the vertices
+Format has the vertex attributes
+In this specifc case it is for position and textures
+
+Format is glVertexAttribPointer but without a few parameters
+index- is handled automatically (it should increment)
+type- everything is GL_FLOAT
+normalized- always GL_FALSE
+COMMENT_END

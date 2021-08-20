@@ -2,6 +2,7 @@
 #include "../snd/snd.h"
 #include "globals.h"
 #include "logger.h"
+#include <JEL/jel.h>
 
 /* WINDOW FUNCTIONS */
 
@@ -23,6 +24,7 @@ int JIN_window_create(struct JIN_Window *window)
   window->active = 1;
 
   glfwMakeContextCurrent(window->window);
+  glEnable(GL_DEPTH_TEST);
 
   WINDOW_WIDTH = window_width;
   WINDOW_HEIGHT = window_height;
@@ -61,6 +63,7 @@ int JIN_core_init(void)
   if (JIN_window_create(&JIN_window)) ERR_EXIT(-1, "Could not create a window");
   if (glewInit() != GLEW_OK)          ERR_EXIT(-1, "Could not initialize GLEW");
   if (JIN_snd_init())                 ERR_EXIT(-1, "Could not initialize Sound");
+  if (JEL_init())                     ERR_EXIT(-1, "Could not initialize JEL");
 
   /* Singletons */
   LOG(LOG, "Creating singletons");
@@ -134,7 +137,7 @@ int JIN_core_update(void)
 int JIN_core_draw(void)
 {
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   STM_stack_draw(&JIN_states);
 

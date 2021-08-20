@@ -144,7 +144,12 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
     glCompileShader(shaders[shader_index]);
  
     glGetShaderiv(shaders[shader_index], GL_COMPILE_STATUS, &success);
-    if (!success) ERR_EXIT(-1, "Error while compiling the shader");
+    if (!success) {
+      char info[512];
+      glGetShaderInfoLog(shaders[shader_index], 512, NULL, info);
+      printf("ERROR: %s\n)", info);
+      ERR_EXIT(-1, "Error while compiling the shader");
+    }
 
     free(shader_src);
 

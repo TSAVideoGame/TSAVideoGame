@@ -21,7 +21,7 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/stm/states.c
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC openal glfw GL GLEW)
+target_link_libraries(${PROJECT_NAME} PUBLIC openal glfw GL GLEW jel m)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/src
