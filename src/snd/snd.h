@@ -49,8 +49,8 @@ int JIN_snd_quit(void);
  * create  | Create a sfx
  * destroy | Destroy a sfx
  */
-int JIN_sndsfx_create (struct JIN_Sndsfx *, const char *fpath);
-int JIN_sndsfx_destroy(struct JIN_Sndsfx *);
+int JIN_sndsfx_create (struct JIN_Sndsfx *sfx, const char *fpath);
+int JIN_sndsfx_destroy(struct JIN_Sndsfx *sfx);
 
 /*
  * Bgm functions
@@ -62,9 +62,9 @@ int JIN_sndsfx_destroy(struct JIN_Sndsfx *);
  * play    | Play the bgm
  * stop    | Stop/pause the bgm
  */
-int JIN_sndbgm_update (struct JIN_Sndbgm *);
-int JIN_sndbgm_create (struct JIN_Sndbgm *, const char *fpath);
-int JIN_sndbgm_destroy(struct JIN_Sndbgm *);
+int JIN_sndbgm_update (struct JIN_Sndbgm *bgm);
+int JIN_sndbgm_create (struct JIN_Sndbgm *bgm, const char *fpath);
+int JIN_sndbgm_destroy(struct JIN_Sndbgm *bgm);
 int JIN_sndbgm_set    (const char *fpath);
 int JIN_sndbgm_play   (void);
 int JIN_sndbgm_stop   (void);

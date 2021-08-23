@@ -23,6 +23,8 @@ enum JIN_Rest {
   JIN_RES_SHADER, /* OpenGL shader program */
   JIN_RES_PNG,    /* OpenGL texture */
   JIN_RES_MODEL,  /* OpenGL VAO and VBO */
+
+  JIN_RES_ANIM,   /* Animation */
   /* Sound */
   JIN_RES_SFX,    /* Sound effect */
 };

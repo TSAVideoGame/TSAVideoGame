@@ -9,6 +9,7 @@ project(jin)
 
 add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/driver.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/anim/anim.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/core.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/globals.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/logger.c

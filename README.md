@@ -12,9 +12,13 @@ As of rn it's still unfinished, probably never going to be but I'm gonna make so
 - cglm
 - lodepng
 
-## Repo layout
-root
-- Not really code stuff
+## Res note
+In this repo I've left out res/images and res/sounds, cloning and building will
+fail if there is no .wav bgm in res/sounds, the res/images might fail, so find
+resources to use for those and then it should be good. (Errors on resource loading
+are a todo...)
+
+## Main repo layout
 - src
 - - driver
 - - - Runs the code
@@ -28,3 +32,5 @@ root
 - - - Sound
 - - stm
 - - - State manager
+
+These folders can be thought of as modules. Modules not listed here are extra stuff.

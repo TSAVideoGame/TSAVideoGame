@@ -39,7 +39,7 @@ int JIN_gfx_draw_sprite(unsigned int *shader, unsigned int *texture, int x, int 
   glUniformMatrix4fv(glGetUniformLocation(*shader, "model"), 1, GL_FALSE, (float *) model);
 
   glUniform2f(glGetUniformLocation(*shader, "tex_scale"), t_w, t_h);
-  glUniform2f(glGetUniformLocation(*shader, "text_translate"), t_x, t_y);
+  glUniform2f(glGetUniformLocation(*shader, "tex_translate"), t_x, t_y);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_RECTANGLE, *texture);
@@ -47,8 +47,6 @@ int JIN_gfx_draw_sprite(unsigned int *shader, unsigned int *texture, int x, int 
   glBindVertexArray(((struct JIN_Model *) JIN_resm_get(&JIN_resm, "JIN_CORE_MODEL_SPRITE"))->vao);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
-
-  return 0;
 
   return 0;
 }
@@ -196,7 +194,7 @@ int JIN_shader_destory(unsigned int *shader)
  * @param fpath
  * @return
  */
-int JIN_texture_create (unsigned int *texture, const char *fpath)
+int JIN_texture_create(unsigned int *texture, const char *fpath)
 {
   unsigned int   error;
   unsigned char *image;

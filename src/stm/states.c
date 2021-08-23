@@ -6,10 +6,14 @@
 #include <GL/glew.h>
 #include "../gfx/cglm/cglm.h"
 #include "../core/logger.h"
+#include "../anim/anim.h"
+#include <JEL/jel.h>
+
+static JEL_Entity player; /* Don't do this, create a state variable */
 
 static int test_fn_create(struct STM_State *state)
 {
-  //JIN_sndbgm_play();
+  JIN_sndbgm_play();
 
   JIN_resm_add(&JIN_resm, "sprite_shader", "res/shaders/sprite.shdr", JIN_RES_SHADER);
 
@@ -23,11 +27,24 @@ static int test_fn_create(struct STM_State *state)
   glm_ortho(0.0f, 640.0f, 480.0f, 0.0f, -1.0f, 1.0f, projection);
   glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
 
-  JIN_resm_add(&JIN_resm, "test_image", "res/images/test_img.png", JIN_RES_PNG);
+  JIN_resm_add(&JIN_resm, "test_image", "res/images/test_image.png", JIN_RES_PNG);
 
   /* 3d fun */
   JIN_resm_add(&JIN_resm, "3d_shader", "res/shaders/3d.shdr", JIN_RES_SHADER);
   JIN_resm_add(&JIN_resm, "3d_spaceship", "res/models/space_ship.mdld", JIN_RES_MODEL);
+
+  /* Animation test */
+  JIN_resm_add(&JIN_resm, "player_animation", "res/animations/player.animd", JIN_RES_ANIM);
+  JIN_resm_add(&JIN_resm, "player_img", "res/images/dodger.png", JIN_RES_PNG);
+
+  JEL_COMPONENT_REGISTER(Sprite);
+
+  player = JEL_entity_create();
+  JEL_ENTITY_ADD(player, Sprite);
+  JEL_ENTITY_SET(player, Sprite, animd, JIN_resm_get(&JIN_resm, "player_animation"));
+  JEL_ENTITY_SET(player, Sprite, anim, 0);
+  JEL_ENTITY_SET(player, Sprite, frame, 0);
+  JEL_ENTITY_SET(player, Sprite, ticks, 0);
 
   return 0;
 }
@@ -39,6 +56,7 @@ static int test_fn_destroy(struct STM_State *state)
 
 static int test_fn_update(struct STM_State *state)
 {
+  JIN_anim_update();
   return 0;
 }
 
@@ -50,7 +68,10 @@ static int test_fn_draw(struct STM_State *state)
 
   shader = JIN_resm_get(&JIN_resm, "sprite_shader");
   texture = JIN_resm_get(&JIN_resm, "test_image");
-  JIN_gfx_draw_sprite(shader, texture, 16, 16, 256, 256, 0, 0, 220, 220);
+  JIN_gfx_draw_sprite(shader, texture, 16, 16, 256, 256, 0, 0, 256, 256);
+  JIN_gfx_draw_sprite(shader, texture, 16, 256, 256, 256, 32, 32, 224, 224);
+
+  JIN_anim_draw();
 
   /* 3d fun */
   shader = JIN_resm_get(&JIN_resm, "3d_shader");

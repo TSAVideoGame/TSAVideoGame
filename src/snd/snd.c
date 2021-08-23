@@ -14,8 +14,8 @@
  * BUFFERS_NUM  | Buffers for bgm
  * BUFFERS_SIZE | Size of a bgm buffer
  */
-static ALCcontext        *context;
-static ALCdevice         *device;
+static ALCcontext *context;
+static ALCdevice  *device;
 
 #define BUFFERS_NUM 4
 #define BUFFERS_SIZE 32768
@@ -240,7 +240,7 @@ int JIN_sndbgm_play(void)
  * @desc
  * @return
  */
-int JIN_sndbgm_stop()
+int JIN_sndbgm_stop(void)
 {
   alSourcePause(JIN_sndbgm.source);
 

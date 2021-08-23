@@ -29,7 +29,7 @@ int JIN_shader_create (unsigned int *shader, const char *fpath);
 int JIN_shader_destory(unsigned int *shader);
 
 /*
- * Texture Functions
+ * Texture functions
  */
 int JIN_texture_create (unsigned int *texture, const char *fpath);
 int JIN_texture_destroy(unsigned int *texture);
