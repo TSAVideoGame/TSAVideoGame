@@ -61,6 +61,7 @@ int JIN_sndsfx_destroy(struct JIN_Sndsfx *sfx);
  * set     | Set what bgm will play
  * play    | Play the bgm
  * stop    | Stop/pause the bgm
+ * state   | Is bgm playing
  */
 int JIN_sndbgm_update (struct JIN_Sndbgm *bgm);
 int JIN_sndbgm_create (struct JIN_Sndbgm *bgm, const char *fpath);
@@ -68,5 +69,6 @@ int JIN_sndbgm_destroy(struct JIN_Sndbgm *bgm);
 int JIN_sndbgm_set    (const char *fpath);
 int JIN_sndbgm_play   (void);
 int JIN_sndbgm_stop   (void);
+int JIN_sndbgm_state  (void);
 
 #endif

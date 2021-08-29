@@ -1,8 +1,10 @@
 #include "core.h"
-#include "../snd/snd.h"
-#include "globals.h"
-#include "logger.h"
+
 #include <JEL/jel.h>
+#include "../resm/resm.h"
+#include "../snd/snd.h"
+#include "../stm/stm.h"
+#include "input.h"
 
 /* WINDOW FUNCTIONS */
 
@@ -108,9 +110,18 @@ int JIN_core_input(void)
 {
   glfwPollEvents();
 
+  /* Close Window */
   if (glfwWindowShouldClose(JIN_window.window)) {
     JIN_window.active = 0;
   }
+
+  /* Keyboard Input */
+  for (int i = 0; i < JIN_INPUT_KEYS_NUM; ++i) {
+    /* Release is 0, press is 1 */
+    int code = glfwGetKey(JIN_window.window, JIN_input.keys[i].key);
+    JIN_input.keys[i].duration = JIN_input.keys[i].duration * code + code;
+  }
+
   return 0;
 }
 
@@ -124,6 +135,15 @@ int JIN_core_update(void)
 {
   JIN_sndbgm_update(&JIN_sndbgm);
   STM_stack_update(&JIN_states);
+
+  if (JIN_input.keys[JIN_KEY_SPACE].duration == 1) {
+    if (JIN_sndbgm_state()) {
+      JIN_sndbgm_stop();
+    }
+    else {
+      JIN_sndbgm_play();
+    }
+  }
 
   return 0;
 }

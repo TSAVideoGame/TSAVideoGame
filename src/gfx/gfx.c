@@ -1,13 +1,12 @@
 #include "gfx.h"
 #include <stdint.h>
 #include <stdlib.h>
-#include "../core/logger.h"
 #include <GL/glew.h>
 #include <stdio.h>
 #include "lodepng/lodepng.h"
 #include "../core/core.h"
 #include "cglm/cglm.h"
-#include "../core/globals.h"
+#include "../resm/resm.h"
 
 /* GFX FUNCTIONS */
 
@@ -15,6 +14,8 @@
  * JIN_gfx_draw_sprite
  *
  * @desc
+ *   TODO: Figure out a way to batch sprites instead of
+ *   drawing them one by one
  * @param shader
  * @param texture
  * @param x

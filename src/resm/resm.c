@@ -154,6 +154,7 @@ int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enu
  * JIN_resm_get
  *
  * @desc
+ *   TODO: Use map instead of linear search
  * @param resm
  * @param name
  * @return

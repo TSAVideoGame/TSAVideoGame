@@ -246,3 +246,17 @@ int JIN_sndbgm_stop(void)
 
   return 0;
 }
+
+/*
+ * JIN_sndbgm_state
+ *
+ * @desc
+ * @return
+ */
+int JIN_sndbgm_state(void)
+{
+  ALenum state;
+  alGetSourcei(JIN_sndbgm.source, AL_SOURCE_STATE, &state);
+
+  return state == AL_PLAYING;
+}
