@@ -45,7 +45,7 @@ int JIN_gfx_draw_sprite(unsigned int *shader, unsigned int *texture, int x, int 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_RECTANGLE, *texture);
 
-  glBindVertexArray(((struct JIN_Model *) JIN_resm_get(&JIN_resm, "JIN_CORE_MODEL_SPRITE"))->vao);
+  glBindVertexArray(((struct JIN_Model *) JIN_resm_get(&JIN_resm, "JIN_MODEL_SPRITE"))->vao);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
 
@@ -66,7 +66,7 @@ int file_to_str(const char *fpath, char **str)
   FILE  *file;
   size_t size;
   
-  if (!(file = fopen(fpath, "r"))) ERR_EXIT(-1, "Couldn't open the file");
+  if (!(file = fopen(fpath, "r"))) ERR_EXIT(-1, "Couldn't open file: %s", fpath);
 
   size = 1; /* Account for '\0' */
   while (fgetc(file) != EOF) {
@@ -100,7 +100,7 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
   int          shader_index;
   int          success;
 
-  if (!(shdr = fopen(fpath, "r"))) ERR_EXIT(-1, "Could not open file");
+  if (!(shdr = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open .shdr file file: %s", fpath);
   
   shader_index = 0;
   while (fread(temp, sizeof(char), 4, shdr) == 4) {
@@ -136,7 +136,7 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
     strncat(shader_path, fpath, ++endpt);
     strncat(shader_path, shader_name, 64);
 
-    if (file_to_str(shader_path, &shader_src)) ERR_EXIT(-1, "Couldn't convert shader file to string");
+    if (file_to_str(shader_path, &shader_src)) ERR_EXIT(-1, "Couldn't convert shader file to string (%s)", shader_path);
     shaders[shader_index] = glCreateShader(shader_type);
     const char *tmp = shader_src;
     glShaderSource(shaders[shader_index], 1, &tmp, NULL);
@@ -202,7 +202,7 @@ int JIN_texture_create(unsigned int *texture, const char *fpath)
   unsigned int   width, height;
 
   error = lodepng_decode32_file(&image, &width, &height, fpath);
-  if (error) ERR_EXIT(-1, "Could not load image");
+  if (error) ERR_EXIT(-1, "Could not load image (%s)", fpath);
 
   glGenTextures(1, texture);
   glBindTexture(GL_TEXTURE_RECTANGLE, *texture);
@@ -249,7 +249,7 @@ int JIN_model_create(struct JIN_Model *model, const char *fpath)
   float       *vertices;
   int32_t      count;
 
-  if (!(file = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open vao file");
+  if (!(file = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open .mdld file: %s", fpath);
 
   if (fread(&count, sizeof(int32_t), 1, file) != 1) ERR_EXIT(-1, "Could not read from file");
   if (!(vertices = malloc(count * sizeof(int32_t)))) ERR_EXIT(-1, "Out of memory");

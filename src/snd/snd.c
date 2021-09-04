@@ -69,7 +69,7 @@ int JIN_sndsfx_create(struct JIN_Sndsfx *sfx, const char *fpath)
   char           *data;
   struct JIN_Wavd wav_data;
 
-  if (JIN_wav_load(fpath, &wav_data, &data, NULL)) ERR_EXIT(-1, "Could not load the wav file");
+  if (JIN_wav_load(fpath, &wav_data, &data, NULL)) ERR_EXIT(-1, "Could not load the wav file: %s", fpath);
 
   alGenBuffers(1, &sfx->buffer);
 
@@ -156,9 +156,9 @@ int JIN_sndbgm_create(struct JIN_Sndbgm *bgm, const char *fpath)
 {
   struct JIN_Wavd wav_data;
   
-  if (JIN_wav_load(fpath, &wav_data, NULL, &bgm->data_size)) ERR_EXIT(-1, "Could not load wav file");
+  if (JIN_wav_load(fpath, &wav_data, NULL, &bgm->data_size)) ERR_EXIT(-1, "Could not load wav file: %s", fpath);
 
-  if (!(bgm->file = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open wav file");
+  if (!(bgm->file = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open wav file: %s", fpath);
   if (fseek(bgm->file, bgm->data_start, SEEK_SET)) ERR_EXIT(-1, "Could not seek wav file");
   bgm->sample_rate = wav_data.sample_rate;
   bgm->data_size = wav_data.size;

@@ -1,5 +1,6 @@
 #include "logger.h"
 #include <stdio.h>
+#include <stdarg.h>
 
 /* static FILE        *file; */
 static unsigned int flags;
@@ -40,21 +41,31 @@ int JIN_logger_quit(void)
  * @param msg
  * @return
  */
-int JIN_logger_log(enum JIN_Loggerm mode, const char *msg)
+int JIN_logger_log(enum JIN_Loggerm mode, const char *msg, ...)
 {
+  va_list args;
+  va_start(args, msg);
+
   if (!(flags & mode)) return -1;
   switch (mode) {
     case JIN_LOGGER_LOG:
-      printf("LOG: ");
+      fprintf(stdout, "LOG: ");
+      vfprintf(stdout, msg, args);
+      fprintf(stdout, "\n");
       break;
     case JIN_LOGGER_DBG:
-      printf("DEBUG: ");
+      fprintf(stdout, "DEBUG: ");
+      vfprintf(stdout, msg, args);
+      fprintf(stdout, "\n");
       break;
     case JIN_LOGGER_ERR:
-      fprintf(stderr, "ERROR: %s\n", msg);
-      return 0;
+      fprintf(stderr, "ERROR: ");
+      vfprintf(stderr, msg, args);
+      fprintf(stderr, "\n");
+      break;
   }
-  printf("%s\n", msg);
+
+  va_end(args);
 
   return 0;
 }

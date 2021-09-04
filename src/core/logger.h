@@ -25,9 +25,10 @@ enum JIN_Loggerm {
  */
 int JIN_logger_init(unsigned int flags);
 int JIN_logger_quit(void);
-int JIN_logger_log (enum JIN_Loggerm mode, const char *msg);
+int JIN_logger_log (enum JIN_Loggerm mode, const char *msg, ...);
 
-#define LOG(mode, msg) JIN_logger_log(JIN_LOGGER_##mode, msg);
-#define ERR_EXIT(ret, msg) { JIN_logger_log(JIN_LOGGER_ERR, msg); return ret; }
+/* Make sure LOG and ERR_EXIT have at least one variadic argument */
+#define LOG(mode, msg, ...) JIN_logger_log(JIN_LOGGER_##mode, msg, ##__VA_ARGS__);
+#define ERR_EXIT(ret, msg, ...) { JIN_logger_log(JIN_LOGGER_ERR, msg, ##__VA_ARGS__); return ret; }
 
 #endif

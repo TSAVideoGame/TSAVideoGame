@@ -74,7 +74,7 @@ int JIN_core_init(void)
   if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/L.wav")) ERR_EXIT(-1, "Could not create background music");
 
   /* Core resources */
-  if (JIN_resm_add(&JIN_resm, "JIN_CORE_MODEL_SPRITE", "res/models/square.mdld", JIN_RES_MODEL)) ERR_EXIT(-1, "Can't create the sprite model");
+  if (JIN_resm_add(&JIN_resm, "JIN_MODEL_SPRITE", "res/models/square.mdld", JIN_RES_MODEL)) ERR_EXIT(-1, "Can't create the sprite model");
 
   return 0;
 }

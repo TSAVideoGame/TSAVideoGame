@@ -4,6 +4,10 @@
 
 As of rn it's still unfinished, probably never going to be but I'm gonna make some progress
 
+Should be C89 compliant except
+- JEL library is C99
+- Log macros are variadic (C99)
+
 ## Big thanks to these libraries
 - OpenAL
 - OpenGL

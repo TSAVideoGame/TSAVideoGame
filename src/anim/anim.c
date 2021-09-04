@@ -20,12 +20,12 @@ JEL_COMPONENT_CREATE(Sprite, struct JIN_Animd *, animd, int32_t, anim, int32_t, 
  * @return
  */
 #define READ(var, count) \
-    if (fread(var, sizeof(*var), count, file) != count) ERR_EXIT(-1, "Could not read from file");
+    if (fread(var, sizeof(*var), count, file) != count) ERR_EXIT(-1, "Could not read from .animd file");
 int JIN_animd_create(struct JIN_Animd *animd, const char *fpath)
 {
   FILE   *file;
 
-  if (!(file = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open file");
+  if (!(file = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open .animd file: %s", fpath);
   READ(&animd->cols, 1);
   READ(&animd->rows, 1);
   READ(&animd->anim_nums, 1);
