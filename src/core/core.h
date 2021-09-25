@@ -1,48 +1,40 @@
 #ifndef JIN_CORE_H
 #define JIN_CORE_H
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "input/input.h"
 #include "logger.h"
 #include "globals.h"
+#include "thread/thread.h"
 
 /*
  * CORE
  *
- * Window, input, etc
- * Window functions are private because
- * the game only has one window, so one
- * OpenGL context and things are simple
+ * Window and input handling
  *
- * TYPES:
- * struct JIN_Window | The game window
+ * Only gonna make for linux and windows
  */
 
-struct JIN_Window {
-  GLFWwindow *window;
-  int         active; /* Should window be closed? */
-};
+extern struct JIN_Input JIN_inputv; /* Volatile Input */
+extern struct JIN_Input JIN_input; /* "Frame" Input */
 
 /*
  * Core functions
- *
+ * 
  * init   | Initialize JIN
- * quit   | Quit JIN
- * input  | Recieve user input
- * update | Perform game logic
- * draw   | Draw game to the screen
- * active | Is the game still running?
+ * quit   | Quit/Cleanup JIN
+ * input  | Receive input
+ * update | Game logic
+ * draw   | Draw to the window
  */
-int JIN_core_init  (void);
-int JIN_core_quit  (void);
-int JIN_core_input (void);
-int JIN_core_update(void);
-int JIN_core_draw  (void);
-int JIN_core_active(void);
+int JIN_init(void);
+int JIN_quit(void);
 
-/*
- * Misc functions
- */
-int JIN_sleep(double time);
+int JIN_tick  (void);
+int JIN_update(void);
+int JIN_draw  (void);
+
+int JIN_dialog(const char *msg);
+
+JIN_THREAD_FN JIN_game_thread(void *);
 
 #endif

@@ -4,7 +4,7 @@
 #include "snd/snd.h"
 #include "../gfx/gfx.h"
 #include <GL/glew.h>
-#include "../gfx/cglm/cglm.h"
+#include "cglm/cglm.h"
 #include "../anim/anim.h"
 #include <JEL/jel.h>
 
