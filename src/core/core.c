@@ -2,7 +2,6 @@
 #include "glew/glew.h"
 #include "time.h"
 #include "thread/thread.h"
-#include "logger.h"
 
 /*
 #include <JEL/jel.h>

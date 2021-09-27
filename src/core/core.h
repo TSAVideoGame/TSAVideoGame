@@ -2,8 +2,8 @@
 #define JIN_CORE_H
 
 #include "input/input.h"
-//#include "logger.h"
-//#include "globals.h"
+#include "logger.h"
+#include "globals.h"
 #include "thread/thread.h"
 
 /*

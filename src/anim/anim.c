@@ -84,6 +84,7 @@ int JIN_animd_destroy(struct JIN_Animd *animd)
  */
 int JIN_anim_update(void)
 {
+  /*
   struct JEL_Query *q;
   JEL_QUERY(q, Sprite);
 
@@ -93,19 +94,20 @@ int JIN_anim_update(void)
 
     for (JEL_EntityInt j = 0; j < q->tables[i]->num; ++j) {
       ++sprite->ticks[j];
-      /* Check if done with this frame */
+      /* Check if done with this frame 
       if (sprite->ticks[j] >= sprite->animd[j]->frame_ticks[sprite->anim[j]][sprite->frame[j]]) {
         sprite->ticks[j] = 0;
         ++sprite->frame[j];
-        /* Check if done with all the frames in the animation */
+        /* Check if done with all the frames in the animation 
         if (sprite->frame[j] >= sprite->animd[j]->frame_nums[sprite->anim[j]]) {
           sprite->frame[j] = 0;
         }
       }
     }
   }
+    */
 
-  JEL_query_destroy(q);
+  //JEL_query_destroy(q);
 
   return 0;
 }
@@ -120,6 +122,7 @@ int JIN_anim_update(void)
 #include "../core/globals.h"
 int JIN_anim_draw(void)
 {
+  /*
   struct JEL_Query *q;
   JEL_QUERY(q, Sprite);
 
@@ -134,7 +137,7 @@ int JIN_anim_draw(void)
     JEL_FRAGMENT_GET(sprite, q->tables[i], Sprite);
 
     for (JEL_EntityInt j = 0; j < q->tables[i]->num; ++j) {
-      /* Currently just uses 0x0 as the drawing coordinate */
+      /* Currently just uses 0x0 as the drawing coordinate 
       for (int rows = 0; rows < sprite->animd[j]->rows; ++rows) {
         for (int cols = 0; cols < sprite->animd[j]->cols; ++cols) {
           int32_t x = sprite->animd[j]->rows;
@@ -147,7 +150,7 @@ int JIN_anim_draw(void)
   }
 
   JEL_query_destroy(q);
-
+*/
   return 0;
 }
 
@@ -159,6 +162,7 @@ int JIN_anim_draw(void)
  */
 int JIN_anim_set(JEL_Entity entity, const char *animation)
 {
+  /*
   struct JIN_Animd *data;
   JEL_ENTITY_GET(entity, Sprite, animd, data);
 
@@ -166,12 +170,12 @@ int JIN_anim_set(JEL_Entity entity, const char *animation)
     if (!strcmp(animation, &data->names[i * 8])) {
       int32_t anim_cur;
       JEL_ENTITY_GET(entity, Sprite, anim, anim_cur);
-      if (anim_cur == i) return 0; /* Already using this animation */
+      if (anim_cur == i) return 0; /* Already using this animation 
       JEL_ENTITY_SET(entity, Sprite, anim, i);
       JEL_ENTITY_SET(entity, Sprite, ticks, 0);
       JEL_ENTITY_SET(entity, Sprite, frame, 0);
     }
-  }
+  }*/
 
   /* Do nothing if no match */
 
