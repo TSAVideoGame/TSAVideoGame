@@ -1,8 +1,5 @@
 #include "core/core.h"
 #include "core/thread/thread.h"
-#include <stdio.h>
-
-extern struct JIN_Window *root;
 
 int main(int argc, char *args[])
 {

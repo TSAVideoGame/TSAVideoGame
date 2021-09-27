@@ -1,7 +1,7 @@
 #include "input.h"
 #include "../env/env.h"
 #include <X11/Xlib.h>
-#include "../core.h"
+#include "core/core.h"
 
 #include <stdio.h>
 

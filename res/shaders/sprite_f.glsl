@@ -8,12 +8,13 @@ uniform vec2 tex_translate;
 
 void main()
 {
-  vec2 real_tex_pos = tex_pos;
+  color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+  //vec2 real_tex_pos = tex_pos;
 
-  real_tex_pos *= tex_scale;
-  real_tex_pos += tex_translate;
+  //real_tex_pos *= tex_scale;
+  //real_tex_pos += tex_translate;
 
-  vec4 tex_color = texture(image, real_tex_pos);
-  if (tex_color.a < 1.0) discard;
-  color = tex_color;
+  //vec4 tex_color = texture(image, real_tex_pos);
+  //if (tex_color.a < 1.0) discard;
+  //color = tex_color;
 }

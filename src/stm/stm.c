@@ -129,10 +129,8 @@ int STM_stack_destroy(struct STM_Stack *stack)
  * @return
  *   Success
  */
-#include <stdio.h>
 int STM_stack_push(struct STM_Stack *stack, struct STM_State *state)
 {
-  printf("Pushing addr %p\n", state);
   if (stack->allocated <= stack->count) {
     if (STM_stack_allocate(stack, stack->count * GROWTH_FACTOR)) ERR_EXIT(-1, "Could not allocate STM_stack");
   }
@@ -172,7 +170,6 @@ int STM_stack_pop(struct STM_Stack *stack)
  */
 int STM_stack_update(struct STM_Stack *stack)
 {
-  printf("Top state address: %p\n", stack->states[stack->count - 1]);
   if (STATE_FN(0, update)) ERR_EXIT(-1, "Could not properly update");
 
   return 0;

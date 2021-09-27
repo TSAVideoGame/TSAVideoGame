@@ -2,8 +2,8 @@
 #define JIN_CORE_H
 
 #include "input/input.h"
-#include "logger.h"
-#include "globals.h"
+//#include "logger.h"
+//#include "globals.h"
 #include "thread/thread.h"
 
 /*
@@ -33,8 +33,8 @@ int JIN_tick  (void);
 int JIN_update(void);
 int JIN_draw  (void);
 
-int JIN_dialog(const char *msg);
-
 JIN_THREAD_FN JIN_game_thread(void *);
+
+int JIN_dialog(const char *msg);
 
 #endif
