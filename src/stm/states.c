@@ -28,6 +28,7 @@ static int test_fn_create(struct STM_State *state)
 {
   //JIN_sndbgm_play();
 
+  /*
   unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
@@ -64,6 +65,8 @@ static int test_fn_create(struct STM_State *state)
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+*/
+  JIN_resm_add(&JIN_resm, "triangle_shader", "res/shaders/test.shdr", JIN_RES_SHADER);
 
 float vertices[] = {
          0.0f,  0.5f, 0.0f,  // top
@@ -93,7 +96,7 @@ float vertices[] = {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw our first triangle
-        glUseProgram(shaderProgram);
+        glUseProgram(* (unsigned int *) JIN_resm_get(&JIN_resm, "triangle_shader"));
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
