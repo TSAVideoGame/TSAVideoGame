@@ -42,12 +42,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 set(CORE_LIBS "")
 
 if (UNIX)
-  set(CORE_LIBS "-lX11 -lGL -lpthread")
+  set(CORE_LIBS "-lX11 -lGL -lpthread -lm")
 endif (UNIX)
 
 if (WIN32)
 endif (WIN32)
 
-# target_link_libraries(${PROJECT_NAME} PUBLIC openal GL jel m X11 pthread)
-target_link_libraries(${PROJECT_NAME} PUBLIC ${CORE_LIBS} openal)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${CORE_LIBS} openal jel)
 

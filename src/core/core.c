@@ -4,7 +4,7 @@
 #include "thread/thread.h"
 
 
-//#include <JEL/jel.h>
+#include <JEL/jel.h>
 #include "../resm/resm.h"
 #include "../snd/snd.h"
 #include "../stm/stm.h"
@@ -44,7 +44,7 @@ int JIN_init(void)
   if (JIN_logger_init(JIN_LOGGER_LOG | JIN_LOGGER_ERR)) return 0;
   LOG(LOG, "Initializing libraries");
   if (JIN_snd_init())                 ERR_EXIT(0, "Could not initialize Sound");
-  //if (JEL_init())                     ERR_EXIT(0, "Could not initialize JEL");
+  if (JEL_init())                     ERR_EXIT(0, "Could not initialize JEL");
 
   /* Singletons */
   LOG(LOG, "Creating singletons");
@@ -71,7 +71,7 @@ int JIN_quit(void)
   STM_stack_destroy(&JIN_states);
   JIN_resm_destroy(&JIN_resm);
  
-  //JEL_quit();
+  JEL_quit();
   JIN_snd_quit();
   JIN_logger_quit();
 
@@ -115,7 +115,7 @@ int JIN_tick(void)
 int JIN_update(void)
 {
   JIN_sndbgm_update(&JIN_sndbgm);
-  //STM_stack_update(&JIN_states);
+  STM_stack_update(&JIN_states);
   
   return 0;
 }
@@ -131,7 +131,7 @@ int JIN_update(void)
 int JIN_draw(void)
 {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   STM_stack_draw(&JIN_states);
   
@@ -181,8 +181,9 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   /* INITIALIZE */
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(gl_err_callback, 0);
+  glEnable(GL_DEPTH_TEST);
   /* Core resources */
-  //if (JIN_resm_add(&JIN_resm, "JIN_MODEL_SPRITE", "res/models/square.mdld", JIN_RES_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
+  if (JIN_resm_add(&JIN_resm, "JIN_MODEL_SPRITE", "res/models/square.mdld", JIN_RES_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
   
   JIN_states_test_create(&test);
   JIN_state_push(&test);

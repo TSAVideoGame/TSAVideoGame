@@ -4,8 +4,7 @@ res/images/
 res/sounds/
 
 # Libraries
-cglm/
-lodepng/
+libs/
 
 # Editor Stuff
 .clangd

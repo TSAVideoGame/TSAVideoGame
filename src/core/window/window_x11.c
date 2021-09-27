@@ -17,8 +17,8 @@ struct JIN_Window {
   GLXFBConfig          fb_config;
 };
 
-#define DEF_WND_WIDTH  960
-#define DEF_WND_HEIGHT 640
+#define DEF_WND_WIDTH  640
+#define DEF_WND_HEIGHT 480
 
 /*
  * is_extension_supported
