@@ -2,6 +2,7 @@
 #include "glew/glew.h"
 #include "time.h"
 #include "thread/thread.h"
+#include "logger.h"
 
 /*
 #include <JEL/jel.h>
@@ -41,8 +42,8 @@ int JIN_init(void)
   JIN_INPUT_INIT(JIN_input);
 
   /* Libraries */
-  //if (JIN_logger_init(JIN_LOGGER_LOG | JIN_LOGGER_ERR)) return 0;
-  //LOG(LOG, "Initializing libraries");
+  if (JIN_logger_init(JIN_LOGGER_LOG | JIN_LOGGER_ERR)) return 0;
+  LOG(LOG, "Initializing libraries");
   /*if (JIN_snd_init())                 ERR_EXIT(0, "Could not initialize Sound");
   if (JEL_init())                     ERR_EXIT(0, "Could not initialize JEL");
 */
@@ -66,7 +67,7 @@ int JIN_init(void)
 int JIN_quit(void)
 {
   /* QUIT */
-  //LOG(LOG, "Quitting core (closing libraries and singletons)");
+  LOG(LOG, "Quitting core (closing libraries and singletons)");
   //JIN_sndbgm_destroy(&JIN_sndbgm);
   //STM_stack_destroy(&JIN_states);
   //JIN_resm_destroy(&JIN_resm);

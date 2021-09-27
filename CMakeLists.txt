@@ -12,7 +12,7 @@ add_executable(${PROJECT_NAME}
   #${CMAKE_CURRENT_LIST_DIR}/src/anim/anim.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/core.c
   #${CMAKE_CURRENT_LIST_DIR}/src/core/globals.c
-  #${CMAKE_CURRENT_LIST_DIR}/src/core/logger.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/core/logger.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/env/env.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/event/event.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/input/input.c
