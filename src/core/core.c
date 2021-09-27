@@ -92,7 +92,7 @@ int JIN_tick(void)
 
   JIN_input = JIN_inputv;
   JIN_update();
-  //JIN_draw();
+  JIN_draw();
 
   frame_end = clock();
   frame_time = (frame_end - frame_start) / CLOCKS_PER_SEC / 1000;
@@ -133,7 +133,7 @@ int JIN_draw(void)
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  //STM_stack_draw(&JIN_states);
+  STM_stack_draw(&JIN_states);
   
   JIN_window_buffer_swap(root);
 

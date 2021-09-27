@@ -17,6 +17,9 @@ struct JIN_Window {
   GLXFBConfig          fb_config;
 };
 
+#define DEF_WND_WIDTH  960
+#define DEF_WND_HEIGHT 640
+
 /*
  * is_extension_supported
  *
@@ -83,7 +86,8 @@ static int JIN_window_gl_setup(struct JIN_Window *window)
 
   GLint glx_attribs[] = {
     GLX_X_RENDERABLE,  True,
-    GLX_DRAWABLE_TYPE, GLX_RGBA_BIT,
+    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+    GLX_RENDER_TYPE,   GLX_RGBA_BIT,
     GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
     GLX_RED_SIZE,      8,
     GLX_GREEN_SIZE,    8,
@@ -176,14 +180,14 @@ struct JIN_Window * JIN_window_create(void)
   window->attribs.override_redirect = True;
   window->attribs.colormap          = XCreateColormap(JIN_env.x_display, RootWindow(JIN_env.x_display, window->screen_id), window->visual->visual, AllocNone);
   window->attribs.event_mask        = ExposureMask;
-  window->window = XCreateWindow(JIN_env.x_display, RootWindow(JIN_env.x_display, window->screen_id), 0, 0, 480, 320, 0, window->visual->depth, InputOutput, window->visual->visual, CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &window->attribs);
+  window->window = XCreateWindow(JIN_env.x_display, RootWindow(JIN_env.x_display, window->screen_id), 0, 0, DEF_WND_WIDTH, DEF_WND_HEIGHT, 0, window->visual->depth, InputOutput, window->visual->visual, CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &window->attribs);
 
   XSelectInput(JIN_env.x_display, window->window, KeyPressMask | KeyReleaseMask);
   XSetWMProtocols(JIN_env.x_display, window->window, &JIN_env.wm_delete_window, 1);
   XSizeHints hints;
   hints.flags = PMinSize | PMaxSize | PResizeInc;
-  hints.min_width  = hints.max_width  = 480;
-  hints.min_height = hints.max_height = 320;
+  hints.min_width  = hints.max_width  = DEF_WND_WIDTH;
+  hints.min_height = hints.max_height = DEF_WND_HEIGHT;
   hints.width_inc  = hints.height_inc = 0;
   XSetWMNormalHints(JIN_env.x_display, window->window, &hints);
 
@@ -225,6 +229,7 @@ int JIN_window_gl_set(struct JIN_Window *window)
     GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
     GLX_CONTEXT_MINOR_VERSION_ARB, 3,
     GLX_CONTEXT_FLAGS_ARB,         GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+    GLX_CONTEXT_PROFILE_MASK_ARB,  GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
     None
   };
 

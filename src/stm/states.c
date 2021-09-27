@@ -24,6 +24,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "}\n\0";
 #include "core/window/window.h"
     extern struct JIN_Window *root;
+unsigned int vao;
 static int test_fn_create(struct STM_State *state)
 {
   //JIN_sndbgm_play();
@@ -73,11 +74,11 @@ float vertices[] = {
          0.5f, -0.5f, 0.0f,  // bottom right
         -0.5f, -0.5f, 0.0f,  // bottom left
     };
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
+    unsigned int VBO;
+    glGenVertexArrays(1, &vao);
     glGenBuffers(1, &VBO);
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
+    glBindVertexArray(vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -92,13 +93,10 @@ float vertices[] = {
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0); 
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
         // draw our first triangle
         glUseProgram(* (unsigned int *) JIN_resm_get(&JIN_resm, "triangle_shader"));
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(vao); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
 
         JIN_window_buffer_swap(root);
 
@@ -154,8 +152,11 @@ static int test_fn_draw(struct STM_State *state)
   //glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
   //glClear(GL_COLOR_BUFFER_BIT);
   
-  unsigned int *shader;
-  unsigned int *texture;
+        glUseProgram(* (unsigned int *) JIN_resm_get(&JIN_resm, "triangle_shader"));
+        glBindVertexArray(vao); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+  //unsigned int *shader;
+  //unsigned int *texture;
 
   /*
   shader = JIN_resm_get(&JIN_resm, "sprite_shader");
