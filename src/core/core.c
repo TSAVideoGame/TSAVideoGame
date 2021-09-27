@@ -3,13 +3,13 @@
 #include "time.h"
 #include "thread/thread.h"
 
-/*
-#include <JEL/jel.h>
+
+//#include <JEL/jel.h>
 #include "../resm/resm.h"
 #include "../snd/snd.h"
-#include "../stm/stm.h"
-#include "stm/states.h"
-*/
+//#include "../stm/stm.h"
+//#include "stm/states.h"
+
 
 #include "window/window.h"
 #include "event/event.h"
@@ -43,15 +43,15 @@ int JIN_init(void)
   /* Libraries */
   if (JIN_logger_init(JIN_LOGGER_LOG | JIN_LOGGER_ERR)) return 0;
   LOG(LOG, "Initializing libraries");
-  /*if (JIN_snd_init())                 ERR_EXIT(0, "Could not initialize Sound");
-  if (JEL_init())                     ERR_EXIT(0, "Could not initialize JEL");
-*/
+  if (JIN_snd_init())                 ERR_EXIT(0, "Could not initialize Sound");
+  //if (JEL_init())                     ERR_EXIT(0, "Could not initialize JEL");
+
   /* Singletons */
-  /*LOG(LOG, "Creating singletons");
+  LOG(LOG, "Creating singletons");
   if (JIN_resm_create(&JIN_resm))                         ERR_EXIT(0, "Could not create a resource manager");
-  if (STM_stack_create(&JIN_states))                      ERR_EXIT(0, "Could not create a state stack");
+  //if (STM_stack_create(&JIN_states))                      ERR_EXIT(0, "Could not create a state stack");
   if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/L.wav")) ERR_EXIT(0, "Could not create background music");
-*/
+
   return 0;
 }
 
@@ -67,13 +67,13 @@ int JIN_quit(void)
 {
   /* QUIT */
   LOG(LOG, "Quitting core (closing libraries and singletons)");
-  //JIN_sndbgm_destroy(&JIN_sndbgm);
+  JIN_sndbgm_destroy(&JIN_sndbgm);
   //STM_stack_destroy(&JIN_states);
-  //JIN_resm_destroy(&JIN_resm);
+  JIN_resm_destroy(&JIN_resm);
  
   //JEL_quit();
-  //JIN_snd_quit();
-  //JIN_logger_quit();
+  JIN_snd_quit();
+  JIN_logger_quit();
 
   JIN_window_destroy(root);
   JIN_env_quit(&JIN_env);
@@ -114,7 +114,7 @@ int JIN_tick(void)
  */
 int JIN_update(void)
 {
-  //JIN_sndbgm_update(&JIN_sndbgm);
+  JIN_sndbgm_update(&JIN_sndbgm);
   //STM_stack_update(&JIN_states);
   
   return 0;
@@ -270,6 +270,7 @@ float vertices[] = {
 
         JIN_window_buffer_swap(root);
 
+  JIN_sndbgm_play();
   /* GAME LOOP */
   while (1) {
     if (JIN_input.quit) break;

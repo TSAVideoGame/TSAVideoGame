@@ -20,7 +20,7 @@ static JEL_Entity player; /* Don't do this, create a state variable */
  */
 static int test_fn_create(struct STM_State *state)
 {
-  JIN_sndbgm_play();
+  //JIN_sndbgm_play();
 
 
   /*JIN_resm_add(&JIN_resm, "sprite_shader", "res/shaders/sprite.shdr", JIN_RES_SHADER);
