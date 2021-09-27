@@ -1,5 +1,5 @@
 #include "input.h"
-#include "core.h"
+#include "core/core.h"
 #include <windows.h>
 
 int JIN_input_loop(void)

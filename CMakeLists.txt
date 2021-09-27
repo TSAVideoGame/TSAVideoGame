@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 # Global Settings
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Debug)
+set(WINDOWS_LIBRARIES_DIRECTORIES "C:/cpplib")
 
 # Binary
 project(jin)
@@ -32,6 +33,7 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/src
   ${CMAKE_CURRENT_LIST_DIR}/libs
+  ${WINDOWS_LIBRARIES_DIRECTORIES}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -45,7 +47,10 @@ if (UNIX)
   set(CORE_LIBS "-lX11 -lGL -lpthread -lm")
 endif (UNIX)
 
+# Assuming WIN32 is MSVC, need to fix that
 if (WIN32)
+  set(CORE_LIBS "opengl32")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Zc:preprocessor")
 endif (WIN32)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${CORE_LIBS} openal jel)

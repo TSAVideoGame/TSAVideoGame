@@ -1,5 +1,5 @@
 # Res folder
-#res/
+res/
 res/images/
 res/sounds/
 
@@ -20,3 +20,15 @@ bin/
 
 # Build (Linux)
 Makefile
+
+# Windows
+*.vcxproj
+*.filters
+*.sln
+*.user
+*.dir
+.vs/
+x64
+Debug/
+Release/
+*.lib
