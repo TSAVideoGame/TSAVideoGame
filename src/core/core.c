@@ -7,8 +7,8 @@
 //#include <JEL/jel.h>
 #include "../resm/resm.h"
 #include "../snd/snd.h"
-//#include "../stm/stm.h"
-//#include "stm/states.h"
+#include "../stm/stm.h"
+#include "stm/states.h"
 
 
 #include "window/window.h"
@@ -49,7 +49,7 @@ int JIN_init(void)
   /* Singletons */
   LOG(LOG, "Creating singletons");
   if (JIN_resm_create(&JIN_resm))                         ERR_EXIT(0, "Could not create a resource manager");
-  //if (STM_stack_create(&JIN_states))                      ERR_EXIT(0, "Could not create a state stack");
+  if (STM_stack_create(&JIN_states))                      ERR_EXIT(0, "Could not create a state stack");
   if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/L.wav")) ERR_EXIT(0, "Could not create background music");
 
   return 0;
@@ -68,7 +68,7 @@ int JIN_quit(void)
   /* QUIT */
   LOG(LOG, "Quitting core (closing libraries and singletons)");
   JIN_sndbgm_destroy(&JIN_sndbgm);
-  //STM_stack_destroy(&JIN_states);
+  STM_stack_destroy(&JIN_states);
   JIN_resm_destroy(&JIN_resm);
  
   //JEL_quit();
@@ -161,7 +161,7 @@ int JIN_dialog(const char *msg)
  *
  */
   /* Create states */
-  //struct STM_State test;
+struct STM_State test;
 
 #include <stdio.h>
 const char *vertexShaderSource = "#version 330 core\n"
@@ -196,8 +196,8 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   /* Core resources */
   //if (JIN_resm_add(&JIN_resm, "JIN_MODEL_SPRITE", "res/models/square.mdld", JIN_RES_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
   
-  //JIN_states_test_create(&test);
-  //JIN_state_push(&test);
+  JIN_states_test_create(&test);
+  JIN_state_push(&test);
 
   unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);

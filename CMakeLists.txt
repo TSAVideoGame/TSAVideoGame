@@ -22,8 +22,8 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/resm/resm.c
   ${CMAKE_CURRENT_LIST_DIR}/src/snd/snd.c
   ${CMAKE_CURRENT_LIST_DIR}/src/snd/wav_util.c
-  #${CMAKE_CURRENT_LIST_DIR}/src/stm/stm.c
-  #${CMAKE_CURRENT_LIST_DIR}/src/stm/states.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/stm/stm.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/stm/states.c
 
   ${CMAKE_CURRENT_LIST_DIR}/libs/lodepng/lodepng.c
   ${CMAKE_CURRENT_LIST_DIR}/libs/glew/glew.c
