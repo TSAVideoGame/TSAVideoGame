@@ -1,7 +1,8 @@
 #include "core.h"
-#include "glew/glew.h"
+#include "gll/gll.h"
 #include "time.h"
 #include "thread/thread.h"
+#include "logger/logger.h"
 
 
 #include <JEL/jel.h>
@@ -12,7 +13,6 @@
 
 
 #include "window/window.h"
-#include "event/event.h"
 #include "env/env.h"
 
 struct JIN_Window *root; /* Root window */
@@ -34,14 +34,15 @@ struct JIN_Input JIN_input;
  */
 int JIN_init(void)
 {
-  JIN_env_init(&JIN_env);
-  root = JIN_window_create();
+  if (JIN_logger_init(JIN_LOGGER_CONSOLE, JIN_LOGGER_ERR)) return 0;
+
+  if (JIN_env_init(&JIN_env)) ERR_EXIT(-1, "Could not initialize the environment");
+  if (!(root = JIN_window_create())) ERR_EXIT(-1, "Could not create the root window");
 
   JIN_INPUT_INIT(JIN_inputv);
   JIN_INPUT_INIT(JIN_input);
 
   /* Libraries */
-  if (JIN_logger_init(JIN_LOGGER_LOG | JIN_LOGGER_ERR)) return 0;
   LOG(LOG, "Initializing libraries");
   if (JIN_snd_init())                 ERR_EXIT(0, "Could not initialize Sound");
   if (JEL_init())                     ERR_EXIT(0, "Could not initialize JEL");
@@ -163,6 +164,10 @@ int JIN_dialog(const char *msg)
   /* Create states */
 struct STM_State test;
 
+/* This shouldn't be needed but is for some reason, GLAPIENTRY is not defined */
+#ifdef _WIN32
+#define GLAPIENTRY __stdcall
+#endif
 #include <stdio.h>
 void GLAPIENTRY gl_err_callback(GLenum src, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *msg, const void *usr_param)
 {
@@ -172,10 +177,9 @@ void GLAPIENTRY gl_err_callback(GLenum src, GLenum type, GLuint id, GLenum sever
 JIN_THREAD_FN JIN_game_thread(void *data)
 {
   JIN_window_gl_set(root);
-  GLenum err;
-  if ((err = glewInit()) != GLEW_OK) {
-    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-    return 0;
+  if (JIN_gll()) {
+    LOG(ERR, "JIN_gll() failed");
+    JIN_input.quit = 1;
   }
 
   /* INITIALIZE */

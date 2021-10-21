@@ -1,11 +1,12 @@
+#include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #include <stdlib.h>
 #include "../env/env.h"
 #include <string.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
-
-#include <stdio.h>
+#include "../logger/logger.h"
 
 struct JIN_Window {
   Window               window;
@@ -13,12 +14,8 @@ struct JIN_Window {
   GLXContext           context;
   XSetWindowAttributes attribs;
   XVisualInfo         *visual;
-  int                  screen_id;
   GLXFBConfig          fb_config;
 };
-
-#define DEF_WND_WIDTH  640
-#define DEF_WND_HEIGHT 480
 
 /*
  * is_extension_supported
@@ -73,37 +70,12 @@ static int is_extension_supported(const char *extension_list, const char *extens
  * @param screen_id
  * @return
  */
-GLXContext (*glx_create_context_attribs_arb)(Display *, GLXFBConfig, GLXContext, Bool, const int *) = NULL;
-static int JIN_window_gl_setup(struct JIN_Window *window)
+static int get_best_fb(struct JIN_Window *window, GLint *glx_attribs)
 {
-  /* Check GLX Version */
-  GLint glx_major, glx_minor;
-  glXQueryVersion(JIN_env.x_display, &glx_major, &glx_minor);
-  if (glx_major <= 1 && glx_minor < 3) {
-    fprintf(stderr, "GLX 1.3 or greater is required\n");
-    return -1;
-  }
-
-  GLint glx_attribs[] = {
-    GLX_X_RENDERABLE,  True,
-    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-    GLX_RENDER_TYPE,   GLX_RGBA_BIT,
-    GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
-    GLX_RED_SIZE,      8,
-    GLX_GREEN_SIZE,    8,
-    GLX_BLUE_SIZE,     8,
-    GLX_ALPHA_SIZE,    8,
-    GLX_DEPTH_SIZE,    24,
-    GLX_STENCIL_SIZE,  8,
-    GLX_DOUBLEBUFFER,  True,
-    None
-  };
-
   int fb_count;
-  GLXFBConfig *fb_configs = glXChooseFBConfig(JIN_env.x_display, window->screen_id, glx_attribs, &fb_count);
+  GLXFBConfig *fb_configs = glXChooseFBConfig(JIN_env.x_display, JIN_env.screen_id, glx_attribs, &fb_count);
   if (!fb_configs) {
-    fprintf(stderr, "Could not get framebuffer config\n");
-    return -1;
+    ERR_EXIT(-1, "Could not get framebuffer config\n");
   }
 
   /* Pick the fb_config/visual with the most samples/pixel */
@@ -114,8 +86,7 @@ static int JIN_window_gl_setup(struct JIN_Window *window)
     int sample_buffer, samples;
     
     if (!(vi = glXGetVisualFromFBConfig(JIN_env.x_display, fb_configs[i]))) {
-      fprintf(stderr, "Could not get visual info\n");
-      return -1;
+      ERR_EXIT(-1, "Could not get visual info\n");
     }
 
     glXGetFBConfigAttrib(JIN_env.x_display, fb_configs[i], GLX_SAMPLE_BUFFERS, &sample_buffer);
@@ -138,20 +109,47 @@ static int JIN_window_gl_setup(struct JIN_Window *window)
   window->fb_config = fb_configs[fb_config_best];
   XFree(fb_configs);
 
-  if (!(window->visual = glXGetVisualFromFBConfig(JIN_env.x_display, window->fb_config))) {
-    fprintf(stderr, "Could not create a visual window\n");
-    return -1;
+  return 0;
+}
+GLXContext (*glx_create_context_attribs_arb)(Display *, GLXFBConfig, GLXContext, Bool, const int *) = NULL;
+static int JIN_window_gl_setup(struct JIN_Window *window)
+{
+  /* Check GLX Version */
+  GLint glx_major, glx_minor;
+  glXQueryVersion(JIN_env.x_display, &glx_major, &glx_minor);
+  if (glx_major <= 1 && glx_minor < 3) {
+    ERR_EXIT(-1, "GLX 1.3 or greater is required\n");
   }
 
-  if (window->screen_id != window->visual->screen) {
-    fprintf(stderr, "Screen id does not match visual screen\n");
-    return -1;
+  GLint glx_attribs[] = {
+    GLX_X_RENDERABLE,  True,
+    GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+    GLX_RENDER_TYPE,   GLX_RGBA_BIT,
+    GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
+    GLX_RED_SIZE,      8,
+    GLX_GREEN_SIZE,    8,
+    GLX_BLUE_SIZE,     8,
+    GLX_ALPHA_SIZE,    8,
+    GLX_DEPTH_SIZE,    24,
+    GLX_STENCIL_SIZE,  8,
+    GLX_DOUBLEBUFFER,  True,
+    None
+  };
+
+  get_best_fb(window, glx_attribs);
+
+  if (!(window->visual = glXGetVisualFromFBConfig(JIN_env.x_display, window->fb_config))) {
+    ERR_EXIT(-1, "Could not create a visual window\n");
+  }
+
+  if (JIN_env.screen_id != window->visual->screen) {
+    ERR_EXIT(-1, "Screen id does not match visual screen\n");
   }
 
   /* Actually create the context */
   glx_create_context_attribs_arb = (GLXContext (*)(Display *, GLXFBConfig, GLXContext, Bool, const int *)) glXGetProcAddressARB((const GLubyte *) "glXCreateContextAttribsARB");
   if (!glx_create_context_attribs_arb) {
-    fprintf(stderr, "glXCreateContextAttribsARB() not found \n");
+    ERR_EXIT(-1, "glXCreateContextAttribsARB() not found \n");
   }
 
   return 0;
@@ -162,32 +160,29 @@ struct JIN_Window * JIN_window_create(void)
   struct JIN_Window *window;
 
   if (!(window = malloc(sizeof(struct JIN_Window)))) {
-    fprintf(stderr, "Out of memory\n");
-    return NULL;
+    ERR_EXIT(NULL, "Out of memory\n");
   }
 
   window->screen = XDefaultScreenOfDisplay(JIN_env.x_display);
-  window->screen_id = XDefaultScreen(JIN_env.x_display);
 
   if (JIN_window_gl_setup(window)) {
-    fprintf(stderr, "Could not set up OpenGL\n");
-    return NULL;
+    ERR_EXIT(NULL, "Could not set up OpenGL\n");
   }
 
   /* Create the Window */
-  window->attribs.border_pixel      = XBlackPixel(JIN_env.x_display, window->screen_id);
-  window->attribs.background_pixel  = XWhitePixel(JIN_env.x_display, window->screen_id);
+  window->attribs.border_pixel      = JIN_env.border_pixel;
+  window->attribs.background_pixel  = JIN_env.background_pixel;
   window->attribs.override_redirect = True;
-  window->attribs.colormap          = XCreateColormap(JIN_env.x_display, RootWindow(JIN_env.x_display, window->screen_id), window->visual->visual, AllocNone);
+  window->attribs.colormap          = XCreateColormap(JIN_env.x_display, RootWindow(JIN_env.x_display, JIN_env.screen_id), window->visual->visual, AllocNone);
   window->attribs.event_mask        = ExposureMask;
-  window->window = XCreateWindow(JIN_env.x_display, RootWindow(JIN_env.x_display, window->screen_id), 0, 0, DEF_WND_WIDTH, DEF_WND_HEIGHT, 0, window->visual->depth, InputOutput, window->visual->visual, CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &window->attribs);
+  window->window = XCreateWindow(JIN_env.x_display, RootWindow(JIN_env.x_display, JIN_env.screen_id), 0, 0, 480, 320, 0, window->visual->depth, InputOutput, window->visual->visual, CWBackPixel | CWColormap | CWBorderPixel | CWEventMask, &window->attribs);
 
   XSelectInput(JIN_env.x_display, window->window, KeyPressMask | KeyReleaseMask);
   XSetWMProtocols(JIN_env.x_display, window->window, &JIN_env.wm_delete_window, 1);
   XSizeHints hints;
   hints.flags = PMinSize | PMaxSize | PResizeInc;
-  hints.min_width  = hints.max_width  = DEF_WND_WIDTH;
-  hints.min_height = hints.max_height = DEF_WND_HEIGHT;
+  hints.min_width  = hints.max_width  = 480;
+  hints.min_height = hints.max_height = 320;
   hints.width_inc  = hints.height_inc = 0;
   XSetWMNormalHints(JIN_env.x_display, window->window, &hints);
 
@@ -198,11 +193,6 @@ struct JIN_Window * JIN_window_create(void)
   return window;
 }
 
-/* 
- * TODO
- *
- * Memory leaked:
- */
 int JIN_window_destroy(struct JIN_Window *window)
 {
   XFree(window->visual);
@@ -223,13 +213,12 @@ int JIN_window_buffer_swap(struct JIN_Window *window)
 
 int JIN_window_gl_set(struct JIN_Window *window)
 {
-  const char *glx_extensions = glXQueryExtensionsString(JIN_env.x_display, window->screen_id);
+  const char *glx_extensions = glXQueryExtensionsString(JIN_env.x_display, JIN_env.screen_id);
   
   int context_attribs[] = {
     GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
     GLX_CONTEXT_MINOR_VERSION_ARB, 3,
     GLX_CONTEXT_FLAGS_ARB,         GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-    GLX_CONTEXT_PROFILE_MASK_ARB,  GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
     None
   };
 
@@ -245,7 +234,7 @@ int JIN_window_gl_set(struct JIN_Window *window)
   
   /* Check if the context is direct */
   if (!glXIsDirect(JIN_env.x_display, window->context)) {
-    fprintf(stderr, "GLX context is not direct\n");
+    LOG(LOG, "GLX context is not direct\n");
   }
 
   return 0;
@@ -255,6 +244,47 @@ int JIN_window_gl_unset(struct JIN_Window *window)
 {
   glXMakeCurrent(JIN_env.x_display, None, NULL);
   glXDestroyContext(JIN_env.x_display, window->context);
+
+  return 0;
+}
+
+int JIN_window_size_set(struct JIN_Window *window, int x, int y)
+{
+  XSizeHints hints;
+  hints.flags = PMinSize | PMaxSize;
+  hints.min_width  = hints.max_width  = x;
+  hints.min_height = hints.max_height = y;
+  XSetWMNormalHints(JIN_env.x_display, window->window, &hints);
+  
+  return 0;
+}
+
+int JIN_window_size_get(struct JIN_Window *window, int *x, int *y)
+{
+  XWindowAttributes attribs;
+  XGetWindowAttributes(JIN_env.x_display, window->window, &attribs);
+  *x = attribs.width;
+  *y = attribs.height;
+
+  return 0;
+}
+
+#include "window_x11_dialog.c"
+int JIN_window_dialog(struct JIN_Window *window, const char* msg)
+{
+  Window               msgbox;
+
+  dialog_setup(&msgbox, window->window);
+  dialog_message(msgbox, msg);
+
+  /* Show the message box */
+  XMapRaised(JIN_env.x_display, msgbox);
+
+  /* Loop the message box */
+  dialog_loop(msgbox, msg);
+
+  /* Quit the message box */
+  XDestroyWindow(JIN_env.x_display, msgbox);
 
   return 0;
 }

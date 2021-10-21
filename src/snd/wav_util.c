@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../core/logger.h"
+#include "core/logger/logger.h"
 
 /*
  * JIN_wav_load

@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "../core/logger.h"
+#include "core/logger/logger.h"
 #include <string.h>
 
-#include "../gfx/gfx.h"
+#include "gfx/gfx.h"
 
 JEL_COMPONENT_CREATE(Sprite, struct JIN_Animd *, animd, int32_t, anim, int32_t, ticks, int32_t, frame)
 

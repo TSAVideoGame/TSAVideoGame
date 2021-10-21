@@ -1,15 +1,15 @@
 #include "resm.h"
 #include <string.h>
 #include <stdlib.h>
-#include "../core/logger.h"
+#include "core/logger/logger.h"
 
 /* Graphics */
-#include "../gfx/gfx.h"
+#include "gfx/gfx.h"
 
-#include "../anim/anim.h"
+#include "anim/anim.h"
 
 /* Sound */
-#include "../snd/snd.h"
+#include "snd/snd.h"
 
 #define GROWTH_FACTOR 2
 #define INITIAL_COUNT 8

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wav_util.h"
-#include "../core/logger.h"
+#include "core/logger/logger.h"
 
 /*
  * GLOBALS AND MACROS

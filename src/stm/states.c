@@ -3,7 +3,7 @@
 #include "core/core.h"
 #include "snd/snd.h"
 #include "gfx/gfx.h"
-#include "glew/glew.h"
+#include "core/gll/gll.h"
 #include "cglm/cglm.h"
 #include "anim/anim.h"
 #include <JEL/jel.h>

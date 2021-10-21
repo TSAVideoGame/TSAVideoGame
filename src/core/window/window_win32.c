@@ -2,8 +2,8 @@
 #include <Windows.h>
 #include "../env/env.h"
 #include <stdio.h>
-#include "glew/glew.h"
-#include "glew/wglew.h"
+#include <GL/gl.h>
+#include <GL/wgl.h>
 
 struct JIN_Window {
   HWND handle;
@@ -175,8 +175,36 @@ int JIN_window_gl_set(struct JIN_Window *window)
   return 0;
 }
 
-int JIN_window_gl_unset(struct JIN_Window* window)
+int JIN_window_gl_unset(struct JIN_Window *window)
 {
   /* This is a TODO */
+  return 0;
+}
+
+int JIN_window_size_set(struct JIN_Window *window, int w, int h)
+{
+  RECT wr = { 0, 0, w, h };
+  AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, FALSE);
+
+  SetWindowPos(window->handle, NULL, 0, 0, wr.right - wr.left, wr.bottom - wr.top, SWP_NOMOVE | SWP_NOZORDER);
+
+  return 0;
+}
+
+int JIN_window_size_get(struct JIN_Window *window, int *w, int *h)
+{
+  RECT rect;
+  GetWindowRect(window->handle, &rect);
+
+  *w = rect.right - rect.left;
+  *h = rect.bottom - rect.top;
+
+  return 0;
+}
+
+int JIN_window_dialog(struct JIN_Window* window, const char* msg)
+{
+  MessageBox(window->handle, msg, NULL, MB_OK | MB_SYSTEMMODAL | MB_TOPMOST | MB_SETFOREGROUND | MB_ICONERROR);
+
   return 0;
 }

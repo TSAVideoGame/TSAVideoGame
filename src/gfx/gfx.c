@@ -1,12 +1,12 @@
 #include "gfx.h"
 #include <stdint.h>
 #include <stdlib.h>
-#include <GL/glew.h>
+#include "core/gll/gll.h"
 #include <stdio.h>
 #include "lodepng/lodepng.h"
-#include "../core/core.h"
+#include "core/core.h"
 #include "cglm/cglm.h"
-#include "../resm/resm.h"
+#include "resm/resm.h"
 
 /* GFX FUNCTIONS */
 

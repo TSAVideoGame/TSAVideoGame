@@ -1,6 +1,6 @@
 #include "stm.h"
 #include <string.h>
-#include "../core/logger.h"
+#include "core/logger/logger.h"
 
 /*
  * STM_state_create

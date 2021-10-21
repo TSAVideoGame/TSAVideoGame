@@ -13,10 +13,10 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/anim/anim.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/core.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/globals.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/core/logger.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/env/env.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/core/event/event.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/core/gll/gll.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/input/input.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/core/logger/logger.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/thread/thread.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/window/window.c
   ${CMAKE_CURRENT_LIST_DIR}/src/gfx/gfx.c
@@ -27,7 +27,6 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/stm/states.c
 
   ${CMAKE_CURRENT_LIST_DIR}/libs/lodepng/lodepng.c
-  ${CMAKE_CURRENT_LIST_DIR}/libs/glew/glew.c
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
