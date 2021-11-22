@@ -4,12 +4,18 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Debug)
 set(WINDOWS_LIBRARIES_DIRECTORIES "C:/cpplib")
+set(LINUX_LIBRARIES_DIRECTORIES "/usr/local/include")
 
 # Binary
 project(jin)
 
+set(DRIVER "${CMAKE_CURRENT_LIST_DIR}/src/driver.c")
+if (EMSCRIPTEN)
+  set(DRIVER "${CMAKE_CURRENT_LIST_DIR}/src/driver_web.c")
+endif ()
+
 add_executable(${PROJECT_NAME}
-  ${CMAKE_CURRENT_LIST_DIR}/src/driver.c
+  ${DRIVER}
   ${CMAKE_CURRENT_LIST_DIR}/src/anim/anim.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/core.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/globals.c
@@ -33,6 +39,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/src
   ${CMAKE_CURRENT_LIST_DIR}/libs
   ${WINDOWS_LIBRARIES_DIRECTORIES}
+  ${LINUX_LIBRARIES_DIRECTORIES}
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -42,15 +49,17 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # Libraries
 set(CORE_LIBS "")
 
-if (UNIX)
+if (EMSCRIPTEN)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s OFFSCREEN_FRAMEBUFFER=1 -s USE_WEBGL2=1 --preload-file res")
+
+elseif (UNIX)
   set(CORE_LIBS "-lX11 -lGL -lpthread -lm")
-endif (UNIX)
 
 # Assuming WIN32 is MSVC, need to fix that
-if (WIN32)
+elseif (WIN32)
   set(CORE_LIBS "opengl32")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Zc:preprocessor")
-endif (WIN32)
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${CORE_LIBS} openal jel)
-
+target_link_directories(${PROJECT_NAME} PUBLIC "/usr/local/lib")

@@ -84,7 +84,7 @@ int JIN_quit(void)
 
 #define FPS         30
 #define FRAME_DELAY (1000 / FPS)
-int JIN_tick(void)
+void JIN_tick(void)
 {
   clock_t frame_start, frame_end;
   double  frame_time;
@@ -102,7 +102,7 @@ int JIN_tick(void)
     JIN_sleep(FRAME_DELAY - frame_time);
   }
 
-  return 0;
+  /* return 0; */
 }
 
 /*
@@ -183,8 +183,8 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   }
 
   /* INITIALIZE */
-  glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(gl_err_callback, 0);
+  /*glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(gl_err_callback, 0);*/
   glEnable(GL_DEPTH_TEST);
   /* Core resources */
   if (JIN_resm_add(&JIN_resm, "JIN_MODEL_SPRITE", "res/models/square.mdld", JIN_RES_MODEL)) ERR_EXIT(0, "Can't create the sprite model");

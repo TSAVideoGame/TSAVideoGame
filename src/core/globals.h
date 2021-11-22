@@ -13,7 +13,7 @@ extern struct JIN_Window JIN_window;
 extern struct JIN_Sndbgm JIN_sndbgm;
 extern struct JIN_Input  JIN_input;
 
-#define WINDOW_WIDTH  640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH  960
+#define WINDOW_HEIGHT 640
 
 #endif

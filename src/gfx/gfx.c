@@ -43,7 +43,7 @@ int JIN_gfx_draw_sprite(unsigned int *shader, unsigned int *texture, int x, int 
   glUniform2f(glGetUniformLocation(*shader, "tex_translate"), t_x, t_y);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_RECTANGLE, *texture);
+  glBindTexture(GL_TEXTURE_2D, *texture);
 
   glBindVertexArray(((struct JIN_Model *) JIN_resm_get(&JIN_resm, "JIN_MODEL_SPRITE"))->vao);
   glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -206,14 +206,14 @@ int JIN_texture_create(unsigned int *texture, const char *fpath)
 
   glGenTextures(1, texture);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_RECTANGLE, *texture);
+  glBindTexture(GL_TEXTURE_2D, *texture);
   /* I prefer GL_REPEAT but RECTANGLE can't have that */
-  glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   
-  glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
   free(image);
   
   return 0;
