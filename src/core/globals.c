@@ -4,6 +4,6 @@
 #include "core.h"
 #include "../snd/snd.h"
 
-struct JIN_Resm   JIN_resm;
+struct RESM_M     JIN_resm;
 struct STM_Stack  JIN_states;
 struct JIN_Sndbgm JIN_sndbgm;

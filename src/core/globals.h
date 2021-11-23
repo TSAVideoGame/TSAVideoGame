@@ -7,11 +7,9 @@
  * Really these are more like singletons
  */
 
-extern struct JIN_Resm   JIN_resm;
+extern struct RESM_M     JIN_resm;
 extern struct STM_Stack  JIN_states;
-extern struct JIN_Window JIN_window;
 extern struct JIN_Sndbgm JIN_sndbgm;
-extern struct JIN_Input  JIN_input;
 
 #define WINDOW_WIDTH  960
 #define WINDOW_HEIGHT 640

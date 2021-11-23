@@ -49,7 +49,7 @@ int JIN_init(void)
 
   /* Singletons */
   LOG(LOG, "Creating singletons");
-  if (JIN_resm_create(&JIN_resm))                         ERR_EXIT(0, "Could not create a resource manager");
+  if (RESM_create(&JIN_resm))                             ERR_EXIT(0, "Could not create a resource manager");
   if (STM_stack_create(&JIN_states))                      ERR_EXIT(0, "Could not create a state stack");
   if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/L.wav")) ERR_EXIT(0, "Could not create background music");
 
@@ -70,7 +70,7 @@ int JIN_quit(void)
   LOG(LOG, "Quitting core (closing libraries and singletons)");
   JIN_sndbgm_destroy(&JIN_sndbgm);
   STM_stack_destroy(&JIN_states);
-  JIN_resm_destroy(&JIN_resm);
+  RESM_destroy(&JIN_resm);
  
   JEL_quit();
   JIN_snd_quit();
@@ -187,7 +187,7 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   glDebugMessageCallback(gl_err_callback, 0);*/
   glEnable(GL_DEPTH_TEST);
   /* Core resources */
-  if (JIN_resm_add(&JIN_resm, "JIN_MODEL_SPRITE", "res/models/square.mdld", JIN_RES_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
+  if (JIN_resm_add("JIN_MODEL_SPRITE", "res/models/square.mdld", RESM_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
   
   JIN_states_test_create(&test);
   JIN_state_push(&test);

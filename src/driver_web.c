@@ -23,7 +23,7 @@ int web_loop(void)
   /* INITIALIZE */
   glEnable(GL_DEPTH_TEST);
   /* Core resources */
-  if (JIN_resm_add(&JIN_resm, "JIN_MODEL_SPRITE", "res/models/square.mdld", JIN_RES_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
+  if (JIN_resm_add("JIN_MODEL_SPRITE", "res/models/square.mdld", RESM_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
 
   struct STM_State test;
   JIN_states_test_create(&test);

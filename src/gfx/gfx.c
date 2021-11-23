@@ -45,7 +45,7 @@ int JIN_gfx_draw_sprite(unsigned int *shader, unsigned int *texture, int x, int 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, *texture);
 
-  glBindVertexArray(((struct JIN_Model *) JIN_resm_get(&JIN_resm, "JIN_MODEL_SPRITE"))->vao);
+  glBindVertexArray(((struct JIN_Model *) JIN_resm_get("JIN_MODEL_SPRITE"))->vao);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
 

@@ -126,8 +126,8 @@ int JIN_anim_draw(void)
   unsigned int *shader;
   unsigned int *texture;
 
-  shader = JIN_resm_get(&JIN_resm, "sprite_shader");
-  texture = JIN_resm_get(&JIN_resm, "player_img");
+  shader = JIN_resm_get("sprite_shader");
+  texture = JIN_resm_get("player_img");
   
   for (JEL_ComponentInt i = 0; i < q->tables_num; ++i) {
     struct SpriteFragment *sprite;

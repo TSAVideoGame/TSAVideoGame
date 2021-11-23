@@ -12,10 +12,10 @@ static JEL_Entity player; /* Don't do this, create a state variable */
 
 static int test_fn_create(struct STM_State *state)
 {
-  JIN_resm_add(&JIN_resm, "triangle_shader", "res/shaders/test.shdr", JIN_RES_SHADER);
+  JIN_resm_add("triangle_shader", "res/shaders/test.shdr", RESM_SHADER);
 
-  JIN_resm_add(&JIN_resm, "sprite_shader", "res/shaders/sprite.shdr", JIN_RES_SHADER);
-  unsigned int *shader = JIN_resm_get(&JIN_resm, "sprite_shader");
+  JIN_resm_add("sprite_shader", "res/shaders/sprite.shdr", RESM_SHADER);
+  unsigned int *shader = JIN_resm_get("sprite_shader");
 
   glUseProgram(*shader);
 
@@ -24,21 +24,21 @@ static int test_fn_create(struct STM_State *state)
   glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
   glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
 
-  JIN_resm_add(&JIN_resm, "test_image", "res/images/test_image.png", JIN_RES_PNG);
+  JIN_resm_add("test_image", "res/images/test_image.png", RESM_PNG);
 
   /* 3d fun */
-  JIN_resm_add(&JIN_resm, "3d_shader", "res/shaders/3d.shdr", JIN_RES_SHADER);
-  JIN_resm_add(&JIN_resm, "3d_spaceship", "res/models/space_ship.mdld", JIN_RES_MODEL);
+  JIN_resm_add("3d_shader", "res/shaders/3d.shdr", RESM_SHADER);
+  JIN_resm_add("3d_spaceship", "res/models/space_ship.mdld", RESM_MODEL);
 
   /* Animation test */
-  JIN_resm_add(&JIN_resm, "player_animation", "res/animations/player.animd", JIN_RES_ANIM);
-  JIN_resm_add(&JIN_resm, "player_img", "res/images/dodger.png", JIN_RES_PNG);
+  JIN_resm_add("player_animation", "res/animations/player.animd", RESM_ANIM);
+  JIN_resm_add("player_img", "res/images/dodger.png", RESM_PNG);
 
   JEL_COMPONENT_REGISTER(Sprite);
 
   player = JEL_entity_create();
   JEL_ENTITY_ADD(player, Sprite);
-  JEL_ENTITY_SET(player, Sprite, animd, JIN_resm_get(&JIN_resm, "player_animation"));
+  JEL_ENTITY_SET(player, Sprite, animd, JIN_resm_get("player_animation"));
   JEL_ENTITY_SET(player, Sprite, anim, 0);
   JEL_ENTITY_SET(player, Sprite, frame, 0);
   JEL_ENTITY_SET(player, Sprite, ticks, 0);
@@ -63,15 +63,15 @@ static int test_fn_draw(struct STM_State *state)
   unsigned int *shader;
   unsigned int *texture;
 
-  shader = JIN_resm_get(&JIN_resm, "sprite_shader");
-  texture = JIN_resm_get(&JIN_resm, "test_image");
+  shader = JIN_resm_get("sprite_shader");
+  texture = JIN_resm_get("test_image");
   JIN_gfx_draw_sprite(shader, texture, 16, 16, 256, 256, 0, 0, 256, 256);
   JIN_gfx_draw_sprite(shader, texture, 16, 256, 256, 256, 32, 32, 224, 224);
 
   JIN_anim_draw();
 
   /* 3d fun */
-  shader = JIN_resm_get(&JIN_resm, "3d_shader");
+  shader = JIN_resm_get("3d_shader");
   glUseProgram(*shader);
   vec3 vec = {0.0f, 0.0f, 0.0f};
   mat4 model = GLM_MAT4_IDENTITY_INIT;
@@ -95,7 +95,7 @@ static int test_fn_draw(struct STM_State *state)
   glUniform3f(glGetUniformLocation(*shader, "light_color"), 1.0f, 1.0f, 1.0f);
   glUniform3f(glGetUniformLocation(*shader, "light_pos"), 4.0f, 0.0f, -40.0f);
 
-  glBindVertexArray(((struct JIN_Model *) JIN_resm_get(&JIN_resm, "3d_spaceship"))->vao);
+  glBindVertexArray(((struct JIN_Model *) JIN_resm_get("3d_spaceship"))->vao);
   glDrawArrays(GL_TRIANGLES, 0, 78);
 
   return 0;

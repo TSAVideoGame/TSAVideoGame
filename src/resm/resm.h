@@ -1,5 +1,5 @@
-#ifndef JIN_RESM_H
-#define JIN_RESM_H
+#ifndef RESM_H
+#define RESM_H
 
 /*
  * RESOURCE MANAGER
@@ -13,28 +13,28 @@
  * id and a type
  *
  * TYPES:
- * enum   JIN_Rest | Types of resources
- * struct JIN_Resm | A resource manager
+ * enum   RESM_T | Types of resources
+ * struct RESM_M | The actual resource manager
  *
  */
 
-enum JIN_Rest {
+enum RESM_T {
   /* Graphics */
-  JIN_RES_SHADER, /* OpenGL shader program */
-  JIN_RES_PNG,    /* OpenGL texture */
-  JIN_RES_MODEL,  /* OpenGL VAO and VBO */
+  RESM_SHADER, /* OpenGL shader program */
+  RESM_PNG,    /* OpenGL texture */
+  RESM_MODEL,  /* OpenGL VAO and VBO */
 
-  JIN_RES_ANIM,   /* Animation */
+  RESM_ANIM,   /* Animation */
   /* Sound */
-  JIN_RES_SFX,    /* Sound effect */
+  RESM_SFX,    /* Sound effect */
 };
 
-struct JIN_Resm {
-  unsigned int   allocated;
-  unsigned int   count;
-  void         **resources;
-  char         **names;
-  enum JIN_Rest *types;
+struct RESM_M {
+  unsigned int allocated;
+  unsigned int count;
+  void       **resources;
+  char       **names;
+  enum RESM_T *types;
 };
 
 /*
@@ -45,9 +45,15 @@ struct JIN_Resm {
  * add     | Add a resource
  * get     | Get a resource
  */
-int    JIN_resm_create (struct JIN_Resm *resm);
-void   JIN_resm_destroy(struct JIN_Resm *resm);
-int    JIN_resm_add    (struct JIN_Resm *resm, const char *name, const char *fpath, enum JIN_Rest type);
-void * JIN_resm_get    (struct JIN_Resm *resm, const char *name);
+int    RESM_create (struct RESM_M *resm);
+void   RESM_destroy(struct RESM_M *resm);
+int    RESM_add    (struct RESM_M *resm, const char *name, const char *fpath, enum RESM_T type);
+void * RESM_get    (struct RESM_M *resm, const char *name);
+
+/*
+ * JIN Functions
+ */
+int    JIN_resm_add(const char *name, const char *fpath, enum RESM_T type);
+void * JIN_resm_get(const char *name);
 
 #endif

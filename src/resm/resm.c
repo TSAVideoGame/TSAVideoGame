@@ -30,13 +30,13 @@
     free(resm->name); \
     resm->name = name; \
   }
-static int JIN_resm_allocate(struct JIN_Resm *resm, unsigned int count)
+static int RESM_allocate(struct RESM_M *resm, unsigned int count)
 {
   if (resm->count <= resm->allocated) return -1;
 
   ALLOC_VAR(void **,         resources);
   ALLOC_VAR(char **,         names);
-  ALLOC_VAR(enum JIN_Rest *, types);
+  ALLOC_VAR(enum RESM_T *,   types);
 
   resm->allocated = count;
 
@@ -50,11 +50,11 @@ static int JIN_resm_allocate(struct JIN_Resm *resm, unsigned int count)
  * @param resm
  * @return
  */
-int JIN_resm_create(struct JIN_Resm *resm)
+int RESM_create(struct RESM_M *resm)
 {
   if (!(resm->resources = malloc(INITIAL_COUNT * sizeof(void *       )))) ERR_EXIT(-1, "Create resm: Out of memory");
   if (!(resm->names     = malloc(INITIAL_COUNT * sizeof(char *       )))) ERR_EXIT(-1, "Create resm: Out of memory");
-  if (!(resm->types     = malloc(INITIAL_COUNT * sizeof(enum JIN_Rest)))) ERR_EXIT(-1, "Create resm: Out of memory");
+  if (!(resm->types     = malloc(INITIAL_COUNT * sizeof(enum RESM_T)))) ERR_EXIT(-1, "Create resm: Out of memory");
 
   resm->count = 0;
   resm->allocated = INITIAL_COUNT;
@@ -69,25 +69,25 @@ int JIN_resm_create(struct JIN_Resm *resm)
  * @param resm
  * @return
  */
-void JIN_resm_destroy(struct JIN_Resm *resm)
+void RESM_destroy(struct RESM_M *resm)
 {
   for (unsigned int i = 0; i < resm->count; ++i) {
     free(resm->names[i]);
 
     switch (resm->types[i]) {
-      case JIN_RES_SHADER:
+      case RESM_SHADER:
         JIN_shader_destory(resm->resources[i]);
         break;
-      case JIN_RES_PNG:
+      case RESM_PNG:
         JIN_texture_destroy(resm->resources[i]);
         break;
-      case JIN_RES_MODEL:
+      case RESM_MODEL:
         JIN_model_destory(resm->resources[i]);
         break;
-      case JIN_RES_ANIM:
+      case RESM_ANIM:
         JIN_animd_destroy(resm->resources[i]);
         break;
-      case JIN_RES_SFX:
+      case RESM_SFX:
         JIN_sndsfx_destroy(resm->resources[i]);
         break;
     }
@@ -110,10 +110,10 @@ void JIN_resm_destroy(struct JIN_Resm *resm)
  * @param type
  * @return
  */
-int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enum JIN_Rest type)
+int RESM_add(struct RESM_M *resm, const char *name, const char *fpath, enum RESM_T type)
 {
   if (resm->allocated <= resm->count) {
-    if (JIN_resm_allocate(resm, resm->count * GROWTH_FACTOR)) ERR_EXIT(-1, "Could not allocate resm");
+    if (RESM_allocate(resm, resm->count * GROWTH_FACTOR)) ERR_EXIT(-1, "Could not allocate resm");
   }
 
   size_t name_size = strlen(name) + 1;
@@ -123,23 +123,23 @@ int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enu
   resm->types[resm->count] = type;
 
   switch (type) {
-    case JIN_RES_SHADER:
+    case RESM_SHADER:
       resm->resources[resm->count] = malloc(sizeof(unsigned int));
       JIN_shader_create(resm->resources[resm->count], fpath);
       break;
-    case JIN_RES_PNG:
+    case RESM_PNG:
       resm->resources[resm->count] = malloc(sizeof(unsigned int));
       JIN_texture_create(resm->resources[resm->count], fpath);
       break;
-    case JIN_RES_MODEL:
+    case RESM_MODEL:
       resm->resources[resm->count] = malloc(sizeof(struct JIN_Model));
       JIN_model_create(resm->resources[resm->count], fpath);
       break;
-    case JIN_RES_ANIM:
+    case RESM_ANIM:
       resm->resources[resm->count] = malloc(sizeof(struct JIN_Animd));
       JIN_animd_create(resm->resources[resm->count], fpath);
       break;
-    case JIN_RES_SFX:
+    case RESM_SFX:
       resm->resources[resm->count] = malloc(sizeof(struct JIN_Sndsfx));
       JIN_sndsfx_create(resm->resources[resm->count], fpath);
       break;
@@ -159,7 +159,7 @@ int JIN_resm_add(struct JIN_Resm *resm, const char *name, const char *fpath, enu
  * @param name
  * @return
  */
-void * JIN_resm_get(struct JIN_Resm *resm, const char *name)
+void * RESM_get(struct RESM_M *resm, const char *name)
 {
   for (unsigned int i = 0; i < resm->count; ++i) {
     if (!strcmp(resm->names[i], name)) {
@@ -168,4 +168,18 @@ void * JIN_resm_get(struct JIN_Resm *resm, const char *name)
   }
 
   return NULL;
+}
+
+/*
+ * JIN_resm_add
+ */
+#include "core/globals.h"
+int JIN_resm_add(const char *name, const char *fpath, enum RESM_T type)
+{
+  return RESM_add(&JIN_resm, name, fpath, type);
+}
+
+void * JIN_resm_get(const char *name)
+{
+  return RESM_get(&JIN_resm, name);
 }
