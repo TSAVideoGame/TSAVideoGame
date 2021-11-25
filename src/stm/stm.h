@@ -36,14 +36,12 @@
  * The create callback is called on a push,
  * and the destroy callback is called on a pop
  */
-typedef uint32_t STM_Data;
+struct STM_S; /* State struct */
 
-struct STM_State;
-
-typedef int (STM_create) (struct STM_State *);
-typedef int (STM_destroy)(struct STM_State *);
-typedef int (STM_update) (struct STM_State *);
-typedef int (STM_draw)   (struct STM_State *);
+typedef int (STM_create) (struct STM_S *);
+typedef int (STM_destroy)(struct STM_S *);
+typedef int (STM_update) (struct STM_S *);
+typedef int (STM_draw)   (struct STM_S *);
 
 enum STM_Flags {
   STM_DRAW_PREV = 0x01, /* Draw the previous state */
@@ -56,10 +54,10 @@ enum STM_Flags {
   STM_FLAG_8    = 0x80, /* Unused */
 };
 
-struct STM_State {
+struct STM_S {
   char         name[16];   /* Name of the state */
   size_t       count;      /* How much data in the state */
-  STM_Data    *data;       /* uint32_t of data */
+  void        *data;       /* uint32_t of data */
   uint8_t      flags;      /* Bit array of flags */
   STM_create  *fn_create;  /* Function when state is created */
   STM_destroy *fn_destroy; /* Function when state is destroyed */
@@ -73,11 +71,29 @@ struct STM_State {
  * create  | Create a state
  * destroy | Destroys/cleans up a state
  */
-int STM_state_create (struct STM_State *state, const char *name, size_t stack_size, uint8_t flags, STM_create fn_create, STM_destroy fn_destroy, STM_update fn_update, STM_draw fn_draw);
-int STM_state_destroy(struct STM_State *state);
+int STM_s_create (struct STM_S *state, const char *name, size_t stack_size, uint8_t flags, STM_create fn_create, STM_destroy fn_destroy, STM_update fn_update, STM_draw fn_draw);
+int STM_s_destroy(struct STM_S *state);
 
 /*
- * STACK
+ * TABLE
+ *
+ * Relates a string and state (pointer)
+ */
+
+struct STM_T {
+  size_t        allocated;
+  size_t        count;
+  char        (*names)[8];
+  struct STM_S *states;
+};
+
+int            STM_t_create (struct STM_T *table);
+int            STM_t_destory(struct STM_T *table);
+int            STM_t_add    (const char *name, struct STM_S *state);
+struct STM_S * STM_t_search (const char *name);
+
+/*
+ * MANAGER
  *
  * Stack of the states, the actual manager of the states
  *
@@ -85,14 +101,14 @@ int STM_state_destroy(struct STM_State *state);
  * depending on your needs
  */
 
-struct STM_Stack {
-  size_t             allocated;
-  size_t             count;
-  struct STM_State **states;
+struct STM_M {
+  size_t         allocated;
+  size_t         count;
+  struct STM_S **states;
 };
 
 /*
- * Stack Functions
+ * Manager Functions
  *
  * create  | Create a stack
  * destroy | Destroy a stack
@@ -101,16 +117,16 @@ struct STM_Stack {
  * update  | Game loop update the state
  * draw    | Game loop draw the state
  */
-int STM_stack_create (struct STM_Stack *stack);
-int STM_stack_destroy(struct STM_Stack *stack);
-int STM_stack_push   (struct STM_Stack *stack, struct STM_State *state);
-int STM_stack_pop    (struct STM_Stack *stack);
-int STM_stack_update (struct STM_Stack *stack);
-int STM_stack_draw   (struct STM_Stack *stack);
+int STM_m_create (struct STM_M *stack);
+int STM_m_destroy(struct STM_M *stack);
+int STM_m_push   (struct STM_M *stack, struct STM_S *state);
+int STM_m_pop    (struct STM_M *stack);
+int STM_m_update (struct STM_M *stack);
+int STM_m_draw   (struct STM_M *stack);
 
 /*
  * JIN functions
  */
-int JIN_state_push(struct STM_State *state);
+int JIN_stm_push(struct STM_S *state);
 
 #endif

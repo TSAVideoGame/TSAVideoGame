@@ -15,12 +15,18 @@
 #define INITIAL_COUNT 8
 
 /*
- * JIN_resm_allocate
+ * RESM_allocate
  *
  * @desc
+ *   Allocates more memory for a RESM_M
  * @param resm
+ *   RESM_M to allocate memory for
  * @param count
+ *   How many items to allocate
  * @return
+ *    0 on success
+ *    1 on already has enough memory
+ *   -1 on out of memory
  */
 #define ALLOC_VAR(type, name) \
   { \
@@ -32,7 +38,7 @@
   }
 static int RESM_allocate(struct RESM_M *resm, unsigned int count)
 {
-  if (resm->count <= resm->allocated) return -1;
+  if (resm->allocated >= count) return 1;
 
   ALLOC_VAR(void **,         resources);
   ALLOC_VAR(char **,         names);
@@ -44,9 +50,10 @@ static int RESM_allocate(struct RESM_M *resm, unsigned int count)
 }
 
 /*
- * JIN_resm_create
+ * RESM_create
  *
  * @desc
+ *   Creates a RESM_M
  * @param resm
  * @return
  */
@@ -63,11 +70,13 @@ int RESM_create(struct RESM_M *resm)
 }
 
 /*
- * JIN_resm_destroy
+ * RESM_destroy
  *
  * @desc
+ *   Destroys a RESM_M and all of its
+ *   resources
  * @param resm
- * @return
+ *   RESM_M to destroy
  */
 void RESM_destroy(struct RESM_M *resm)
 {
@@ -101,15 +110,24 @@ void RESM_destroy(struct RESM_M *resm)
 }
 
 /*
- * JIN_resm_add
+ * RESM_add
  *
  * @desc
+ *   Adds a resource to RESM_M
  * @param resm
+ *   RESM_M to add to
  * @param name
+ *   What the resources will be named
  * @param fpath
+ *   File location of the resources
  * @param type
+ *   Type of the resource (used to figure out
+ *   what function to call)
  * @return
+ *    0 on success
+ *   -1 on failure
  */
+#define RES_MALLOC(type) if (!(resm->resources[resm->count] = malloc(sizeof(type)))) return -1;
 int RESM_add(struct RESM_M *resm, const char *name, const char *fpath, enum RESM_T type)
 {
   if (resm->allocated <= resm->count) {
@@ -117,30 +135,30 @@ int RESM_add(struct RESM_M *resm, const char *name, const char *fpath, enum RESM
   }
 
   size_t name_size = strlen(name) + 1;
-  resm->names[resm->count] = malloc(name_size * sizeof(char));
+  if (!(resm->names[resm->count] = malloc(name_size * sizeof(char)))) return -1;
   for (size_t i = 0; i < name_size; ++i) resm->names[resm->count][i] = name[i];
 
   resm->types[resm->count] = type;
 
   switch (type) {
     case RESM_SHADER:
-      resm->resources[resm->count] = malloc(sizeof(unsigned int));
+      RES_MALLOC(unsigned int);
       JIN_shader_create(resm->resources[resm->count], fpath);
       break;
     case RESM_PNG:
-      resm->resources[resm->count] = malloc(sizeof(unsigned int));
+      RES_MALLOC(unsigned int);
       JIN_texture_create(resm->resources[resm->count], fpath);
       break;
     case RESM_MODEL:
-      resm->resources[resm->count] = malloc(sizeof(struct JIN_Model));
+      RES_MALLOC(struct JIN_Model);
       JIN_model_create(resm->resources[resm->count], fpath);
       break;
     case RESM_ANIM:
-      resm->resources[resm->count] = malloc(sizeof(struct JIN_Animd));
+      RES_MALLOC(struct JIN_Animd);
       JIN_animd_create(resm->resources[resm->count], fpath);
       break;
     case RESM_SFX:
-      resm->resources[resm->count] = malloc(sizeof(struct JIN_Sndsfx));
+      RES_MALLOC(struct JIN_Sndsfx);
       JIN_sndsfx_create(resm->resources[resm->count], fpath);
       break;
   }
@@ -151,13 +169,18 @@ int RESM_add(struct RESM_M *resm, const char *name, const char *fpath, enum RESM
 }
 
 /*
- * JIN_resm_get
+ * RESM_get
  *
  * @desc
  *   TODO: Use map instead of linear search
+ *   Get a resource given its name.
  * @param resm
+ *   RESM_M to search
  * @param name
+ *   Name of the resource to get
  * @return
+ *   Pointer to the resource
+ *   NULL if not found
  */
 void * RESM_get(struct RESM_M *resm, const char *name)
 {
@@ -171,7 +194,10 @@ void * RESM_get(struct RESM_M *resm, const char *name)
 }
 
 /*
- * JIN_resm_add
+ * JIN Wrappers
+ *
+ * They're just wrappers but use
+ * the global JIN_resm RESM_M
  */
 #include "core/globals.h"
 int JIN_resm_add(const char *name, const char *fpath, enum RESM_T type)
