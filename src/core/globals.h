@@ -8,7 +8,8 @@
  */
 
 extern struct RESM_M     JIN_resm;
-extern struct STM_Stack  JIN_states;
+extern struct STM_T      JIN_stmt;
+extern struct STM_M      JIN_stmm;
 extern struct JIN_Sndbgm JIN_sndbgm;
 
 #define WINDOW_WIDTH  960

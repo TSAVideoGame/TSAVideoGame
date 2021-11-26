@@ -181,8 +181,8 @@ struct JIN_Window * JIN_window_create(void)
   XSetWMProtocols(JIN_env.x_display, window->window, &JIN_env.wm_delete_window, 1);
   XSizeHints hints;
   hints.flags = PMinSize | PMaxSize | PResizeInc;
-  hints.min_width  = hints.max_width  = 640;
-  hints.min_height = hints.max_height = 480;
+  hints.min_width  = hints.max_width  = 960;
+  hints.min_height = hints.max_height = 640;
   hints.width_inc  = hints.height_inc = 0;
   XSetWMNormalHints(JIN_env.x_display, window->window, &hints);
 

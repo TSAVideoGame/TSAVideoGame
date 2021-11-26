@@ -5,5 +5,6 @@
 #include "../snd/snd.h"
 
 struct RESM_M     JIN_resm;
-struct STM_Stack  JIN_states;
+struct STM_T      JIN_stmt;
+struct STM_M      JIN_stmm;
 struct JIN_Sndbgm JIN_sndbgm;

@@ -9,55 +9,44 @@
  *
  * A game state, like menu, game, pause
  *
- * State Data are basically variables,
- * but instead of names you need to use
- * an index, make enums if you want names
- * 
- * The data is also just an array of
- * whatever data type you want, preferably
- * a uint type that you cast into others
- *
- * Access state data by:
- *   state.data[index]
- *
  * States have updates and draws, input is not
  * handled
  *
  * The actual functions for create and destroy
- * are for initializing and destroying the struct,
- * while the callbacks are for when they are
- * created and destroyed on the stack.
+ * are for initializing and destroying the struct
+ * (this is handled by the table), while the 
+ * callbacks are for when they are created and
+ * destroyed on the stack.
  *
- * The state data persists in memory as long as
- * the state manager is active, but other data
- * can be created dynamically with the create
- * and destroy callbacks
+ * The state data should persist in memory as long as
+ * the state is alive. If you need to communicate
+ * data between states, a resource is probably needed.
  *
  * The create callback is called on a push,
  * and the destroy callback is called on a pop
  */
-struct STM_S; /* State struct */
+struct STM_S;
+
+typedef int (*STM_S_Constructor)(struct STM_S *);
 
 typedef int (STM_create) (struct STM_S *);
 typedef int (STM_destroy)(struct STM_S *);
 typedef int (STM_update) (struct STM_S *);
 typedef int (STM_draw)   (struct STM_S *);
 
-enum STM_Flags {
-  STM_DRAW_PREV = 0x01, /* Draw the previous state */
-  STM_FLAG_2    = 0x02, /* Unused */
-  STM_FLAG_3    = 0x04, /* Unused */
-  STM_FLAG_4    = 0x08, /* Unused */
-  STM_FLAG_5    = 0x10, /* Unused */
-  STM_FLAG_6    = 0x20, /* Unused */
-  STM_FLAG_7    = 0x40, /* Unused */
-  STM_FLAG_8    = 0x80, /* Unused */
+enum STM_F {
+  STM_PERSIST_PREV = 0x01, /* Keep previous state alive */
+  STM_DRAW_PREV    = 0x02, /* Draw the previous state */
+  STM_FLAG_3       = 0x04, /* Unused */
+  STM_FLAG_4       = 0x08, /* Unused */
+  STM_FLAG_5       = 0x10, /* Unused */
+  STM_FLAG_6       = 0x20, /* Unused */
+  STM_FLAG_7       = 0x40, /* Unused */
+  STM_FLAG_8       = 0x80, /* Unused */
 };
 
 struct STM_S {
-  char         name[16];   /* Name of the state */
-  size_t       count;      /* How much data in the state */
-  void        *data;       /* uint32_t of data */
+  void        *data;       /* buffer of data */
   uint8_t      flags;      /* Bit array of flags */
   STM_create  *fn_create;  /* Function when state is created */
   STM_destroy *fn_destroy; /* Function when state is destroyed */
@@ -71,26 +60,33 @@ struct STM_S {
  * create  | Create a state
  * destroy | Destroys/cleans up a state
  */
-int STM_s_create (struct STM_S *state, const char *name, size_t stack_size, uint8_t flags, STM_create fn_create, STM_destroy fn_destroy, STM_update fn_update, STM_draw fn_draw);
+int STM_s_create (struct STM_S *state, uint8_t flags, STM_create fn_create, STM_destroy fn_destroy, STM_update fn_update, STM_draw fn_draw);
 int STM_s_destroy(struct STM_S *state);
 
 /*
  * TABLE
  *
- * Relates a string and state (pointer)
+ * Table of state names and constructors
  */
-
 struct STM_T {
-  size_t        allocated;
-  size_t        count;
-  char        (*names)[8];
-  struct STM_S *states;
+  unsigned int       allocated;
+  unsigned int       count;
+  char             **names;
+  STM_S_Constructor *constructors;
 };
 
-int            STM_t_create (struct STM_T *table);
-int            STM_t_destory(struct STM_T *table);
-int            STM_t_add    (const char *name, struct STM_S *state);
-struct STM_S * STM_t_search (const char *name);
+/*
+ * Table functions
+ *
+ * create  | Create the table
+ * destroy | Destroy the table
+ * add     | Adds a row
+ * get     | Gets the constructor
+ */
+int               STM_t_create (struct STM_T *table);
+int               STM_t_destroy(struct STM_T *table);
+int               STM_t_add    (struct STM_T *table, const char *name, int (*constructor)(struct STM_S *state));
+STM_S_Constructor STM_t_get    (struct STM_T *table, const char *name);
 
 /*
  * MANAGER
@@ -99,34 +95,48 @@ struct STM_S * STM_t_search (const char *name);
  *
  * You may need to update the update and draw functions
  * depending on your needs
+ *
  */
-
 struct STM_M {
-  size_t         allocated;
-  size_t         count;
-  struct STM_S **states;
+  struct STM_T     *table;
+  unsigned int      allocated;
+  unsigned int      count;
+  char            **names;  /* Name of the states */
+  struct STM_S     *states; /* Array of state structs */
+  int              *alive;  /* Is the state alive or not (create/destroy) */
+  int               queued;
+  char             *queue_name;
+  int               queue_flags;
 };
 
 /*
  * Manager Functions
  *
- * create  | Create a stack
- * destroy | Destroy a stack
- * push    | Push a state on the stack
- * pop     | Pop a state off the stack
- * update  | Game loop update the state
- * draw    | Game loop draw the state
+ * create    | Create a stack
+ * destroy   | Destroy a stack
+ * push      | Push a state on the stack
+ * pop       | Pop a state off the stack
+ * pop_until | Pop until a state is found, if not found pops all states
+ * update    | Game loop update the state
+ * draw      | Game loop draw the state
+ * queue     | Queue a sate to be switched
+ * switch    | Actually switch states
  */
-int STM_m_create (struct STM_M *stack);
-int STM_m_destroy(struct STM_M *stack);
-int STM_m_push   (struct STM_M *stack, struct STM_S *state);
-int STM_m_pop    (struct STM_M *stack);
-int STM_m_update (struct STM_M *stack);
-int STM_m_draw   (struct STM_M *stack);
+int STM_m_create   (struct STM_M *manager, struct STM_T *table);
+int STM_m_destroy  (struct STM_M *manager);
+int STM_m_push     (struct STM_M *manager, const char *name, STM_S_Constructor constructor, uint8_t flags);
+int STM_m_pop      (struct STM_M *manager);
+int STM_m_pop_until(struct STM_M *manager, const char *name);
+int STM_m_update   (struct STM_M *manager);
+int STM_m_draw     (struct STM_M *manager);
+int STM_m_queue    (struct STM_M *manager, const char *name, uint8_t flags);
+int STM_m_switch   (struct STM_M *manager);
 
 /*
  * JIN functions
  */
-int JIN_stm_push(struct STM_S *state);
+int JIN_stm_queue (const char *name, uint8_t flags);
+int JIN_stm_switch(void);
+int JIN_stm_add   (const char *name, STM_S_Constructor);
 
 #endif

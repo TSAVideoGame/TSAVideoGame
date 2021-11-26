@@ -6,6 +6,7 @@
 
 
 #include <JEL/jel.h>
+#include "../anim/anim.h"
 #include "../resm/resm.h"
 #include "../snd/snd.h"
 #include "../stm/stm.h"
@@ -50,8 +51,12 @@ int JIN_init(void)
   /* Singletons */
   LOG(LOG, "Creating singletons");
   if (RESM_create(&JIN_resm))                             ERR_EXIT(0, "Could not create a resource manager");
-  if (STM_stack_create(&JIN_states))                      ERR_EXIT(0, "Could not create a state stack");
+  if (STM_t_create(&JIN_stmt))                            ERR_EXIT(0, "Could not create a state table");
+  if (STM_m_create(&JIN_stmm, &JIN_stmt))                 ERR_EXIT(0, "Could not create a state stack");
   if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/L.wav")) ERR_EXIT(0, "Could not create background music");
+
+  /* JEL Components */
+  JEL_COMPONENT_REGISTER(Sprite);
 
   return 0;
 }
@@ -69,7 +74,8 @@ int JIN_quit(void)
   /* QUIT */
   LOG(LOG, "Quitting core (closing libraries and singletons)");
   JIN_sndbgm_destroy(&JIN_sndbgm);
-  STM_stack_destroy(&JIN_states);
+  STM_m_destroy(&JIN_stmm);
+  STM_t_destroy(&JIN_stmt);
   RESM_destroy(&JIN_resm);
  
   JEL_quit();
@@ -116,7 +122,10 @@ void JIN_tick(void)
 int JIN_update(void)
 {
   JIN_sndbgm_update(&JIN_sndbgm);
-  STM_stack_update(&JIN_states);
+  if (JIN_stmm.queued) {
+    JIN_stm_switch();
+  }
+  STM_m_update(&JIN_stmm);
   
   return 0;
 }
@@ -134,7 +143,7 @@ int JIN_draw(void)
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  STM_stack_draw(&JIN_states);
+  STM_m_draw(&JIN_stmm);
   
   JIN_window_buffer_swap(root);
 
@@ -157,12 +166,6 @@ int JIN_dialog(const char *msg)
 {
   return 0;
 }
-
-/*
- *
- */
-  /* Create states */
-struct STM_State test;
 
 /* This shouldn't be needed but is for some reason, GLAPIENTRY is not defined */
 #ifdef _WIN32
@@ -188,9 +191,11 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   glEnable(GL_DEPTH_TEST);
   /* Core resources */
   if (JIN_resm_add("JIN_MODEL_SPRITE", "res/models/square.mdld", RESM_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
-  
-  JIN_states_test_create(&test);
-  JIN_state_push(&test);
+ 
+  JIN_stm_add("IMG", JIN_states_create_img);
+  JIN_stm_add("ANIMATION", JIN_states_create_animation);
+  JIN_stm_add("3D", JIN_states_create_3d);
+  JIN_stm_queue("IMG", 0);
 
   JIN_sndbgm_play();
   /* GAME LOOP */
