@@ -1,4 +1,4 @@
-#version 300 es
+#version 330 core
 layout (location = 0) in vec2 pos;
 layout (location = 1) in vec2 tex_pos_in;
 

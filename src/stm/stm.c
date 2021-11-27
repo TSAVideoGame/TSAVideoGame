@@ -306,6 +306,7 @@ int STM_m_push(struct STM_M *manager, const char *name, STM_S_Constructor constr
   /* Destroy the previous state (if there is any) unless PERSIST_PREV flag is there */
   if (manager->count > 0) {
     if (!(flags & STM_PERSIST_PREV)) {
+      manager->alive[manager->count - 1] = 0;
       STATE_FN(0, destroy); /* 0 because I haven't increased manager count just yet */
     }
   }

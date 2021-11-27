@@ -35,7 +35,7 @@ struct JIN_Input JIN_input;
  */
 int JIN_init(void)
 {
-  if (JIN_logger_init(JIN_LOGGER_CONSOLE, JIN_LOGGER_ERR)) return 0;
+  if (JIN_logger_init(JIN_LOGGER_CONSOLE, JIN_LOGGER_LOG | JIN_LOGGER_ERR)) return 0;
 
   if (JIN_env_init(&JIN_env)) ERR_EXIT(-1, "Could not initialize the environment");
   if (!(root = JIN_window_create())) ERR_EXIT(-1, "Could not create the root window");
@@ -186,16 +186,26 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   }
 
   /* INITIALIZE */
-  /*glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(gl_err_callback, 0);*/
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(gl_err_callback, 0);
   glEnable(GL_DEPTH_TEST);
   /* Core resources */
   if (JIN_resm_add("JIN_MODEL_SPRITE", "res/models/square.mdld", RESM_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
- 
+
+  /* Testing resources */
+  JIN_resm_add("sprite_shader", "res/shaders/sprite.shdr", RESM_SHADER);
+  JIN_resm_add("test_image", "res/images/test_image.png", RESM_PNG);
+
+  JIN_resm_add("player_animation", "res/animations/player.animd", RESM_ANIM);
+  JIN_resm_add("player_img", "res/images/dodger.png", RESM_PNG);
+
+  JIN_resm_add("3d_shader", "res/shaders/3d.shdr", RESM_SHADER);
+  JIN_resm_add("3d_spaceship", "res/models/space_ship.mdld", RESM_MODEL);
+
   JIN_stm_add("IMG", JIN_states_create_img);
   JIN_stm_add("ANIMATION", JIN_states_create_animation);
   JIN_stm_add("3D", JIN_states_create_3d);
-  JIN_stm_queue("IMG", 0);
+  JIN_stm_queue("ANIMATION", 0);
 
   JIN_sndbgm_play();
   /* GAME LOOP */

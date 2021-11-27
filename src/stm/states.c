@@ -9,11 +9,16 @@
 #include <JEL/jel.h>
 #include "stm.h"
 
-static JEL_Entity player; /* Don't do this, create a state variable */
-
+static JEL_Entity player;
 /* IMAGE STATE */
 static int img_fn_create(struct STM_S *state)
 {
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+
+  glUseProgram(*shader);
+
+  glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+  
   return 0;
 }
 
@@ -24,7 +29,7 @@ static int img_fn_destroy(struct STM_S *state)
 
 static int img_fn_update(struct STM_S *state)
 {
-  if (JIN_input.keys.d) {
+  if (JIN_input.keys.d == 1) {
     JIN_stm_queue("ANIMATION", 0);
   }
   return 0;
@@ -46,14 +51,14 @@ static int img_fn_draw(struct STM_S *state)
 
 int JIN_states_create_img(struct STM_S *state)
 {
-  JIN_resm_add("sprite_shader", "res/shaders/sprite.shdr", RESM_SHADER);
   unsigned int *shader = JIN_resm_get("sprite_shader");
 
   glUseProgram(*shader);
 
-  glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-  JIN_resm_add("test_image", "res/images/test_image.png", RESM_PNG);
-
+  mat4 projection;
+  glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
+  glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
+  
   if (STM_s_create(state, 0, img_fn_create, img_fn_destroy, img_fn_update, img_fn_draw)) return -1;
 
   return 0;
@@ -62,17 +67,34 @@ int JIN_states_create_img(struct STM_S *state)
 /* ANIMATION STATE */
 static int animation_fn_create(struct STM_S *state)
 {
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+
+  glUseProgram(*shader);
+
+  mat4 projection;
+  glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
+  glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
+  
+  player = JEL_entity_create();
+  JEL_ENTITY_ADD(player, Sprite);
+  JEL_ENTITY_SET(player, Sprite, animd, JIN_resm_get("player_animation"));
+  JEL_ENTITY_SET(player, Sprite, anim, 0);
+  JEL_ENTITY_SET(player, Sprite, frame, 0);
+  JEL_ENTITY_SET(player, Sprite, ticks, 0);
+
   return 0;
 }
 
 static int animation_fn_destroy(struct STM_S *state)
 {
+  JEL_entity_destroy(player);
+
   return 0;
 }
 
 static int animation_fn_update(struct STM_S *state)
 {
-  if (JIN_input.keys.d) {
+  if (JIN_input.keys.d == 1) {
     JIN_stm_queue("3D", 0);
   }
   JIN_anim_update();
@@ -96,9 +118,6 @@ static int animation_fn_draw(struct STM_S *state)
 int JIN_states_create_animation(struct STM_S *state)
 {
   /* Animation test */
-  JIN_resm_add("player_animation", "res/animations/player.animd", RESM_ANIM);
-  JIN_resm_add("player_img", "res/images/dodger.png", RESM_PNG);
-
   if (STM_s_create(state, 0, animation_fn_create, animation_fn_destroy, animation_fn_update, animation_fn_draw)) return -1;
 
   return 0;
@@ -107,26 +126,17 @@ int JIN_states_create_animation(struct STM_S *state)
 /* 3D STATE */
 static int td_fn_create(struct STM_S *state)
 {
-  player = JEL_entity_create();
-  JEL_ENTITY_ADD(player, Sprite);
-  JEL_ENTITY_SET(player, Sprite, animd, JIN_resm_get("player_animation"));
-  JEL_ENTITY_SET(player, Sprite, anim, 0);
-  JEL_ENTITY_SET(player, Sprite, frame, 0);
-  JEL_ENTITY_SET(player, Sprite, ticks, 0);
-
   return 0;
 }
 
 static int td_fn_destroy(struct STM_S *state)
 {
-  JEL_entity_destroy(player);
-
   return 0;
 }
 
 static int td_fn_update(struct STM_S *state)
 {
-  if (JIN_input.keys.d) {
+  if (JIN_input.keys.d == 1) {
     JIN_stm_queue("IMG", 0);
   }
   ++ticks;
@@ -171,11 +181,9 @@ static int td_fn_draw(struct STM_S *state)
 
 int JIN_states_create_3d(struct STM_S *state)
 {
-  /* 3d fun */
-  JIN_resm_add("3d_shader", "res/shaders/3d.shdr", RESM_SHADER);
-  JIN_resm_add("3d_spaceship", "res/models/space_ship.mdld", RESM_MODEL);
-
   unsigned int *shader = JIN_resm_get("3d_shader");
+
+  glUseProgram(*shader);
 
   mat4 projection;
   glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
