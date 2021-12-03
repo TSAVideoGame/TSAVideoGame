@@ -31,20 +31,6 @@ jobs:
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
-          BRANCH: bin
+          BRANCH: site
           FOLDER: bin
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-      - name: Update workflow repo with upstream
-        uses: actions/checkout@v2
-      - name: Merge bin and site
-        uses: devmasx/merge-branch@master
-        with:
-          type: now
-          from_branch: bin
-          target_branch: site
-          github_token: ${{ secrets.DEPLOY_TOKEN }}
-      - name: Delete bin branch
-        uses: dawidd6/action-delete-branch@v3
-        with:
-          github_token: ${{ secrets.DEPLOY_TOKEN }}
-          branches: bin
