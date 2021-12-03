@@ -1,11 +1,3 @@
-# Res folder
-res/
-res/images/
-res/sounds/
-
-# Libraries
-libs/
-
 # Editor Stuff
 .clangd
 
