@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
       # Set up emscripten
       - uses: mymindstorm/setup-emsdk@v11
-      - run: emcmake .
+      - run: emcmake cmake .
       - run: make
       # Take the bin/ folder and deploy that to gh-pages
       - name: deploy
