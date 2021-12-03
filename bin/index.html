@@ -1,0 +1,14 @@
+<!doctype hmtl>
+<html>
+<head>
+  <script type="text/javascript" src="./jin.js"></script>
+</head>
+<body>
+  <script type="text/javascript">
+    WebAssembly.instantiateStreaming(fetch('jin.wasm'))
+    .then(results => {
+      console.log(results);
+    });
+  </script>
+</body>
+</html>
