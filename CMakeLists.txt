@@ -42,6 +42,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   ${LINUX_LIBRARIES_DIRECTORIES}
 )
 
+target_link_directories(${PROJECT_NAME} PUBLIC
+  ${CMAKE_CURRENT_LIST_DIR}
+)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY bin
 )
