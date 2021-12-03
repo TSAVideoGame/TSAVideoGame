@@ -35,7 +35,7 @@ jobs:
           FOLDER: bin
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
       - name: Update workflow repo with upstream
-        run: git pull
+        uses: actions/checkout@v2
       - name: Merge bin and site
         uses: devmasx/merge-branch@master
         with:
