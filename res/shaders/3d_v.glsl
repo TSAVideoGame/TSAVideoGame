@@ -1,4 +1,4 @@
-#version 330 core
+#version 300 es
 layout (location = 0) in vec3 pos_in;
 layout (location = 1) in vec3 color_in;
 layout (location = 2) in vec3 normal_in;

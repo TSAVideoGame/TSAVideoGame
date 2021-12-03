@@ -6,11 +6,9 @@
 
 
 #include <JEL/jel.h>
-#include "../anim/anim.h"
 #include "../resm/resm.h"
 #include "../snd/snd.h"
 #include "../stm/stm.h"
-#include "stm/states.h"
 
 
 #include "window/window.h"
@@ -54,9 +52,6 @@ int JIN_init(void)
   if (STM_t_create(&JIN_stmt))                            ERR_EXIT(0, "Could not create a state table");
   if (STM_m_create(&JIN_stmm, &JIN_stmt))                 ERR_EXIT(0, "Could not create a state stack");
   if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/L.wav")) ERR_EXIT(0, "Could not create background music");
-
-  /* JEL Components */
-  JEL_COMPONENT_REGISTER(Sprite);
 
   return 0;
 }
@@ -177,6 +172,11 @@ void GLAPIENTRY gl_err_callback(GLenum src, GLenum type, GLuint id, GLenum sever
   if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
     fprintf(stderr, "GL CALLBACK: type = 0x%x, severity = 0x%x, message = %s\n", type, severity, msg);
 }
+
+#include "inits/core_init_jel.c"
+#include "inits/core_init_res.c"
+#include "inits/core_init_states.c"
+
 JIN_THREAD_FN JIN_game_thread(void *data)
 {
   JIN_window_gl_set(root);
@@ -186,25 +186,14 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   }
 
   /* INITIALIZE */
-  glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(gl_err_callback, 0);
+  //glEnable(GL_DEBUG_OUTPUT);
+  //glDebugMessageCallback(gl_err_callback, 0);
   glEnable(GL_DEPTH_TEST);
-  /* Core resources */
-  if (JIN_resm_add("JIN_MODEL_SPRITE", "res/models/square.mdld", RESM_MODEL)) ERR_EXIT(0, "Can't create the sprite model");
+ 
+  init_components();
+  init_resources();
+  init_states();
 
-  /* Testing resources */
-  JIN_resm_add("sprite_shader", "res/shaders/sprite.shdr", RESM_SHADER);
-  JIN_resm_add("test_image", "res/images/test_image.png", RESM_PNG);
-
-  JIN_resm_add("player_animation", "res/animations/player.animd", RESM_ANIM);
-  JIN_resm_add("player_img", "res/images/dodger.png", RESM_PNG);
-
-  JIN_resm_add("3d_shader", "res/shaders/3d.shdr", RESM_SHADER);
-  JIN_resm_add("3d_spaceship", "res/models/space_ship.mdld", RESM_MODEL);
-
-  JIN_stm_add("IMG", JIN_states_create_img);
-  JIN_stm_add("ANIMATION", JIN_states_create_animation);
-  JIN_stm_add("3D", JIN_states_create_3d);
   JIN_stm_queue("ANIMATION", 0);
 
   JIN_sndbgm_play();
@@ -218,4 +207,37 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   
   return 0;
 }
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+int JIN_web_loop(void)
+{
+  JIN_window_gl_set(root);
+  if (JIN_gll()) {
+    LOG(ERR, "JIN_gll() failed");
+    JIN_input.quit = 1;
+  }
+
+  /* INITIALIZE */
+  glEnable(GL_DEPTH_TEST);
+
+  init_components();
+  init_resources();
+  init_states();
+
+  JIN_stm_queue("ANIMATION", 0);
+
+  JIN_sndbgm_play();
+  /* GAME LOOP */
+  emscripten_set_main_loop(JIN_tick, FPS, EM_TRUE);
+  while (1) {
+    if (JIN_input.quit) break;
+    JIN_tick();
+  }
+
+  JIN_window_gl_unset(root);
+
+  return 0;
+}
+#endif
 

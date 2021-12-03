@@ -37,4 +37,8 @@ JIN_THREAD_FN JIN_game_thread(void *);
 
 int JIN_dialog(const char *msg);
 
+#ifdef __EMSCRIPTEN__
+int JIN_web_loop(void);
+#endif
+
 #endif

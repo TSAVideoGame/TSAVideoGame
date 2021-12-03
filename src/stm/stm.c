@@ -311,7 +311,6 @@ int STM_m_push(struct STM_M *manager, const char *name, STM_S_Constructor constr
     }
   }
 
-  /* Actually create the new state */
   manager->alive[manager->count] = 1;
   ++manager->count;
   STATE_FN(0, create);
@@ -341,10 +340,11 @@ int STM_m_pop(struct STM_M *manager)
 
   if (STATE_FN(0, destroy)) return -1;
   free(manager->names[manager->count - 1]);
+  manager->alive[manager->count - 1] = 0;
 
   if (--manager->count > 0) {
     if (!manager->alive[manager->count - 1]) {
-      manager->alive[manager->count] = 1;
+      manager->alive[manager->count - 1] = 1;
       STATE_FN(0, create);
     }
   }
