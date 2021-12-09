@@ -1,4 +1,5 @@
 #include "anim/anim.h"
+#include "ui/ui.h"
 
 /*
  * CORE INIT STATE
@@ -7,7 +8,8 @@
  */
 
 #define INIT_COMPONENT_LIST \
-  X(Sprite)
+  X(Sprite) \
+  X(UI_btn)
 
 static int init_components(void)
 {
