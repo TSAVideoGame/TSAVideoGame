@@ -92,7 +92,7 @@ void JIN_tick(void)
 
   frame_start = clock();
 
-  JIN_input = JIN_inputv;
+  JIN_input_sync(&JIN_input, &JIN_inputv);
   JIN_update();
   JIN_draw();
 
@@ -225,7 +225,7 @@ int JIN_web_loop(void)
   init_resources();
   init_states();
 
-  JIN_stm_queue("ANIMATION", 0);
+  JIN_stm_queue("MAIN_MENU", 0);
 
   JIN_sndbgm_play();
   /* GAME LOOP */
