@@ -202,7 +202,7 @@ Module['FS_createPath']("/res", "images", true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/res/shaders/sprite_f.glsl", "start": 0, "end": 421}, {"filename": "/res/shaders/sprite_v.glsl", "start": 421, "end": 687}, {"filename": "/res/shaders/3d_f.glsl", "start": 687, "end": 1196}, {"filename": "/res/shaders/3d.shdr", "start": 1196, "end": 1226}, {"filename": "/res/shaders/3d_v.glsl", "start": 1226, "end": 1647}, {"filename": "/res/shaders/sprite.shdr", "start": 1647, "end": 1685}, {"filename": "/res/animations/player.animd", "start": 1685, "end": 1745}, {"filename": "/res/animations/player.animd.txt", "start": 1745, "end": 1800}, {"filename": "/res/models/square.mdld", "start": 1800, "end": 1928}, {"filename": "/res/models/space_ship.mdld", "start": 1928, "end": 4780}, {"filename": "/res/models/square.mdld.txt", "start": 4780, "end": 5389}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5389, "end": 10800}, {"filename": "/res/sounds/nujabes.wav", "start": 10800, "end": 46425666, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46425666, "end": 74956504, "audio": 1}, {"filename": "/res/images/dodger.png", "start": 74956504, "end": 74957178}, {"filename": "/res/images/test_image.png", "start": 74957178, "end": 74999745}], "remote_package_size": 74999745, "package_uuid": "a28119cc-f58c-4a24-87cf-1db0da4ff87c"});
+   loadPackage({"files": [{"filename": "/res/shaders/sprite_f.glsl", "start": 0, "end": 421}, {"filename": "/res/shaders/sprite_v.glsl", "start": 421, "end": 687}, {"filename": "/res/shaders/3d_f.glsl", "start": 687, "end": 1196}, {"filename": "/res/shaders/3d.shdr", "start": 1196, "end": 1226}, {"filename": "/res/shaders/3d_v.glsl", "start": 1226, "end": 1647}, {"filename": "/res/shaders/sprite.shdr", "start": 1647, "end": 1685}, {"filename": "/res/animations/player.animd", "start": 1685, "end": 1745}, {"filename": "/res/animations/player.animd.txt", "start": 1745, "end": 1800}, {"filename": "/res/models/square.mdld", "start": 1800, "end": 1928}, {"filename": "/res/models/space_ship.mdld", "start": 1928, "end": 4780}, {"filename": "/res/models/square.mdld.txt", "start": 4780, "end": 5389}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5389, "end": 10800}, {"filename": "/res/sounds/nujabes.wav", "start": 10800, "end": 46425666, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46425666, "end": 74956504, "audio": 1}, {"filename": "/res/images/buttons.png", "start": 74956504, "end": 74956983}, {"filename": "/res/images/dodger.png", "start": 74956983, "end": 74957657}, {"filename": "/res/images/test_image.png", "start": 74957657, "end": 75000224}], "remote_package_size": 75000224, "package_uuid": "dcdcadcb-ea71-4517-b6ff-9baf151ce751"});
   
   })();
   
@@ -1918,8 +1918,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  10276: function() {alert("Confirm to begin")},  
- 10302: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
+  10404: function() {alert("Confirm to begin")},  
+ 10430: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
 };
 
 
