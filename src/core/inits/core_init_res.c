@@ -19,6 +19,8 @@
   /* 3D State */ \
   X("3d_shader", "res/shaders/3d.shdr", RESM_SHADER) \
   X("3d_spaceship", "res/models/space_ship.mdld", RESM_MODEL) \
+  /* Main Menu */ \
+  X("buttons", "res/images/buttons.png", RESM_PNG) \
 
 static int init_resources(void)
 {
