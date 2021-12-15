@@ -15,7 +15,7 @@
 
 static void to_museum(void)
 {
-  JIN_stm_queue("IMG", 0);
+  JIN_stm_queue("MUSEUM", 0);
 }
 
 static void to_quit(void)
