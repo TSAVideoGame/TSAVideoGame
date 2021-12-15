@@ -125,11 +125,11 @@ var Module = typeof Module !== 'undefined' ? Module : {};
         if (!check) throw msg + new Error().stack;
       }
   Module['FS_createPath']("/", "res", true, true);
-Module['FS_createPath']("/res", "shaders", true, true);
+Module['FS_createPath']("/res", "images", true, true);
 Module['FS_createPath']("/res", "animations", true, true);
 Module['FS_createPath']("/res", "models", true, true);
+Module['FS_createPath']("/res", "shaders", true, true);
 Module['FS_createPath']("/res", "sounds", true, true);
-Module['FS_createPath']("/res", "images", true, true);
 
           /** @constructor */
           function DataRequest(start, end, audio) {
@@ -202,7 +202,7 @@ Module['FS_createPath']("/res", "images", true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/res/shaders/sprite_f.glsl", "start": 0, "end": 421}, {"filename": "/res/shaders/sprite_v.glsl", "start": 421, "end": 687}, {"filename": "/res/shaders/3d_f.glsl", "start": 687, "end": 1196}, {"filename": "/res/shaders/3d.shdr", "start": 1196, "end": 1226}, {"filename": "/res/shaders/3d_v.glsl", "start": 1226, "end": 1647}, {"filename": "/res/shaders/sprite.shdr", "start": 1647, "end": 1685}, {"filename": "/res/animations/player.animd", "start": 1685, "end": 1745}, {"filename": "/res/animations/player.animd.txt", "start": 1745, "end": 1800}, {"filename": "/res/models/square.mdld", "start": 1800, "end": 1928}, {"filename": "/res/models/space_ship.mdld", "start": 1928, "end": 4780}, {"filename": "/res/models/square.mdld.txt", "start": 4780, "end": 5389}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5389, "end": 10800}, {"filename": "/res/sounds/nujabes.wav", "start": 10800, "end": 46425666, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46425666, "end": 74956504, "audio": 1}, {"filename": "/res/images/buttons.png", "start": 74956504, "end": 74956983}, {"filename": "/res/images/dodger.png", "start": 74956983, "end": 74957657}, {"filename": "/res/images/test_image.png", "start": 74957657, "end": 75000224}], "remote_package_size": 75000224, "package_uuid": "dcdcadcb-ea71-4517-b6ff-9baf151ce751"});
+   loadPackage({"files": [{"filename": "/res/images/test_image.png", "start": 0, "end": 42567}, {"filename": "/res/images/dodger.png", "start": 42567, "end": 43241}, {"filename": "/res/images/tiles.png", "start": 43241, "end": 43856}, {"filename": "/res/images/buttons.png", "start": 43856, "end": 44335}, {"filename": "/res/animations/player.animd.txt", "start": 44335, "end": 44390}, {"filename": "/res/animations/player.animd", "start": 44390, "end": 44450}, {"filename": "/res/models/square.mdld.txt", "start": 44450, "end": 45059}, {"filename": "/res/models/space_ship.mdld", "start": 45059, "end": 47911}, {"filename": "/res/models/square.mdld", "start": 47911, "end": 48039}, {"filename": "/res/models/space_ship.mdld.txt", "start": 48039, "end": 53450}, {"filename": "/res/shaders/3d_f.glsl", "start": 53450, "end": 53959}, {"filename": "/res/shaders/sprite_f.glsl", "start": 53959, "end": 54380}, {"filename": "/res/shaders/sprite.shdr", "start": 54380, "end": 54418}, {"filename": "/res/shaders/3d.shdr", "start": 54418, "end": 54448}, {"filename": "/res/shaders/sprite_v.glsl", "start": 54448, "end": 54714}, {"filename": "/res/shaders/3d_v.glsl", "start": 54714, "end": 55135}, {"filename": "/res/sounds/L.wav", "start": 55135, "end": 28585973, "audio": 1}, {"filename": "/res/sounds/nujabes.wav", "start": 28585973, "end": 75000839, "audio": 1}], "remote_package_size": 75000839, "package_uuid": "a5a21758-0b3c-444d-85fe-02fa09fe7203"});
   
   })();
   
@@ -1918,8 +1918,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  10404: function() {alert("Confirm to begin")},  
- 10430: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
+  10740: function() {alert("Confirm to begin")},  
+ 10766: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
 };
 
 
