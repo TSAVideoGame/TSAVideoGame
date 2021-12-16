@@ -17,6 +17,7 @@ endif ()
 add_executable(${PROJECT_NAME}
   ${DRIVER}
   ${CMAKE_CURRENT_LIST_DIR}/src/anim/anim.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/components/components.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/core.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/globals.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/env/env.c

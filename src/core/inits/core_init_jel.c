@@ -1,6 +1,6 @@
 #include "anim/anim.h"
 #include "ui/ui.h"
-#include "stm/states/tile.h"
+#include "components/components.h"
 
 /*
  * CORE INIT STATE
@@ -9,9 +9,12 @@
  */
 
 #define INIT_COMPONENT_LIST \
+  X(Position) \
   X(Sprite) \
+  X(Physics) \
+  X(AABB) \
+  X(Animation) \
   X(UI_btn) \
-  X(Tile)
 
 static int init_components(void)
 {

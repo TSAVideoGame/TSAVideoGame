@@ -7,7 +7,7 @@
 
 #include "gfx/gfx.h"
 
-JEL_COMPONENT_CREATE(Sprite, struct JIN_Animd *, animd, int32_t, anim, int32_t, ticks, int32_t, frame)
+JEL_COMPONENT_CREATE(Animation, struct JIN_Animd *, animd, int32_t, anim, int32_t, ticks, int32_t, frame)
 
 /* ANIMATION FUNCTIONS */
 
@@ -85,11 +85,11 @@ int JIN_animd_destroy(struct JIN_Animd *animd)
 int JIN_anim_update(void)
 {
   struct JEL_Query *q;
-  JEL_QUERY(q, Sprite);
+  JEL_QUERY(q, Animation);
 
   for (JEL_ComponentInt i = 0; i < q->tables_num; ++i) {
-    struct SpriteFragment *sprite;
-    JEL_FRAGMENT_GET(sprite, q->tables[i], Sprite);
+    struct AnimationFragment *sprite;
+    JEL_FRAGMENT_GET(sprite, q->tables[i], Animation);
 
     for (JEL_EntityInt j = 0; j < q->tables[i]->num; ++j) {
       ++sprite->ticks[j];
@@ -121,7 +121,7 @@ int JIN_anim_update(void)
 int JIN_anim_draw(void)
 {
   struct JEL_Query *q;
-  JEL_QUERY(q, Sprite);
+  JEL_QUERY(q, Animation);
 
   unsigned int *shader;
   unsigned int *texture;
@@ -130,8 +130,8 @@ int JIN_anim_draw(void)
   texture = JIN_resm_get("player_img");
   
   for (JEL_ComponentInt i = 0; i < q->tables_num; ++i) {
-    struct SpriteFragment *sprite;
-    JEL_FRAGMENT_GET(sprite, q->tables[i], Sprite);
+    struct AnimationFragment *sprite;
+    JEL_FRAGMENT_GET(sprite, q->tables[i], Animation);
 
     for (JEL_EntityInt j = 0; j < q->tables[i]->num; ++j) {
       /* Currently just uses 0x0 as the drawing coordinate */
@@ -160,16 +160,16 @@ int JIN_anim_draw(void)
 int JIN_anim_set(JEL_Entity entity, const char *animation)
 {
   struct JIN_Animd *data;
-  JEL_ENTITY_GET(entity, Sprite, animd, data);
+  JEL_ENTITY_GET(entity, Animation, animd, data);
 
   for (int i = 0; i < data->anim_nums; ++i) {
     if (!strcmp(animation, &data->names[i * 8])) {
       int32_t anim_cur;
-      JEL_ENTITY_GET(entity, Sprite, anim, anim_cur);
+      JEL_ENTITY_GET(entity, Animation, anim, anim_cur);
       if (anim_cur == i) return 0; /* Already using this animation */
-      JEL_ENTITY_SET(entity, Sprite, anim, i);
-      JEL_ENTITY_SET(entity, Sprite, ticks, 0);
-      JEL_ENTITY_SET(entity, Sprite, frame, 0);
+      JEL_ENTITY_SET(entity, Animation, anim, i);
+      JEL_ENTITY_SET(entity, Animation, ticks, 0);
+      JEL_ENTITY_SET(entity, Animation, frame, 0);
     }
   }
 
