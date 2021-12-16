@@ -20,12 +20,13 @@ static int animation_fn_create(struct STM_S *state)
   glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
   
   player = JEL_entity_create();
+  /*
   JEL_ENTITY_ADD(player, Sprite);
   JEL_ENTITY_SET(player, Sprite, animd, JIN_resm_get("player_animation"));
   JEL_ENTITY_SET(player, Sprite, anim, 0);
   JEL_ENTITY_SET(player, Sprite, frame, 0);
   JEL_ENTITY_SET(player, Sprite, ticks, 0);
-
+  */
   return 0;
 }
 
@@ -54,7 +55,7 @@ static int animation_fn_draw(struct STM_S *state)
   shader = JIN_resm_get("sprite_shader");
   texture = JIN_resm_get("test_image");
 
-  JIN_anim_draw();
+  //JIN_anim_draw();
 
   return 0;
 }
