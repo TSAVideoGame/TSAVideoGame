@@ -15,6 +15,9 @@
 // can continue to use Module afterwards as well.
 var Module = typeof Module !== 'undefined' ? Module : {};
 
+// See https://caniuse.com/mdn-javascript_builtins_object_assign
+var objAssign = Object.assign;
+
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
 
@@ -23,7 +26,10 @@ var Module = typeof Module !== 'undefined' ? Module : {};
   }
   Module.expectedDataFileDownloads++;
   (function() {
-   var loadPackage = function(metadata) {
+    // When running as a pthread, FS operations are proxied to the main thread, so we don't need to
+    // fetch the .data bundle on the worker
+    if (Module['ENVIRONMENT_IS_PTHREAD']) return;
+    var loadPackage = function(metadata) {
   
       var PACKAGE_PATH = '';
       if (typeof window === 'object') {
@@ -202,13 +208,14 @@ Module['FS_createPath']("/res", "sounds", true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/res/images/test_image.png", "start": 0, "end": 42567}, {"filename": "/res/images/dodger.png", "start": 42567, "end": 43241}, {"filename": "/res/images/tiles.png", "start": 43241, "end": 43856}, {"filename": "/res/images/buttons.png", "start": 43856, "end": 44335}, {"filename": "/res/animations/player.animd.txt", "start": 44335, "end": 44390}, {"filename": "/res/animations/player.animd", "start": 44390, "end": 44450}, {"filename": "/res/models/square.mdld.txt", "start": 44450, "end": 45059}, {"filename": "/res/models/space_ship.mdld", "start": 45059, "end": 47911}, {"filename": "/res/models/square.mdld", "start": 47911, "end": 48039}, {"filename": "/res/models/space_ship.mdld.txt", "start": 48039, "end": 53450}, {"filename": "/res/shaders/3d_f.glsl", "start": 53450, "end": 53959}, {"filename": "/res/shaders/sprite_f.glsl", "start": 53959, "end": 54380}, {"filename": "/res/shaders/sprite.shdr", "start": 54380, "end": 54418}, {"filename": "/res/shaders/3d.shdr", "start": 54418, "end": 54448}, {"filename": "/res/shaders/sprite_v.glsl", "start": 54448, "end": 54714}, {"filename": "/res/shaders/3d_v.glsl", "start": 54714, "end": 55135}, {"filename": "/res/sounds/L.wav", "start": 55135, "end": 28585973, "audio": 1}, {"filename": "/res/sounds/nujabes.wav", "start": 28585973, "end": 75000839, "audio": 1}], "remote_package_size": 75000839, "package_uuid": "53b7df0c-56bf-4984-ab20-3a663232414f"});
+   loadPackage({"files": [{"filename": "/res/images/test_image.png", "start": 0, "end": 42567}, {"filename": "/res/images/spritesheet.png", "start": 42567, "end": 43241}, {"filename": "/res/images/dodger.png", "start": 43241, "end": 43915}, {"filename": "/res/images/tiles.png", "start": 43915, "end": 44589}, {"filename": "/res/images/buttons.png", "start": 44589, "end": 45068}, {"filename": "/res/animations/player.animd.txt", "start": 45068, "end": 45123}, {"filename": "/res/animations/player.animd", "start": 45123, "end": 45183}, {"filename": "/res/models/square.mdld.txt", "start": 45183, "end": 45792}, {"filename": "/res/models/space_ship.mdld", "start": 45792, "end": 48644}, {"filename": "/res/models/square.mdld", "start": 48644, "end": 48772}, {"filename": "/res/models/space_ship.mdld.txt", "start": 48772, "end": 54183}, {"filename": "/res/shaders/3d_f.glsl", "start": 54183, "end": 54692}, {"filename": "/res/shaders/sprite_f.glsl", "start": 54692, "end": 55007}, {"filename": "/res/shaders/sprite.shdr", "start": 55007, "end": 55045}, {"filename": "/res/shaders/3d.shdr", "start": 55045, "end": 55075}, {"filename": "/res/shaders/sprite_v.glsl", "start": 55075, "end": 55315}, {"filename": "/res/shaders/3d_v.glsl", "start": 55315, "end": 55736}, {"filename": "/res/sounds/L.wav", "start": 55736, "end": 28586574, "audio": 1}, {"filename": "/res/sounds/nujabes.wav", "start": 28586574, "end": 75001440, "audio": 1}], "remote_package_size": 75001440, "package_uuid": "5f98d2fc-2c24-409f-94d6-03f392868869"});
   
   })();
   
 
     // All the pre-js content up to here must remain later on, we need to run
     // it.
+    if (Module['ENVIRONMENT_IS_PTHREAD']) Module['preRun'] = [];
     var necessaryPreJSTasks = Module['preRun'].slice();
   
     if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
@@ -222,13 +229,7 @@ Module['FS_createPath']("/res", "sounds", true, true);
 // we collect those properties and reapply _after_ we configure
 // the current environment's defaults to avoid having to be so
 // defensive during initialization.
-var moduleOverrides = {};
-var key;
-for (key in Module) {
-  if (Module.hasOwnProperty(key)) {
-    moduleOverrides[key] = Module[key];
-  }
-}
+var moduleOverrides = objAssign({}, Module);
 
 var arguments_ = [];
 var thisProgram = './this.program';
@@ -282,8 +283,9 @@ function logExceptionOnExit(e) {
   err('exiting due to exception: ' + toLog);
 }
 
-var nodeFS;
+var fs;
 var nodePath;
+var requireNodeFS;
 
 if (ENVIRONMENT_IS_NODE) {
   if (!(typeof process === 'object' && typeof require === 'function')) throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
@@ -296,11 +298,19 @@ if (ENVIRONMENT_IS_NODE) {
 // include: node_shell_read.js
 
 
+requireNodeFS = function() {
+  // We always initialize both of these together, so we can use
+  // either one as the indicator for them not being initialized.
+  if (!fs) {
+    fs = require('fs');
+    nodePath = require('path');
+  }
+}
+
 read_ = function shell_read(filename, binary) {
-  if (!nodeFS) nodeFS = require('fs');
-  if (!nodePath) nodePath = require('path');
+  requireNodeFS();
   filename = nodePath['normalize'](filename);
-  return nodeFS['readFileSync'](filename, binary ? null : 'utf8');
+  return fs.readFileSync(filename, binary ? null : 'utf8');
 };
 
 readBinary = function readBinary(filename) {
@@ -313,10 +323,9 @@ readBinary = function readBinary(filename) {
 };
 
 readAsync = function readAsync(filename, onload, onerror) {
-  if (!nodeFS) nodeFS = require('fs');
-  if (!nodePath) nodePath = require('path');
+  requireNodeFS();
   filename = nodePath['normalize'](filename);
-  nodeFS['readFile'](filename, function(err, data) {
+  fs.readFile(filename, function(err, data) {
     if (err) onerror(err);
     else onload(data.buffer);
   });
@@ -480,11 +489,7 @@ var out = Module['print'] || console.log.bind(console);
 var err = Module['printErr'] || console.warn.bind(console);
 
 // Merge back in the overrides
-for (key in moduleOverrides) {
-  if (moduleOverrides.hasOwnProperty(key)) {
-    Module[key] = moduleOverrides[key];
-  }
-}
+objAssign(Module, moduleOverrides);
 // Free the object hierarchy contained in the overrides, this lets the GC
 // reclaim data used e.g. in memoryInitializerRequest, which is a large typed array.
 moduleOverrides = null;
@@ -892,7 +897,7 @@ var EXITSTATUS;
 /** @type {function(*, string=)} */
 function assert(condition, text) {
   if (!condition) {
-    abort('Assertion failed: ' + text);
+    abort('Assertion failed' + (text ? ': ' + text : ''));
   }
 }
 
@@ -1918,8 +1923,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  10836: function() {alert("Confirm to begin")},  
- 10862: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
+  10724: function() {alert("Confirm to begin")},  
+ 10750: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
 };
 
 
@@ -2248,7 +2253,7 @@ var ASM_CONSTS = {
               var bytesRead = 0;
   
               try {
-                bytesRead = nodeFS.readSync(process.stdin.fd, buf, 0, BUFSIZE, null);
+                bytesRead = fs.readSync(process.stdin.fd, buf, 0, BUFSIZE, null);
               } catch(e) {
                 // Cross-platform differences: on Windows, reading EOF throws an exception, but on other OSes,
                 // reading EOF returns 0. Uniformize behavior by treating the EOF exception to return 0.
@@ -3240,6 +3245,9 @@ var ASM_CONSTS = {
       },unlink:function(path) {
         var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
+        if (!parent) {
+          throw new FS.ErrnoError(44);
+        }
         var name = PATH.basename(path);
         var node = FS.lookupNode(parent, name);
         var errCode = FS.mayDelete(parent, name, false);
@@ -3787,8 +3795,7 @@ var ASM_CONSTS = {
       },quit:function() {
         FS.init.initialized = false;
         // force-flush all streams, so we get musl std streams printed out
-        var fflush = Module['_fflush'];
-        if (fflush) fflush(0);
+        _fflush(0);
         // close all of our streams
         for (var i = 0; i < FS.streams.length; i++) {
           var stream = FS.streams[i];
@@ -7833,20 +7840,6 @@ var ASM_CONSTS = {
   return _emscripten_webgl_do_create_context(a0,a1);
   }
 
-  function _emscripten_webgl_do_get_current_context() {
-      return GL.currentContext ? GL.currentContext.handle : 0;
-    }
-  function _emscripten_webgl_get_current_context(
-  ) {
-  return _emscripten_webgl_do_get_current_context();
-  }
-  Module["_emscripten_webgl_get_current_context"] = _emscripten_webgl_get_current_context;
-  
-  function _emscripten_webgl_make_context_current(contextHandle) {
-      var success = GL.makeContextCurrent(contextHandle);
-      return success ? 0 : -5;
-    }
-  Module["_emscripten_webgl_make_context_current"] = _emscripten_webgl_make_context_current;
   function _emscripten_webgl_destroy_context(contextHandle) {
       if (GL.currentContext == contextHandle) GL.currentContext = 0;
       GL.deleteContext(contextHandle);
@@ -7868,6 +7861,10 @@ var ASM_CONSTS = {
   
     }
 
+  function _emscripten_webgl_make_context_current(contextHandle) {
+      var success = GL.makeContextCurrent(contextHandle);
+      return success ? 0 : -5;
+    }
 
   function _fd_close(fd) {try {
   
@@ -7976,6 +7973,14 @@ var ASM_CONSTS = {
       }
     }
 
+  function _glBufferSubData(target, offset, size, data) {
+      if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
+        GLctx.bufferSubData(target, offset, HEAPU8, data, size);
+        return;
+      }
+      GLctx.bufferSubData(target, offset, HEAPU8.subarray(data, data+size));
+    }
+
   function _glClear(x0) { GLctx['clear'](x0) }
 
   function _glClearColor(x0, x1, x2, x3) { GLctx['clearColor'](x0, x1, x2, x3) }
@@ -8054,6 +8059,12 @@ var ASM_CONSTS = {
   function _glDrawArrays(mode, first, count) {
   
       GLctx.drawArrays(mode, first, count);
+  
+    }
+
+  function _glDrawElements(mode, count, type, indices) {
+  
+      GLctx.drawElements(mode, count, type, indices);
   
     }
 
@@ -8776,6 +8787,7 @@ var asmLibraryArg = {
   "glBindTexture": _glBindTexture,
   "glBindVertexArray": _glBindVertexArray,
   "glBufferData": _glBufferData,
+  "glBufferSubData": _glBufferSubData,
   "glClear": _glClear,
   "glClearColor": _glClearColor,
   "glCompileShader": _glCompileShader,
@@ -8786,6 +8798,7 @@ var asmLibraryArg = {
   "glDeleteTextures": _glDeleteTextures,
   "glDeleteVertexArrays": _glDeleteVertexArrays,
   "glDrawArrays": _glDrawArrays,
+  "glDrawElements": _glDrawElements,
   "glEnable": _glEnable,
   "glEnableVertexAttribArray": _glEnableVertexAttribArray,
   "glGenBuffers": _glGenBuffers,
@@ -8820,22 +8833,13 @@ var _malloc = Module["_malloc"] = createExportWrapper("malloc");
 var _free = Module["_free"] = createExportWrapper("free");
 
 /** @type {function(...*):?} */
-var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = createExportWrapper("emscripten_main_thread_process_queued_calls");
+var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 /** @type {function(...*):?} */
 var _fflush = Module["_fflush"] = createExportWrapper("fflush");
 
 /** @type {function(...*):?} */
-var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
-
-/** @type {function(...*):?} */
-var stackSave = Module["stackSave"] = createExportWrapper("stackSave");
-
-/** @type {function(...*):?} */
-var stackRestore = Module["stackRestore"] = createExportWrapper("stackRestore");
-
-/** @type {function(...*):?} */
-var stackAlloc = Module["stackAlloc"] = createExportWrapper("stackAlloc");
+var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = createExportWrapper("emscripten_main_thread_process_queued_calls");
 
 /** @type {function(...*):?} */
 var _emscripten_stack_init = Module["_emscripten_stack_init"] = function() {
@@ -8851,6 +8855,15 @@ var _emscripten_stack_get_free = Module["_emscripten_stack_get_free"] = function
 var _emscripten_stack_get_end = Module["_emscripten_stack_get_end"] = function() {
   return (_emscripten_stack_get_end = Module["_emscripten_stack_get_end"] = Module["asm"]["emscripten_stack_get_end"]).apply(null, arguments);
 };
+
+/** @type {function(...*):?} */
+var stackSave = Module["stackSave"] = createExportWrapper("stackSave");
+
+/** @type {function(...*):?} */
+var stackRestore = Module["stackRestore"] = createExportWrapper("stackRestore");
+
+/** @type {function(...*):?} */
+var stackAlloc = Module["stackAlloc"] = createExportWrapper("stackAlloc");
 
 /** @type {function(...*):?} */
 var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
@@ -8932,7 +8945,10 @@ if (!Object.getOwnPropertyDescriptor(Module, "Protocols")) Module["Protocols"] =
 if (!Object.getOwnPropertyDescriptor(Module, "Sockets")) Module["Sockets"] = function() { abort("'Sockets' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "getRandomDevice")) Module["getRandomDevice"] = function() { abort("'getRandomDevice' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "traverseStack")) Module["traverseStack"] = function() { abort("'traverseStack' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "convertFrameToPC")) Module["convertFrameToPC"] = function() { abort("'convertFrameToPC' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "UNWIND_CACHE")) Module["UNWIND_CACHE"] = function() { abort("'UNWIND_CACHE' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "saveInUnwindCache")) Module["saveInUnwindCache"] = function() { abort("'saveInUnwindCache' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "convertPCtoSourceLocation")) Module["convertPCtoSourceLocation"] = function() { abort("'convertPCtoSourceLocation' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "readAsmConstArgsArray")) Module["readAsmConstArgsArray"] = function() { abort("'readAsmConstArgsArray' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "readAsmConstArgs")) Module["readAsmConstArgs"] = function() { abort("'readAsmConstArgs' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 if (!Object.getOwnPropertyDescriptor(Module, "mainThreadEM_ASM")) Module["mainThreadEM_ASM"] = function() { abort("'mainThreadEM_ASM' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
@@ -9231,8 +9247,7 @@ function checkUnflushedContent() {
     has = true;
   }
   try { // it doesn't matter if it fails
-    var flush = Module['_fflush'];
-    if (flush) flush(0);
+    _fflush(0);
     // also flush in the JS FS layer
     ['stdout', 'stderr'].forEach(function(name) {
       var info = FS.analyzePath('/dev/' + name);
