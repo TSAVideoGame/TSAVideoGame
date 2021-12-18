@@ -118,18 +118,8 @@ static int main_menu_fn_draw(struct STM_S *state)
   return 0;
 }
 
-#include "core/gll/gll.h"
-#include "cglm/cglm.h"
 int JIN_states_create_main_menu(struct STM_S *state)
 {
-  unsigned int *shader = JIN_resm_get("sprite_shader");
-
-  glUseProgram(*shader);
-
-  mat4 projection;
-  glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
-  glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
-  
   if (STM_s_create(state, 0, main_menu_fn_create, main_menu_fn_destroy, main_menu_fn_update, main_menu_fn_draw)) return -1;
   return 0;
 }

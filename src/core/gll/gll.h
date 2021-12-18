@@ -36,6 +36,7 @@ int JIN_gll(void);
   GLFN(void,            glBindBuffer,              GLenum, GLuint) \
   GLFN(void,            glBindVertexArray,         GLuint) \
   GLFN(void,            glBufferData,              GLenum, GLsizeiptr, const GLvoid *, GLenum) \
+  GLFN(void,            glBufferSubData,           GLenum, GLintptr, GLsizeiptr, const GLvoid *) \
   GLFN(void,            glCompileShader,           GLuint) \
   GLFN(GLuint,          glCreateShader,            GLenum) \
   GLFN(GLuint,          glCreateProgram,           void) \

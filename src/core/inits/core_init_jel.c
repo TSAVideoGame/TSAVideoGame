@@ -1,6 +1,7 @@
 #include "anim/anim.h"
 #include "ui/ui.h"
 #include "components/components.h"
+#include "gfx/sprite.h"
 
 /*
  * CORE INIT STATE

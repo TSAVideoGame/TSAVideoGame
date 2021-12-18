@@ -4,6 +4,7 @@
 #include "thread/thread.h"
 #include "logger/logger.h"
 
+#include "gfx/gfx.h"
 
 #include <JEL/jel.h>
 #include "../resm/resm.h"
@@ -68,6 +69,8 @@ int JIN_quit(void)
 {
   /* QUIT */
   LOG(LOG, "Quitting core (closing libraries and singletons)");
+  JIN_gfx_quit();
+  
   JIN_sndbgm_destroy(&JIN_sndbgm);
   STM_m_destroy(&JIN_stmm);
   STM_t_destroy(&JIN_stmt);
@@ -194,7 +197,9 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   init_resources();
   init_states();
 
-  JIN_stm_queue("ANIMATION", 0);
+  JIN_gfx_init();
+
+  JIN_stm_queue("MAIN_MENU", 0);
 
   JIN_sndbgm_play();
   /* GAME LOOP */
@@ -225,6 +230,8 @@ int JIN_web_loop(void)
   init_resources();
   init_states();
 
+  JIN_gfx_init();
+  
   JIN_stm_queue("MAIN_MENU", 0);
 
   JIN_sndbgm_play();
