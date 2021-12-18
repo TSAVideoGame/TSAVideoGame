@@ -8,10 +8,7 @@
  */
 
 #define INIT_RESOURCE_LIST \
-  /* Core resources */ \
-  X("JIN_MODEL_SPRITE", "res/models/square.mdld", RESM_MODEL) \
   /* Image State */ \
-  X("sprite_shader", "res/shaders/sprite.shdr", RESM_SHADER) \
   X("test_image", "res/images/test_image.png", RESM_PNG) \
   /* Animation State */ \
   X("player_img", "res/images/dodger.png", RESM_PNG) \

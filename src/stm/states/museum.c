@@ -47,13 +47,13 @@ static int museum_fn_create(struct STM_S *state)
 
 
     JEL_ENTITY_ADD(tiles[i], Sprite);
-    JEL_ENTITY_SET(tiles[i], Sprite, texture, *sprite);
+    JEL_ENTITY_SET(tiles[i], Sprite, z, 0);
     JEL_ENTITY_SET(tiles[i], Sprite, w, TILE_SIZE);
     JEL_ENTITY_SET(tiles[i], Sprite, h, TILE_SIZE);
-    JEL_ENTITY_SET(tiles[i], Sprite, tex_x, test_map[0] * 32);
-    JEL_ENTITY_SET(tiles[i], Sprite, tex_y, 0);
-    JEL_ENTITY_SET(tiles[i], Sprite, tex_w, 32);
-    JEL_ENTITY_SET(tiles[i], Sprite, tex_h, 32);
+    JEL_ENTITY_SET(tiles[i], Sprite, tx, (test_map[0] - ASCII_0) * 32);
+    JEL_ENTITY_SET(tiles[i], Sprite, ty, 16);
+    JEL_ENTITY_SET(tiles[i], Sprite, tw, 32);
+    JEL_ENTITY_SET(tiles[i], Sprite, th, 32);
 
     test_map += 4;
   }
@@ -72,13 +72,13 @@ static int museum_fn_create(struct STM_S *state)
 
   JEL_ENTITY_ADD(player, Sprite);
   sprite = JIN_resm_get("player_img");
-  JEL_ENTITY_SET(player, Sprite, texture, *sprite);
+  JEL_ENTITY_SET(player, Sprite, z, 1);
   JEL_ENTITY_SET(player, Sprite, w, TILE_SIZE);
   JEL_ENTITY_SET(player, Sprite, h, TILE_SIZE);
-  JEL_ENTITY_SET(player, Sprite, tex_x, 0);
-  JEL_ENTITY_SET(player, Sprite, tex_y, 0);
-  JEL_ENTITY_SET(player, Sprite, tex_w, 16);
-  JEL_ENTITY_SET(player, Sprite, tex_h, 16);
+  JEL_ENTITY_SET(player, Sprite, tx, 0);
+  JEL_ENTITY_SET(player, Sprite, ty, 0);
+  JEL_ENTITY_SET(player, Sprite, tw, 16);
+  JEL_ENTITY_SET(player, Sprite, th, 16);
 
   return 0;
 }
@@ -96,31 +96,51 @@ static int museum_fn_destroy(struct STM_S *state)
   return 0;
 }
 
-static int museum_fn_update(struct STM_S *state)
+/*
+ * Probably put player movement into a different function
+ * Figure out a 'friction' for the player
+ *
+ * Equation is a - a(v^2 / vT^2)
+ */
+static int player_movement(void)
 {
+  float accel = .5;
+  float max_vel = 5;
+
+  float x_vel;
+  JEL_ENTITY_GET(player, Physics, x_vel, x_vel);
   if (JIN_input.keys.a || JIN_input.keys.d) {
     if (JIN_input.keys.a) {
-      JEL_ENTITY_CHANGE(player, Physics, x_accel, -= 0.1);
+      JEL_ENTITY_SET(player, Physics, x_accel, -1 * accel + accel * ((x_vel * x_vel) / (max_vel * max_vel)));
     }
     else {
-      JEL_ENTITY_CHANGE(player, Physics, x_accel, += 0.1);
+      JEL_ENTITY_SET(player, Physics, x_accel, accel - accel * ((x_vel * x_vel) / (max_vel * max_vel)));
     }
   }
   else {
-    JEL_ENTITY_CHANGE(player, Physics, x_accel, /= 2);
+    JEL_ENTITY_SET(player, Physics, x_accel, x_vel / -2);
   }
 
+  float y_vel;
+  JEL_ENTITY_GET(player, Physics, y_vel, y_vel);
   if (JIN_input.keys.w || JIN_input.keys.s) {
     if (JIN_input.keys.w) {
-      JEL_ENTITY_CHANGE(player, Physics, y_accel, -= 0.1);
+      JEL_ENTITY_SET(player, Physics, y_accel, -1 * accel + accel * ((y_vel * y_vel) / (max_vel * max_vel)));
     }
     else {
-      JEL_ENTITY_CHANGE(player, Physics, y_accel, += 0.1);
+      JEL_ENTITY_SET(player, Physics, y_accel, accel - accel * ((y_vel * y_vel) / (max_vel * max_vel)));
     }
   }
   else {
-    JEL_ENTITY_CHANGE(player, Physics, y_accel, /= 2);
+    JEL_ENTITY_SET(player, Physics, y_accel, y_vel / -2);
   }
+
+  return 0;
+}
+
+static int museum_fn_update(struct STM_S *state)
+{
+  player_movement();
 
   struct JEL_Query *q;
   JEL_QUERY(q, Position, Physics);
@@ -148,26 +168,7 @@ static int museum_fn_update(struct STM_S *state)
 
 static int museum_fn_draw(struct STM_S *state)
 {
-  unsigned int *shader;
-
-  shader = JIN_resm_get("sprite_shader");
-
-  struct JEL_Query *q;
-  JEL_QUERY(q, Position, Sprite);
-
-  for (JEL_ComponentInt i = 0; i < q->tables_num; ++i) {
-    struct PositionFragment *pos;
-    struct SpriteFragment *sprite;
-    JEL_FRAGMENT_GET(pos, q->tables[i], Position);
-    JEL_FRAGMENT_GET(sprite, q->tables[i], Sprite);
-
-    for (JEL_EntityInt j = 0; j < q->tables[i]->num; ++j) {
-      JIN_gfx_draw_sprite(shader, &sprite->texture[j], pos->x[j], pos->y[j], sprite->w[j], sprite->h[j], 
-        sprite->tex_x[j], sprite->tex_y[j], sprite->tex_w[j], sprite->tex_h[j]);
-    }
-  }
-
-  JEL_query_destroy(q);
+  JIN_gfx_sprite_draw();
 
   return 0;
 }

@@ -27,6 +27,10 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src/core/thread/thread.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/window/window.c
   ${CMAKE_CURRENT_LIST_DIR}/src/gfx/gfx.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/gfx/model.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/gfx/shader.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/gfx/sprite.c
+  ${CMAKE_CURRENT_LIST_DIR}/src/gfx/texture.c
   ${CMAKE_CURRENT_LIST_DIR}/src/resm/resm.c
   ${CMAKE_CURRENT_LIST_DIR}/src/snd/snd.c
   ${CMAKE_CURRENT_LIST_DIR}/src/snd/wav_util.c

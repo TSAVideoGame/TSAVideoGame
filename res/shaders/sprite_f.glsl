@@ -5,15 +5,10 @@ in vec2 tex_pos;
 out vec4 color;
 
 uniform sampler2D image;
-uniform vec2 tex_scale;
-uniform vec2 tex_translate;
 
 void main()
 {
-  vec2 real_tex_pos = tex_pos;
-
-  real_tex_pos *= tex_scale;
-  real_tex_pos += tex_translate;
+  vec2 real_tex_pos = vec2(tex_pos.xy);
 
   real_tex_pos /= vec2(textureSize(image, 0));
 
