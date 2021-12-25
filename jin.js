@@ -208,7 +208,7 @@ Module['FS_createPath']("/res", "sounds", true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/res/images/test_image.png", "start": 0, "end": 42567}, {"filename": "/res/images/spritesheet.png", "start": 42567, "end": 43241}, {"filename": "/res/images/dodger.png", "start": 43241, "end": 43915}, {"filename": "/res/images/tiles.png", "start": 43915, "end": 44589}, {"filename": "/res/images/buttons.png", "start": 44589, "end": 45068}, {"filename": "/res/animations/player.animd.txt", "start": 45068, "end": 45123}, {"filename": "/res/animations/player.animd", "start": 45123, "end": 45183}, {"filename": "/res/models/square.mdld.txt", "start": 45183, "end": 45792}, {"filename": "/res/models/space_ship.mdld", "start": 45792, "end": 48644}, {"filename": "/res/models/square.mdld", "start": 48644, "end": 48772}, {"filename": "/res/models/space_ship.mdld.txt", "start": 48772, "end": 54183}, {"filename": "/res/shaders/3d_f.glsl", "start": 54183, "end": 54692}, {"filename": "/res/shaders/sprite_f.glsl", "start": 54692, "end": 55007}, {"filename": "/res/shaders/sprite.shdr", "start": 55007, "end": 55045}, {"filename": "/res/shaders/3d.shdr", "start": 55045, "end": 55075}, {"filename": "/res/shaders/sprite_v.glsl", "start": 55075, "end": 55315}, {"filename": "/res/shaders/3d_v.glsl", "start": 55315, "end": 55736}, {"filename": "/res/sounds/L.wav", "start": 55736, "end": 28586574, "audio": 1}, {"filename": "/res/sounds/nujabes.wav", "start": 28586574, "end": 75001440, "audio": 1}], "remote_package_size": 75001440, "package_uuid": "5f98d2fc-2c24-409f-94d6-03f392868869"});
+   loadPackage({"files": [{"filename": "/res/images/test_image.png", "start": 0, "end": 42567}, {"filename": "/res/images/spritesheet.png", "start": 42567, "end": 43241}, {"filename": "/res/images/dodger.png", "start": 43241, "end": 43915}, {"filename": "/res/images/tiles.png", "start": 43915, "end": 44589}, {"filename": "/res/images/buttons.png", "start": 44589, "end": 45068}, {"filename": "/res/animations/player.animd.txt", "start": 45068, "end": 45123}, {"filename": "/res/animations/player.animd", "start": 45123, "end": 45183}, {"filename": "/res/models/square.mdld.txt", "start": 45183, "end": 45792}, {"filename": "/res/models/space_ship.mdld", "start": 45792, "end": 48644}, {"filename": "/res/models/square.mdld", "start": 48644, "end": 48772}, {"filename": "/res/models/space_ship.mdld.txt", "start": 48772, "end": 54183}, {"filename": "/res/shaders/3d_f.glsl", "start": 54183, "end": 54692}, {"filename": "/res/shaders/sprite_f.glsl", "start": 54692, "end": 55007}, {"filename": "/res/shaders/sprite.shdr", "start": 55007, "end": 55045}, {"filename": "/res/shaders/3d.shdr", "start": 55045, "end": 55075}, {"filename": "/res/shaders/sprite_v.glsl", "start": 55075, "end": 55315}, {"filename": "/res/shaders/3d_v.glsl", "start": 55315, "end": 55736}, {"filename": "/res/sounds/L.wav", "start": 55736, "end": 28586574, "audio": 1}, {"filename": "/res/sounds/nujabes.wav", "start": 28586574, "end": 75001440, "audio": 1}], "remote_package_size": 75001440, "package_uuid": "e6a72ecb-e46f-47cc-a047-fffa20826765"});
   
   })();
   
@@ -233,7 +233,7 @@ var moduleOverrides = objAssign({}, Module);
 
 var arguments_ = [];
 var thisProgram = './this.program';
-var quit_ = function(status, toThrow) {
+var quit_ = (status, toThrow) => {
   throw toThrow;
 };
 
@@ -276,7 +276,7 @@ var read_,
 // this may no longer be needed under node.
 function logExceptionOnExit(e) {
   if (e instanceof ExitStatus) return;
-  var toLog = e;
+  let toLog = e;
   if (e && typeof e === 'object' && e.stack) {
     toLog = [e, e.stack];
   }
@@ -299,9 +299,10 @@ if (ENVIRONMENT_IS_NODE) {
 
 
 requireNodeFS = function() {
-  // We always initialize both of these together, so we can use
-  // either one as the indicator for them not being initialized.
-  if (!fs) {
+  // Use nodePath as the indicator for these not being initialized,
+  // since in some environments a global fs may have already been
+  // created.
+  if (!nodePath) {
     fs = require('fs');
     nodePath = require('path');
   }
@@ -356,7 +357,7 @@ readAsync = function readAsync(filename, onload, onerror) {
   // See https://nodejs.org/api/cli.html#cli_unhandled_rejections_mode
   process['on']('unhandledRejection', function(reason) { throw reason; });
 
-  quit_ = function(status, toThrow) {
+  quit_ = (status, toThrow) => {
     if (keepRuntimeAlive()) {
       process['exitCode'] = status;
       throw toThrow;
@@ -379,7 +380,7 @@ if (ENVIRONMENT_IS_SHELL) {
   }
 
   readBinary = function readBinary(f) {
-    var data;
+    let data;
     if (typeof readbuffer === 'function') {
       return new Uint8Array(readbuffer(f));
     }
@@ -389,7 +390,7 @@ if (ENVIRONMENT_IS_SHELL) {
   };
 
   readAsync = function readAsync(f, onload, onerror) {
-    setTimeout(function() { onload(readBinary(f)); }, 0);
+    setTimeout(() => onload(readBinary(f)), 0);
   };
 
   if (typeof scriptArgs != 'undefined') {
@@ -399,7 +400,7 @@ if (ENVIRONMENT_IS_SHELL) {
   }
 
   if (typeof quit === 'function') {
-    quit_ = function(status, toThrow) {
+    quit_ = (status, toThrow) => {
       logExceptionOnExit(toThrow);
       quit(status);
     };
@@ -479,7 +480,7 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
 // end include: web_or_worker_shell_read.js
   }
 
-  setWindowTitle = function(title) { document.title = title };
+  setWindowTitle = (title) => document.title = title;
 } else
 {
   throw new Error('environment detection error');
@@ -4551,11 +4552,11 @@ var ASM_CONSTS = {
     }
   
   var _emscripten_get_now;if (ENVIRONMENT_IS_NODE) {
-    _emscripten_get_now = function() {
+    _emscripten_get_now = () => {
       var t = process['hrtime']();
       return t[0] * 1e3 + t[1] / 1e6;
     };
-  } else _emscripten_get_now = function() { return performance.now(); }
+  } else _emscripten_get_now = () => performance.now();
   ;
   
   function _emscripten_webgl_do_commit_frame() {
@@ -4816,7 +4817,7 @@ var ASM_CONSTS = {
           var url = Browser.URLObject.createObjectURL(b);
           assert(typeof url == 'string', 'createObjectURL must return a url as a string');
           var img = new Image();
-          img.onload = function img_onload() {
+          img.onload = () => {
             assert(img.complete, 'Image ' + name + ' could not be decoded');
             var canvas = document.createElement('canvas');
             canvas.width = img.width;
@@ -4827,7 +4828,7 @@ var ASM_CONSTS = {
             Browser.URLObject.revokeObjectURL(url);
             if (onload) onload(byteArray);
           };
-          img.onerror = function img_onerror(event) {
+          img.onerror = (event) => {
             out('Image ' + url + ' could not be decoded');
             if (onerror) onerror();
           };
