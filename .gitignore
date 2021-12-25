@@ -1,6 +1,11 @@
 # Editor Stuff
 .clangd
 
+# Libs emscripten provides
+libs/AL
+libs/GL
+libs/KHR
+
 # CMake Stuff
 CMakeFiles/
 cmake_install.cmake
@@ -24,3 +29,4 @@ x64
 Debug/
 Release/
 *.lib
+*.dll

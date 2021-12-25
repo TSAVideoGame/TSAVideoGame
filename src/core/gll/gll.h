@@ -9,6 +9,8 @@
 #elif _WIN32
   #include <Windows.h>
   #define GLDECL WINAPI
+  #include <GL/gl.h>
+  #include <GL/glext.h>
 #else
   #error Platform not supported (JIN GL Loader)
 #endif
@@ -32,6 +34,7 @@ int JIN_gll(void);
 
 /* Declare the functions */
 #define JIN_GL_PROCS \
+  GLFN(void,            glActiveTexture,           GLenum) \
   GLFN(void,            glAttachShader,            GLuint, GLuint) \
   GLFN(void,            glBindBuffer,              GLenum, GLuint) \
   GLFN(void,            glBindVertexArray,         GLuint) \
