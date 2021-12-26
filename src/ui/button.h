@@ -9,7 +9,7 @@
  * A UI Button
  */
 typedef void (*UI_btn_fn)(void);
-JEL_COMPONENT_DEFINE(UI_btn, int, x, int, y, int, w, int, h, UI_btn_fn, fn, unsigned int *, texture, int, txt_x, int, txt_y, int, txt_w, int, txt_h, int, hovered);
+JEL_COMPONENT_DEFINE(UI_btn, UI_btn_fn, fn, unsigned int *, texture, int, hovered);
 JEL_COMPONENT_EXTERN(UI_btn);
 
 #endif
