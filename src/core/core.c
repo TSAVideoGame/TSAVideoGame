@@ -38,6 +38,7 @@ int JIN_init(void)
 
   if (JIN_env_init(&JIN_env)) ERR_EXIT(-1, "Could not initialize the environment");
   if (!(root = JIN_window_create())) ERR_EXIT(-1, "Could not create the root window");
+  JIN_window_size_set(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
   JIN_INPUT_INIT(JIN_inputv);
   JIN_INPUT_INIT(JIN_input);
