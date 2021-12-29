@@ -1,8 +1,6 @@
 #ifndef JEL_CORE_H
 #define JEL_CORE_H
 
-#include "context.h"
-
 /* 
  * Core
  *
@@ -13,6 +11,17 @@
  *
  * Utility functions for contexts
  */
+
+#include "entity.h"
+#include "component.h"
+#include "table.h"
+
+struct JEL_Context {
+  struct JEL_EntityManager *entity_manager;
+  struct JEL_ComponentTable component_table;
+  struct JEL_ComponentMap   component_map;
+  struct JEL_TableStack     table_stack;
+};
 
 #define JEL_GLOBAL_VAR
 #ifdef _WIN32
@@ -25,19 +34,19 @@
 #endif
 
 JEL_GLOBAL_VAR extern struct JEL_Context *JEL_context_current;
+#define JEL_CTX JEL_context_current
 
-int JEL_init(void);
-int JEL_quit(void);
+/* Entity Component */
+struct JEL_EntityC { JEL_Entity entity; };
+struct JEL_EntityCIt { JEL_Entity *entity; };
 
-/* Entity Table Fragment for all tables */
-/* TODO: Where should this go? */
-
-#include "component/component.h"
-
-JEL_COMPONENT_DEFINE(JEL_EntityC, JEL_Entity, entity)
-/* JEL_COMPONENT_EXTERN(JEL_EntityC) */
-JEL_GLOBAL_VAR extern JEL_TypeIndex JEL_EntityC_id;
-JEL_GLOBAL_VAR extern struct JEL_FragmentInfo JEL_EntityC_info;
-struct JEL_EntityCFragment;
+/*
+ * Core functions
+ *
+ * init | Initializes JEL with a current context
+ * quit | Quits JEL (closes the current context)
+ */
+int  JEL_init(void);
+void JEL_quit(void);
 
 #endif

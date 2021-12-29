@@ -19,7 +19,7 @@
 
 static int init_components(void)
 {
-  #define X(component) JEL_COMPONENT_REGISTER(component);
+  #define X(component) JEL_REGISTER(component);
   INIT_COMPONENT_LIST
   #undef X
   return 0;

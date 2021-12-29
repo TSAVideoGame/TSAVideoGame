@@ -5,16 +5,13 @@
 extern "C" {
 #endif
 
-#include "component/component.h"
-#include "context.h"
+#include "component.h"
 #include "core.h"
 #include "entity.h"
-#include "error.h"
-#include "hierarchy.h"
-#include "prefab.h"
+#include "entity_magic.h"
+#include "query.h"
+#include "table.h"
 #include "type.h"
-#include "table/query.h"
-#include "utility.h"
 
 #ifdef __cplusplus
 }

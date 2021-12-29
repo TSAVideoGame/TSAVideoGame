@@ -24,8 +24,6 @@
  */
 #define VERTEX_ATTRIBS 5
 
-JEL_COMPONENT_CREATE(Sprite, int, z, int, w, int, h, int, tx, int, ty, int, tw, int, th);
-
 unsigned int sprite_vao;
 unsigned int sprite_vbo;
 unsigned int sprite_ebo;
@@ -110,52 +108,52 @@ int JIN_gfx_sprite_draw(void)
   unsigned int *shader = JIN_resm_get("sprite_shader");
   unsigned int *texture = JIN_resm_get("spritesheet");
 
-  struct JEL_Query *q;
+  struct JEL_Query q;
   JEL_QUERY(q, Position, Sprite);
   
   unsigned int sprite_num = 0;
 
   /* Prepare the vbo */
-  for (JEL_ComponentInt t = 0; t < q->tables_num; ++t) {
-    struct PositionFragment *pos;
-    struct SpriteFragment *sprite;
-    JEL_FRAGMENT_GET(pos, q->tables[t], Position);
-    JEL_FRAGMENT_GET(sprite, q->tables[t], Sprite);
+  for (unsigned int t = 0; t < q.count; ++t) {
+    struct PositionIt pos;
+    struct SpriteIt sprite;
+    JEL_IT(pos, q.tables[t], Position);
+    JEL_IT(sprite, q.tables[t], Sprite);
 
     // TODO: Loop is not parallelized
     if (sprite_num > MAX_SPRITES)
       break;
 
     // TODO: Skip sprites outside of the screen
-    for (JEL_EntityInt i = 0; i < q->tables[t]->num; ++i) {
+    for (JEL_EntityInt i = 0; i < q.tables[t]->count; ++i) {
       #define SPRITE_BUFFER_IDX(index) sprite_buffer[(sprite_num * VERTEX_ATTRIBS * 4) + index]
       /* Top right */
-      SPRITE_BUFFER_IDX( 0) = pos->x[i] + sprite->w[i];
-      SPRITE_BUFFER_IDX( 1) = pos->y[i];
-      SPRITE_BUFFER_IDX( 2) = sprite->z[i];
-      SPRITE_BUFFER_IDX( 3) = sprite->tx[i] + sprite->tw[i];
-      SPRITE_BUFFER_IDX( 4) = sprite->ty[i];
+      SPRITE_BUFFER_IDX( 0) = pos.x[i] + sprite.w[i];
+      SPRITE_BUFFER_IDX( 1) = pos.y[i];
+      SPRITE_BUFFER_IDX( 2) = sprite.z[i];
+      SPRITE_BUFFER_IDX( 3) = sprite.tx[i] + sprite.tw[i];
+      SPRITE_BUFFER_IDX( 4) = sprite.ty[i];
 
       /* Bottom right */
-      SPRITE_BUFFER_IDX( 5) = pos->x[i] + sprite->w[i];
-      SPRITE_BUFFER_IDX( 6) = pos->y[i] + sprite->h[i];
-      SPRITE_BUFFER_IDX( 7) = sprite->z[i];
-      SPRITE_BUFFER_IDX( 8) = sprite->tx[i] + sprite->tw[i];
-      SPRITE_BUFFER_IDX( 9) = sprite->ty[i] + sprite->th[i];
+      SPRITE_BUFFER_IDX( 5) = pos.x[i] + sprite.w[i];
+      SPRITE_BUFFER_IDX( 6) = pos.y[i] + sprite.h[i];
+      SPRITE_BUFFER_IDX( 7) = sprite.z[i];
+      SPRITE_BUFFER_IDX( 8) = sprite.tx[i] + sprite.tw[i];
+      SPRITE_BUFFER_IDX( 9) = sprite.ty[i] + sprite.th[i];
 
       /* Bottom left */
-      SPRITE_BUFFER_IDX(10) = pos->x[i];
-      SPRITE_BUFFER_IDX(11) = pos->y[i] + sprite->h[i];
-      SPRITE_BUFFER_IDX(12) = sprite->z[i];
-      SPRITE_BUFFER_IDX(13) = sprite->tx[i];
-      SPRITE_BUFFER_IDX(14) = sprite->ty[i] + sprite->th[i];
+      SPRITE_BUFFER_IDX(10) = pos.x[i];
+      SPRITE_BUFFER_IDX(11) = pos.y[i] + sprite.h[i];
+      SPRITE_BUFFER_IDX(12) = sprite.z[i];
+      SPRITE_BUFFER_IDX(13) = sprite.tx[i];
+      SPRITE_BUFFER_IDX(14) = sprite.ty[i] + sprite.th[i];
 
       /* Top left */
-      SPRITE_BUFFER_IDX(15) = pos->x[i];
-      SPRITE_BUFFER_IDX(16) = pos->y[i];
-      SPRITE_BUFFER_IDX(17) = sprite->z[i];
-      SPRITE_BUFFER_IDX(18) = sprite->tx[i];
-      SPRITE_BUFFER_IDX(19) = sprite->ty[i];
+      SPRITE_BUFFER_IDX(15) = pos.x[i];
+      SPRITE_BUFFER_IDX(16) = pos.y[i];
+      SPRITE_BUFFER_IDX(17) = sprite.z[i];
+      SPRITE_BUFFER_IDX(18) = sprite.tx[i];
+      SPRITE_BUFFER_IDX(19) = sprite.ty[i];
 
       // TODO: Loop is not parallelized
       if (++sprite_num > MAX_SPRITES)
@@ -163,7 +161,7 @@ int JIN_gfx_sprite_draw(void)
     }
   }
 
-  JEL_query_destroy(q);
+  JEL_query_destroy(&q);
  
   /* OpenGL Drawing stuff */
   glUseProgram(*shader);

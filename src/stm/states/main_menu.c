@@ -40,37 +40,16 @@ static int main_menu_fn_create(struct STM_S *state)
 {
   #define X(n, xp, yp, wp, hp, fnp, txtp, txtx, txty, txtw, txth, hovp) \
     btns[n] = JEL_entity_create(); \
-    JEL_ENTITY_ADD(btns[n], UI_btn); \
-    JEL_ENTITY_ADD(btns[n], Position); \
-    JEL_ENTITY_ADD(btns[n], Sprite); \
-    JEL_ENTITY_SET(btns[n], Position, x, xp); \
-    JEL_ENTITY_SET(btns[n], Position, y, yp); \
-    JEL_ENTITY_SET(btns[n], Sprite, w, wp); \
-    JEL_ENTITY_SET(btns[n], Sprite, h, hp); \
-    JEL_ENTITY_SET(btns[n], UI_btn, fn, fnp); \
-    JEL_ENTITY_SET(btns[n], UI_btn, texture, (unsigned int *) JIN_resm_get(txtp)); \
-    JEL_ENTITY_SET(btns[n], Sprite, tx, txtx); \
-    JEL_ENTITY_SET(btns[n], Sprite, ty, txty); \
-    JEL_ENTITY_SET(btns[n], Sprite, tw, txtw); \
-    JEL_ENTITY_SET(btns[n], Sprite, th, txth); \
-    JEL_ENTITY_SET(btns[n], Sprite, z, 0); \
-    JEL_ENTITY_SET(btns[n], UI_btn, hovered, hovp);
+    JEL_ENTITY_SET(btns[n], UI_btn, fnp, (unsigned int *) JIN_resm_get(txtp), hovp); \
+    JEL_ENTITY_SET(btns[n], Position, xp, yp); \
+    JEL_ENTITY_SET(btns[n], Sprite, 0, wp, hp, txtx, txtw, txth);
     
   MAIN_MENU_LIST
   #undef X
 
   cursor = JEL_entity_create();
-  JEL_ENTITY_ADD(cursor, Position);
-  JEL_ENTITY_ADD(cursor, Sprite);
-  JEL_ENTITY_SET(cursor, Position, x, 0);
-  JEL_ENTITY_SET(cursor, Position, y, 0);
-  JEL_ENTITY_SET(cursor, Sprite, w, 32);
-  JEL_ENTITY_SET(cursor, Sprite, h, 32);
-  JEL_ENTITY_SET(cursor, Sprite, tx, 0);
-  JEL_ENTITY_SET(cursor, Sprite, ty, 0);
-  JEL_ENTITY_SET(cursor, Sprite, tw, 16);
-  JEL_ENTITY_SET(cursor, Sprite, th, 16);
-  JEL_ENTITY_SET(cursor, Sprite, z, 0);
+  JEL_ENTITY_SET(cursor, Position, 0, 0);
+  JEL_ENTITY_SET(cursor, Sprite, 0, 32, 32, 0, 0, 16, 16);
 
   return 0;
 }
@@ -88,24 +67,30 @@ static int main_menu_fn_destroy(struct STM_S *state)
 
 static int main_menu_fn_update(struct STM_S *state)
 {
+  struct Position cp;
+  JEL_ENTITY_GET(cursor, Position, &cp);
   if (JIN_input.keys.w == 1) {
-    JEL_ENTITY_CHANGE(cursor, Position, y, -= 48);
+    JEL_ENTITY_SET(cursor, Position, cp.x, cp.y - 48);
+    JEL_ENTITY_GET(cursor, Position, &cp);
     if (--menu_hovered < 0) {
       menu_hovered = MAIN_MENU_BTNS - 1;
-      JEL_ENTITY_CHANGE(cursor, Position, y, += 48 * MAIN_MENU_BTNS);
+      JEL_ENTITY_SET(cursor, Position, cp.x, cp.y + 48 * MAIN_MENU_BTNS);
+      JEL_ENTITY_GET(cursor, Position, &cp);
     }
   }
   if (JIN_input.keys.s == 1) {
-    JEL_ENTITY_CHANGE(cursor, Position, y, += 48);
+    JEL_ENTITY_SET(cursor, Position, cp.x, cp.y + 48);
+    JEL_ENTITY_GET(cursor, Position, &cp);
     if (++menu_hovered >= MAIN_MENU_BTNS) {
       menu_hovered = 0;
-      JEL_ENTITY_CHANGE(cursor, Position, y, -= 48 * MAIN_MENU_BTNS);
+      JEL_ENTITY_SET(cursor, Position, cp.x, cp.y - 48 * MAIN_MENU_BTNS);
+      JEL_ENTITY_GET(cursor, Position, &cp);
     }
   }
   if (JIN_input.keys.d == 1) {
-    UI_btn_fn fn;
-    JEL_ENTITY_GET(btns[menu_hovered], UI_btn, fn, fn);
-    fn();
+    struct UI_btn btn;
+    JEL_ENTITY_GET(btns[menu_hovered], UI_btn, &btn);
+    btn.fn();
   }
 
   return 0;
