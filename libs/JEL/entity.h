@@ -2,7 +2,6 @@
 #define JEL_ENTITY_H
 
 #include <stdint.h>
-#include "component/component_types.h"
 #include "type.h"
 
 /*
@@ -29,9 +28,8 @@
 #define JEL_ENTITY_INDEX_BITS      24
 #define JEL_ENTITY_GENERATION_BITS  8
 
-typedef uint32_t JEL_EntityInt;
-
-typedef JEL_EntityInt JEL_Entity;
+typedef uint32_t   JEL_Entity;
+typedef JEL_Entity JEL_EntityInt;
 
 /*
  * JEL_EntityManager
@@ -59,17 +57,17 @@ struct JEL_EntityManager {
 /*
  * Entity functions
  *
- * create         | Create an entity
- * destroy        | Destroy an entity
- * index_get      | Get the index of an entity
- * generation_get | Get the generation of an entity
- * is_alive       | Check if the entity is alive
+ * create  | Create an entity
+ * destroy | Destroy an entity
+ * index   | Get the index of an entity
+ * gen     | Get the generation of an entity
+ * alive   | Check if the entity is alive
  */
 
-JEL_Entity    JEL_entity_create(void);
+JEL_Entity    JEL_entity_create (void);
 int           JEL_entity_destroy(JEL_Entity);
-JEL_EntityInt JEL_entity_index_get(JEL_Entity);
-JEL_EntityInt JEL_entity_generation_get(JEL_Entity);
-int           JEL_entity_is_alive(JEL_Entity);
+JEL_EntityInt JEL_entity_index  (JEL_Entity);
+JEL_EntityInt JEL_entity_gen    (JEL_Entity);
+int           JEL_entity_alive  (JEL_Entity);
 
 #endif

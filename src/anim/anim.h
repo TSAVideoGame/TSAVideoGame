@@ -26,8 +26,13 @@ struct JIN_Animd {
   int32_t **frame_ticks; /* Frame durations */
 };
 
-JEL_COMPONENT_DEFINE(Animation, struct JIN_Animd *, animd, int32_t, anim, int32_t, ticks, int32_t, frame)
-JEL_COMPONENT_EXTERN(Animation)
+struct Animation {
+  struct JIN_Animd *animd;
+  int32_t anim;
+  int32_t ticks;
+  int32_t frame;
+};
+JEL_COMPONENT(Animation, animd, anim, ticks, frame);
 
 /*
  * Animation functions

@@ -36,49 +36,20 @@ static int museum_fn_create(struct STM_S *state)
   map_y = test_map_meta[1];
 
   tiles = malloc(sizeof(JEL_Entity) * map_x * map_y);
-
-  unsigned int *sprite = JIN_resm_get("tiles");
   
   for (int i = 0; i < map_x * map_y; ++i) {
     tiles[i] = JEL_entity_create();
-    JEL_ENTITY_ADD(tiles[i], Position);
-    JEL_ENTITY_SET(tiles[i], Position, x, (i % map_y) * TILE_SIZE);
-    JEL_ENTITY_SET(tiles[i], Position, y, (i / map_y) * TILE_SIZE);
-
-
-    JEL_ENTITY_ADD(tiles[i], Sprite);
-    JEL_ENTITY_SET(tiles[i], Sprite, z, 0);
-    JEL_ENTITY_SET(tiles[i], Sprite, w, TILE_SIZE);
-    JEL_ENTITY_SET(tiles[i], Sprite, h, TILE_SIZE);
-    JEL_ENTITY_SET(tiles[i], Sprite, tx, (test_map[0] - ASCII_0) * 32);
-    JEL_ENTITY_SET(tiles[i], Sprite, ty, 16);
-    JEL_ENTITY_SET(tiles[i], Sprite, tw, 32);
-    JEL_ENTITY_SET(tiles[i], Sprite, th, 32);
+    JEL_ENTITY_SET(tiles[i], Position, (i % map_y) * TILE_SIZE, (i / map_y) * TILE_SIZE);
+    JEL_ENTITY_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, (test_map[0] - ASCII_0) * 32, 16, 32, 32);
 
     test_map += 4;
   }
   test_map -= (map_x * map_y - 1) * 4;
 
   player = JEL_entity_create();
-  JEL_ENTITY_ADD(player, Position);
-  JEL_ENTITY_SET(player, Position, x, 256);
-  JEL_ENTITY_SET(player, Position, y, 256);
-
-  JEL_ENTITY_ADD(player, Physics);
-  JEL_ENTITY_SET(player, Physics, x_accel, 0);
-  JEL_ENTITY_SET(player, Physics, y_accel, 0);
-  JEL_ENTITY_SET(player, Physics, x_vel, 0);
-  JEL_ENTITY_SET(player, Physics, y_vel, 0);
-
-  JEL_ENTITY_ADD(player, Sprite);
-  sprite = JIN_resm_get("player_img");
-  JEL_ENTITY_SET(player, Sprite, z, 1);
-  JEL_ENTITY_SET(player, Sprite, w, TILE_SIZE);
-  JEL_ENTITY_SET(player, Sprite, h, TILE_SIZE);
-  JEL_ENTITY_SET(player, Sprite, tx, 0);
-  JEL_ENTITY_SET(player, Sprite, ty, 0);
-  JEL_ENTITY_SET(player, Sprite, tw, 16);
-  JEL_ENTITY_SET(player, Sprite, th, 16);
+  JEL_ENTITY_SET(player, Position, 256, 256);
+  JEL_ENTITY_SET(player, Physics, 0, 0, 0, 0);
+  JEL_ENTITY_SET(player, Sprite, 1, TILE_SIZE, TILE_SIZE, 0, 0, 16, 16);
 
   return 0;
 }
@@ -107,32 +78,54 @@ static int player_movement(void)
   float accel = .5;
   float max_vel = 5;
 
-  float x_vel;
-  JEL_ENTITY_GET(player, Physics, x_vel, x_vel);
+  struct Physics phys;
+  JEL_ENTITY_GET(player, Physics, &phys);
   if (JIN_input.keys.a || JIN_input.keys.d) {
     if (JIN_input.keys.a) {
-      JEL_ENTITY_SET(player, Physics, x_accel, -1 * accel + accel * ((x_vel * x_vel) / (max_vel * max_vel)));
+      JEL_ENTITY_SET(player, Physics,
+        phys.x_vel, phys.y_vel,
+        -1 * accel + accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel)),
+        phys.y_accel);
+      JEL_ENTITY_GET(player, Physics, &phys);
     }
     else {
-      JEL_ENTITY_SET(player, Physics, x_accel, accel - accel * ((x_vel * x_vel) / (max_vel * max_vel)));
+      JEL_ENTITY_SET(player, Physics,
+        phys.x_vel, phys.y_vel,
+        accel - accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel)),
+        phys.y_accel);
+      JEL_ENTITY_GET(player, Physics, &phys);
     }
   }
   else {
-    JEL_ENTITY_SET(player, Physics, x_accel, x_vel / -2);
+    JEL_ENTITY_SET(player, Physics,
+      phys.x_vel, phys.y_vel,
+      phys.x_vel / -2,
+      phys.y_accel);
+    JEL_ENTITY_GET(player, Physics, &phys);
   }
 
-  float y_vel;
-  JEL_ENTITY_GET(player, Physics, y_vel, y_vel);
   if (JIN_input.keys.w || JIN_input.keys.s) {
     if (JIN_input.keys.w) {
-      JEL_ENTITY_SET(player, Physics, y_accel, -1 * accel + accel * ((y_vel * y_vel) / (max_vel * max_vel)));
+      JEL_ENTITY_SET(player, Physics,
+        phys.x_vel, phys.y_vel,
+        phys.x_accel,
+        -1 * accel + accel * ((phys.y_vel * phys.y_vel) / (max_vel * max_vel)));
+      JEL_ENTITY_GET(player, Physics, &phys);
     }
     else {
-      JEL_ENTITY_SET(player, Physics, y_accel, accel - accel * ((y_vel * y_vel) / (max_vel * max_vel)));
+      JEL_ENTITY_SET(player, Physics,
+        phys.x_vel, phys.y_vel,
+        phys.x_accel,
+        accel - accel * ((phys.y_vel * phys.y_vel) / (max_vel * max_vel)));
+      JEL_ENTITY_GET(player, Physics, &phys);
     }
   }
   else {
-    JEL_ENTITY_SET(player, Physics, y_accel, y_vel / -2);
+    JEL_ENTITY_SET(player, Physics,
+      phys.x_vel, phys.y_vel,
+      phys.x_accel,
+      phys.y_vel / -2);
+    JEL_ENTITY_GET(player, Physics, &phys);
   }
 
   return 0;
@@ -142,26 +135,26 @@ static int museum_fn_update(struct STM_S *state)
 {
   player_movement();
 
-  struct JEL_Query *q;
+  struct JEL_Query q;
   JEL_QUERY(q, Position, Physics);
 
-  for (JEL_ComponentInt i = 0; i < q->tables_num; ++i) {
-    struct PositionFragment *pos;
-    struct PhysicsFragment *phys;
-    JEL_FRAGMENT_GET(pos, q->tables[i], Position);
-    JEL_FRAGMENT_GET(phys, q->tables[i], Physics);
+  for (unsigned int i = 0; i < q.count; ++i) {
+    struct PositionIt pos;
+    struct PhysicsIt phys;
+    JEL_IT(pos, q.tables[i], Position);
+    JEL_IT(phys, q.tables[i], Physics);
 
-    for (JEL_EntityInt j = 0; j < q->tables[i]->num; ++j) {
+    for (JEL_EntityInt j = 1; j < q.tables[i]->count; ++j) {
       /* Explicit Euler Integration ;) */
-      phys->x_vel[j] += phys->x_accel[j];
-      pos->x[j] += phys->x_vel[j];
+      phys.x_vel[j] += phys.x_accel[j];
+      pos.x[j] += phys.x_vel[j];
       
-      phys->y_vel[j] += phys->y_accel[j];
-      pos->y[j] += phys->y_vel[j];
+      phys.y_vel[j] += phys.y_accel[j];
+      pos.y[j] += phys.y_vel[j];
     }
   }
 
-  JEL_query_destroy(q);
+  JEL_query_destroy(&q);
   
   return 0;
 }

@@ -1,3 +1,5 @@
+#define JEL_REGISTER_COMPONENTS
+
 #include "core.h"
 #include "gll/gll.h"
 #include "time.h"

@@ -17,7 +17,6 @@ endif ()
 add_executable(${PROJECT_NAME}
   ${DRIVER}
   ${CMAKE_CURRENT_LIST_DIR}/src/anim/anim.c
-  ${CMAKE_CURRENT_LIST_DIR}/src/components/components.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/core.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/globals.c
   ${CMAKE_CURRENT_LIST_DIR}/src/core/env/env.c
@@ -69,6 +68,7 @@ elseif (UNIX)
 elseif (WIN32)
   set(CORE_LIBS "opengl32")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Zc:preprocessor")
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif ()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${CORE_LIBS} openal jel)

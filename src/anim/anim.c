@@ -7,8 +7,6 @@
 
 #include "gfx/gfx.h"
 
-JEL_COMPONENT_CREATE(Animation, struct JIN_Animd *, animd, int32_t, anim, int32_t, ticks, int32_t, frame)
-
 /* ANIMATION FUNCTIONS */
 
 /*
@@ -84,28 +82,28 @@ int JIN_animd_destroy(struct JIN_Animd *animd)
  */
 int JIN_anim_update(void)
 {
-  struct JEL_Query *q;
+  struct JEL_Query q;
   JEL_QUERY(q, Animation);
 
-  for (JEL_ComponentInt i = 0; i < q->tables_num; ++i) {
-    struct AnimationFragment *sprite;
-    JEL_FRAGMENT_GET(sprite, q->tables[i], Animation);
+  for (unsigned int i = 0; i < q.count; ++i) {
+    struct AnimationIt sprite;
+    JEL_IT(sprite, q.tables[i], Animation);
 
-    for (JEL_EntityInt j = 0; j < q->tables[i]->num; ++j) {
-      ++sprite->ticks[j];
+    for (JEL_EntityInt j = 1; j < q.tables[i]->count; ++j) {
+      ++sprite.ticks[j];
       /* Check if done with this frame */
-      if (sprite->ticks[j] >= sprite->animd[j]->frame_ticks[sprite->anim[j]][sprite->frame[j]]) {
-        sprite->ticks[j] = 0;
-        ++sprite->frame[j];
+      if (sprite.ticks[j] >= sprite.animd[j]->frame_ticks[sprite.anim[j]][sprite.frame[j]]) {
+        sprite.ticks[j] = 0;
+        ++sprite.frame[j];
         /* Check if done with all the frames in the animation */
-        if (sprite->frame[j] >= sprite->animd[j]->frame_nums[sprite->anim[j]]) {
-          sprite->frame[j] = 0;
+        if (sprite.frame[j] >= sprite.animd[j]->frame_nums[sprite.anim[j]]) {
+          sprite.frame[j] = 0;
         }
       }
     }
   }
 
-  JEL_query_destroy(q);
+  JEL_query_destroy(&q);
 
   return 0;
 }
@@ -120,7 +118,7 @@ int JIN_anim_update(void)
 #include "../core/globals.h"
 int JIN_anim_draw(void)
 {
-  struct JEL_Query *q;
+  struct JEL_Query q;
   JEL_QUERY(q, Animation);
 
   unsigned int *shader;
@@ -129,24 +127,24 @@ int JIN_anim_draw(void)
   shader = JIN_resm_get("sprite_shader");
   texture = JIN_resm_get("player_img");
   
-  for (JEL_ComponentInt i = 0; i < q->tables_num; ++i) {
-    struct AnimationFragment *sprite;
-    JEL_FRAGMENT_GET(sprite, q->tables[i], Animation);
+  for (unsigned int i = 0; i < q.count; ++i) {
+    struct AnimationIt sprite;
+    JEL_IT(sprite, q.tables[i], Animation);
 
-    for (JEL_EntityInt j = 0; j < q->tables[i]->num; ++j) {
+    for (JEL_EntityInt j = 1; j < q.tables[i]->count; ++j) {
       /* Currently just uses 0x0 as the drawing coordinate */
-      for (int rows = 0; rows < sprite->animd[j]->rows; ++rows) {
-        for (int cols = 0; cols < sprite->animd[j]->cols; ++cols) {
-          int32_t x = sprite->animd[j]->rows;
-          int32_t y = sprite->animd[j]->cols;
+      for (int rows = 0; rows < sprite.animd[j]->rows; ++rows) {
+        for (int cols = 0; cols < sprite.animd[j]->cols; ++cols) {
+          int32_t x = sprite.animd[j]->rows;
+          int32_t y = sprite.animd[j]->cols;
           JIN_gfx_draw_sprite(shader, texture, (256 + 16) + rows * 16, 0 + cols * 16, 256, 256, 
-              16 * sprite->animd[j]->ids[sprite->anim[j]][sprite->frame[j] * x * y + (rows * x) + cols], 0, 16, 16);
+              16 * sprite.animd[j]->ids[sprite.anim[j]][sprite.frame[j] * x * y + (rows * x) + cols], 0, 16, 16);
         }
       }
     }
   }
 
-  JEL_query_destroy(q);
+  JEL_query_destroy(&q);
 
   return 0;
 }
@@ -159,17 +157,16 @@ int JIN_anim_draw(void)
  */
 int JIN_anim_set(JEL_Entity entity, const char *animation)
 {
-  struct JIN_Animd *data;
-  JEL_ENTITY_GET(entity, Animation, animd, data);
+  struct Animation a;
+  JEL_ENTITY_GET(entity, Animation, &a);
 
-  for (int i = 0; i < data->anim_nums; ++i) {
-    if (!strcmp(animation, &data->names[i * 8])) {
-      int32_t anim_cur;
-      JEL_ENTITY_GET(entity, Animation, anim, anim_cur);
-      if (anim_cur == i) return 0; /* Already using this animation */
-      JEL_ENTITY_SET(entity, Animation, anim, i);
-      JEL_ENTITY_SET(entity, Animation, ticks, 0);
-      JEL_ENTITY_SET(entity, Animation, frame, 0);
+  for (int i = 0; i < a.animd->anim_nums; ++i) {
+    if (!strcmp(animation, &a.animd->names[i * 8])) {
+      if (a.anim == i) return 0; /* Already using this animation */
+      a.anim = i;
+      a.ticks = 0;
+      a.frame = 0;
+      JEL_ENTITY_SET(entity, Animation, &a);
     }
   }
 

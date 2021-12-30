@@ -10,13 +10,24 @@
 
 #include <JEL/jel.h>
 
-JEL_COMPONENT_DEFINE(Position, int, x, int, y);
-JEL_COMPONENT_EXTERN(Position);
-
-JEL_COMPONENT_DEFINE(Physics, float, x_vel, float, y_vel, float, x_accel, float, y_accel);
-JEL_COMPONENT_EXTERN(Physics);
-
-JEL_COMPONENT_DEFINE(AABB, int, x, int, y, int, w, int, h);
-JEL_COMPONENT_EXTERN(AABB);
+struct Position {
+  int x;
+  int y;
+};
+JEL_COMPONENT(Position, x, y);
+struct Physics {
+  float x_vel;
+  float y_vel;
+  float x_accel;
+  float y_accel;
+};
+JEL_COMPONENT(Physics, x_vel, y_vel, x_accel, y_accel);
+struct AABB {
+  int x;
+  int y;
+  int w;
+  int h;
+};
+JEL_COMPONENT(AABB, x, y, w, h);
 
 #endif
