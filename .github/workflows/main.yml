@@ -32,7 +32,6 @@ jobs:
       - run: rm CMakeCache.txt
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        with:
       - run: emcmake cmake .
       - run: make
       # Take the bin/ folder and deploy that to gh-pages
