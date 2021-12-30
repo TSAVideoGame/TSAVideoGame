@@ -27,10 +27,11 @@ jobs:
           repository: 'MisterMjir/jEL'
           path: 'jel'
       - run: cd jel
+      - run: dir
       - run: emcmake cmake ./jel
       - run: make
       - run: dir
-      - run: cd/jel
+      - run: cd ../
       - run: dir
       - run: mv ./jel/libjel.a ./libjel.a
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
