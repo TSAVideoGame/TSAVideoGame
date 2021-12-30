@@ -49,7 +49,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_link_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}
+  ./
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
