@@ -35,8 +35,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
-          clean: 'false'
-      - run: emcmake cmake .
+          path: 'jin'
+      - run: emcmake cmake ./jin
       - run: dir
       - run: make
       # Take the bin/ folder and deploy that to gh-pages
