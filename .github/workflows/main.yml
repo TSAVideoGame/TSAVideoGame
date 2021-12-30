@@ -19,21 +19,20 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # Set up web magic
+      - uses: mymindstorm/setup-emsdk@v11
       # Make jel
       - uses: actions/checkout@v2
         with:
           repository: 'MisterMjir/jEL'
           path: 'jel'
       - run: cd jel
-      - uses: mymindstorm/setup-emsdk@v11
       - run: emcmake cmake .
       - run: make
       - run: mv libjel.a ../libjel.a
       - run: cd ../
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      # Set up emscripten
-      # - uses: mymindstorm/setup-emsdk@v11
       - run: emcmake cmake .
       - run: make
       # Take the bin/ folder and deploy that to gh-pages
