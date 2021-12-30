@@ -37,6 +37,7 @@ jobs:
         with:
           path: 'jin'
       - run: emcmake cmake ./jin
+      - run: mv libjel.a jin/libjel.a
       - run: dir
       - run: make
       # Take the bin/ folder and deploy that to gh-pages
