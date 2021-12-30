@@ -29,8 +29,10 @@ jobs:
       - run: cd jel
       - run: emcmake cmake ./jel
       - run: make
+      - run: dir
+      - run: cd/jel
+      - run: dir
       - run: mv ./jel/libjel.a ./libjel.a
-      - run: cd ../
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - run: emcmake cmake .
