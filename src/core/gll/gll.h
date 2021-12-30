@@ -34,7 +34,7 @@ int JIN_gll(void);
 
 /* Declare the functions */
 #define JIN_GL_PROCS \
-  GLFN(void,            glActiveTexture,           GLenum) \
+  /* GLFN(void,            glActiveTexture,           GLenum) */ \
   GLFN(void,            glAttachShader,            GLuint, GLuint) \
   GLFN(void,            glBindBuffer,              GLenum, GLuint) \
   GLFN(void,            glBindVertexArray,         GLuint) \
