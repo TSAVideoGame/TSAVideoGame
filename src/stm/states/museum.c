@@ -144,7 +144,7 @@ static int museum_fn_update(struct STM_S *state)
     JEL_IT(pos, q.tables[i], Position);
     JEL_IT(phys, q.tables[i], Physics);
 
-    for (JEL_EntityInt j = 0; j < q.tables[i]->count; ++j) {
+    for (JEL_EntityInt j = 1; j < q.tables[i]->count; ++j) {
       /* Explicit Euler Integration ;) */
       phys.x_vel[j] += phys.x_accel[j];
       pos.x[j] += phys.x_vel[j];

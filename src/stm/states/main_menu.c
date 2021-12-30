@@ -42,7 +42,7 @@ static int main_menu_fn_create(struct STM_S *state)
     btns[n] = JEL_entity_create(); \
     JEL_ENTITY_SET(btns[n], UI_btn, fnp, (unsigned int *) JIN_resm_get(txtp), hovp); \
     JEL_ENTITY_SET(btns[n], Position, xp, yp); \
-    JEL_ENTITY_SET(btns[n], Sprite, 0, wp, hp, txtx, txtw, txth);
+    JEL_ENTITY_SET(btns[n], Sprite, 0, wp, hp, txtx, txty, txtw, txth); \
     
   MAIN_MENU_LIST
   #undef X

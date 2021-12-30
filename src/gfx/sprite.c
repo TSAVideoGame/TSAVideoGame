@@ -125,7 +125,7 @@ int JIN_gfx_sprite_draw(void)
       break;
 
     // TODO: Skip sprites outside of the screen
-    for (JEL_EntityInt i = 0; i < q.tables[t]->count; ++i) {
+    for (JEL_EntityInt i = 1; i < q.tables[t]->count; ++i) {
       #define SPRITE_BUFFER_IDX(index) sprite_buffer[(sprite_num * VERTEX_ATTRIBS * 4) + index]
       /* Top right */
       SPRITE_BUFFER_IDX( 0) = pos.x[i] + sprite.w[i];

@@ -33,13 +33,13 @@
         new_table = JEL_table_stack_push(&JEL_CTX->table_stack, etype); \
       } \
       JEL_table_add(new_table, entity); \
-      for (unsigned int i = 1; i < table->types_num; ++i) { \
-        struct JEL_Component *cd = &JEL_CTX->component_table.components[table->types[i]]; \
+      for (unsigned int JEL_i = 1; JEL_i < table->types_num; ++JEL_i) { \
+        struct JEL_Component *cd = &JEL_CTX->component_table.components[table->types[JEL_i]]; \
         size_t size = cd->offsets[cd->props - 1] + cd->sizes[cd->props - 1]; \
         void *buffer; \
         if (!(buffer = malloc(size))) break; \
-        JEL_table_get(table, entity, table->types[i], buffer); \
-        JEL_table_set(new_table, entity, table->types[i], buffer); \
+        JEL_table_get(table, entity, table->types[JEL_i], buffer); \
+        JEL_table_set(new_table, entity, table->types[JEL_i], buffer); \
         free(buffer); \
       } \
       JEL_table_remove(table, entity); \
