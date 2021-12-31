@@ -27,12 +27,19 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: 'MisterMjir/jEL'
-      - run: emcmake cmake .
-      - run: make install
+          path: 'jel'
+      - run: emcmake cmake ./jel
+      - run: make
+      - run: rm -r lib
       - run: rm CMakeCache.txt
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - run: emcmake cmake .
+        with:
+          path: 'jin'
+      - run: emcmake cmake ./jin
+      - run: mv libjel.a jin/libjel.a
+      - run: mv jin/res res
+      - run: dir
       - run: make
       # Take the bin/ folder and deploy that to gh-pages
       - name: deploy
