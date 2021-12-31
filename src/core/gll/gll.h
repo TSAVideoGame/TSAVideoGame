@@ -33,6 +33,7 @@
 int JIN_gll(void);
 
 /* Declare the functions */
+/* Windows needs glActiveTexture but linux does not */
 #define JIN_GL_PROCS \
   /* GLFN(void,            glActiveTexture,           GLenum) */ \
   GLFN(void,            glAttachShader,            GLuint, GLuint) \

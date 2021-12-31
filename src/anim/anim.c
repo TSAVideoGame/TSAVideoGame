@@ -166,7 +166,7 @@ int JIN_anim_set(JEL_Entity entity, const char *animation)
       a.anim = i;
       a.ticks = 0;
       a.frame = 0;
-      JEL_ENTITY_SET(entity, Animation, &a);
+      JEL_ENTITY_SET(entity, Animation, a.animd, a.anim, a.ticks, a.frame);
     }
   }
 

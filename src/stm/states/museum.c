@@ -40,7 +40,7 @@ static int museum_fn_create(struct STM_S *state)
   for (int i = 0; i < map_x * map_y; ++i) {
     tiles[i] = JEL_entity_create();
     JEL_ENTITY_SET(tiles[i], Position, (i % map_y) * TILE_SIZE, (i / map_y) * TILE_SIZE);
-    JEL_ENTITY_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, (test_map[0] - ASCII_0) * 32, 16, 32, 32);
+    JEL_ENTITY_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, (test_map[0] - ASCII_0) * 32, 16, 32, 32, 0);
 
     test_map += 4;
   }
@@ -49,7 +49,7 @@ static int museum_fn_create(struct STM_S *state)
   player = JEL_entity_create();
   JEL_ENTITY_SET(player, Position, 256, 256);
   JEL_ENTITY_SET(player, Physics, 0, 0, 0, 0);
-  JEL_ENTITY_SET(player, Sprite, 1, TILE_SIZE, TILE_SIZE, 0, 0, 16, 16);
+  JEL_ENTITY_SET(player, Sprite, 1, TILE_SIZE, TILE_SIZE, 0, 0, 16, 16, 0);
 
   return 0;
 }
