@@ -11,8 +11,9 @@ struct Sprite {
   int ty;
   int tw;
   int th;
+  int dir;
 };
-JEL_COMPONENT(Sprite, z, w, h, tx, ty, tw, th);
+JEL_COMPONENT(Sprite, z, w, h, tx, ty, tw, th, dir);
 
 int JIN_gfx_sprite_init(void);
 int JIN_gfx_sprite_quit(void);

@@ -131,28 +131,28 @@ int JIN_gfx_sprite_draw(void)
       SPRITE_BUFFER_IDX( 0) = pos.x[i] + sprite.w[i];
       SPRITE_BUFFER_IDX( 1) = pos.y[i];
       SPRITE_BUFFER_IDX( 2) = sprite.z[i];
-      SPRITE_BUFFER_IDX( 3) = sprite.tx[i] + sprite.tw[i];
+      SPRITE_BUFFER_IDX( 3) = sprite.tx[i] + sprite.tw[i] - sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX( 4) = sprite.ty[i];
 
       /* Bottom right */
       SPRITE_BUFFER_IDX( 5) = pos.x[i] + sprite.w[i];
       SPRITE_BUFFER_IDX( 6) = pos.y[i] + sprite.h[i];
       SPRITE_BUFFER_IDX( 7) = sprite.z[i];
-      SPRITE_BUFFER_IDX( 8) = sprite.tx[i] + sprite.tw[i];
+      SPRITE_BUFFER_IDX( 8) = sprite.tx[i] + sprite.tw[i] - sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX( 9) = sprite.ty[i] + sprite.th[i];
 
       /* Bottom left */
       SPRITE_BUFFER_IDX(10) = pos.x[i];
       SPRITE_BUFFER_IDX(11) = pos.y[i] + sprite.h[i];
       SPRITE_BUFFER_IDX(12) = sprite.z[i];
-      SPRITE_BUFFER_IDX(13) = sprite.tx[i];
+      SPRITE_BUFFER_IDX(13) = sprite.tx[i] + sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX(14) = sprite.ty[i] + sprite.th[i];
 
       /* Top left */
       SPRITE_BUFFER_IDX(15) = pos.x[i];
       SPRITE_BUFFER_IDX(16) = pos.y[i];
       SPRITE_BUFFER_IDX(17) = sprite.z[i];
-      SPRITE_BUFFER_IDX(18) = sprite.tx[i];
+      SPRITE_BUFFER_IDX(18) = sprite.tx[i] + sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX(19) = sprite.ty[i];
 
       // TODO: Loop is not parallelized

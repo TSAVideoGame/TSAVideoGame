@@ -38,7 +38,7 @@ struct JEL_Component {
 void   JEL_component_create(struct JEL_Component *component, unsigned int props, size_t *sizes, size_t *offsets);
 size_t JEL_component_size(struct JEL_Component *component);
 
-#define JEL_COMPONENT_IT_FN(name, m) TYPEOF(((struct name *) 0)->m) *m;
+#define JEL_COMPONENT_IT_FN(name, m) typeof(((struct name *) 0)->m) *m;
 
 #define JEL_COMPONENT_IT(name, ...) \
   struct name##It { \

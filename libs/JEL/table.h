@@ -31,15 +31,16 @@ struct JEL_Table {
 /*
  *
  */
-int          JEL_table_create  (struct JEL_Table *table, JEL_Type type);
-void         JEL_table_destroy (struct JEL_Table *table);
-int          JEL_table_allocate(struct JEL_Table *table, unsigned int count);
-int          JEL_table_add     (struct JEL_Table *table, JEL_Entity entity);
-int          JEL_table_remove  (struct JEL_Table *table, JEL_Entity entity);
-unsigned int JEL_table_index   (struct JEL_Table *table, JEL_Entity entity);
-int          JEL_table_set     (struct JEL_Table *table, JEL_Entity entity, JEL_TypeIndex component_index, void *data);
-int          JEL_table_get     (struct JEL_Table *table, JEL_Entity entity, JEL_TypeIndex component_index, void *data);
-int          JEL_table_get_it  (struct JEL_Table *table, void *it, JEL_TypeIndex ti);
+int          JEL_table_create    (struct JEL_Table *table, JEL_Type type);
+void         JEL_table_destroy   (struct JEL_Table *table);
+int          JEL_table_allocate  (struct JEL_Table *table, unsigned int count);
+int          JEL_table_add       (struct JEL_Table *table, JEL_Entity entity);
+int          JEL_table_remove    (struct JEL_Table *table, JEL_Entity entity);
+unsigned int JEL_table_index     (struct JEL_Table *table, JEL_Entity entity);
+int          JEL_table_set       (struct JEL_Table *table, JEL_Entity entity, JEL_TypeIndex component_index, void *data);
+int          JEL_table_set_member(struct JEL_Table *table, JEL_Entity entity, JEL_TypeIndex ti, size_t size, size_t offset, void *data);
+int          JEL_table_get       (struct JEL_Table *table, JEL_Entity entity, JEL_TypeIndex component_index, void *data);
+int          JEL_table_get_it    (struct JEL_Table *table, void *it, JEL_TypeIndex ti);
 
 #define JEL_IT(it, table, comp) \
   { \
@@ -47,9 +48,9 @@ int          JEL_table_get_it  (struct JEL_Table *table, void *it, JEL_TypeIndex
   }
 
 struct JEL_TableStack {
-  unsigned int       allocated;
-  unsigned int       count;
-  struct JEL_Table  *tables;
+  unsigned int        allocated;
+  unsigned int        count;
+  struct JEL_Table  **tables;
 };
 
 /*
