@@ -123,7 +123,7 @@ int JIN_anim_update(void)
 int JIN_anim_set(JEL_Entity entity, const char *animation)
 {
   struct Animation a;
-  JEL_ENTITY_GET(entity, Animation, &a);
+  JEL_GET(entity, Animation, &a);
 
   for (int i = 0; i < a.animd->anim_nums; ++i) {
     if (!strcmp(animation, &a.animd->names[i * 8])) {
@@ -131,7 +131,7 @@ int JIN_anim_set(JEL_Entity entity, const char *animation)
       a.anim = i;
       a.ticks = 0;
       a.frame = 0;
-      JEL_ENTITY_SET_STRUCT(entity, Animation, a);
+      JEL_SET_STRUCT(entity, Animation, a);
     }
   }
 
