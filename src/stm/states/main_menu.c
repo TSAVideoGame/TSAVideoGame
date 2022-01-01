@@ -70,21 +70,21 @@ static int main_menu_fn_update(struct STM_S *state)
   struct Position cp;
   JEL_ENTITY_GET(cursor, Position, &cp);
   if (JIN_input.keys.w == 1) {
-    JEL_ENTITY_SET(cursor, Position, cp.x, cp.y - 48);
-    JEL_ENTITY_GET(cursor, Position, &cp);
+    cp.y -= 48;
+    JEL_ENTITY_SET_PROP(cursor, Position, y, cp.y);
     if (--menu_hovered < 0) {
       menu_hovered = MAIN_MENU_BTNS - 1;
-      JEL_ENTITY_SET(cursor, Position, cp.x, cp.y + 48 * MAIN_MENU_BTNS);
-      JEL_ENTITY_GET(cursor, Position, &cp);
+      cp.y += 48 * MAIN_MENU_BTNS;
+      JEL_ENTITY_SET_PROP(cursor, Position, y, cp.y);
     }
   }
   if (JIN_input.keys.s == 1) {
-    JEL_ENTITY_SET(cursor, Position, cp.x, cp.y + 48);
-    JEL_ENTITY_GET(cursor, Position, &cp);
+    cp.y += 48;
+    JEL_ENTITY_SET_PROP(cursor, Position, y, cp.y);
     if (++menu_hovered >= MAIN_MENU_BTNS) {
       menu_hovered = 0;
-      JEL_ENTITY_SET(cursor, Position, cp.x, cp.y - 48 * MAIN_MENU_BTNS);
-      JEL_ENTITY_GET(cursor, Position, &cp);
+      cp.y -= 48 * MAIN_MENU_BTNS;
+      JEL_ENTITY_SET_PROP(cursor, Position, y, cp.y);
     }
   }
   if (JIN_input.keys.d == 1) {
