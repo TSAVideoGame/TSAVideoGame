@@ -2,7 +2,7 @@
 #define JEL_ENTITY_MAGIC_H
 
 /*
- * JEL_ENTITY_SET
+ * JEL_SET
  *
  * @desc
  *   Fully sets a component for an entity,
@@ -16,18 +16,18 @@
  *   What would go in the brace initialization
  *   of the component struct
  */
-#define JEL_ENTITY_SET(entity, component, ...) \
+#define JEL_SET(entity, component, ...) \
   switch (0) { \
   case 0: { \
     JEL_Type etype; \
-    JEL_type_set(etype, JEL_CTX->entity_manager->types[JEL_entity_index(entity)]); \
+    JEL_type_set(etype, JEL_CTX->entity_manager.types[JEL_entity_index(entity)]); \
     JEL_TypeIndex ti = JEL_component_map_get(&JEL_CTX->component_map, #component); \
     if (!ti) break; \
     struct JEL_Table *table = JEL_table_stack_get(&JEL_CTX->table_stack, etype); \
     struct component c = { __VA_ARGS__ }; \
     if (!JEL_type_index_check(etype, ti)) { \
       JEL_type_add(etype, ti); \
-      JEL_type_add(JEL_CTX->entity_manager->types[JEL_entity_index(entity)], ti); \
+      JEL_type_add(JEL_CTX->entity_manager.types[JEL_entity_index(entity)], ti); \
       struct JEL_Table *new_table = JEL_table_stack_get(&JEL_CTX->table_stack, etype); \
       if (!new_table) { \
         new_table = JEL_table_stack_push(&JEL_CTX->table_stack, etype); \
@@ -50,7 +50,7 @@
   }
 
 /*
- * JEL_ENTITY_SET_STRUCT
+ * JEL_SET_STRUCT
  *
  * @desc
  *   Fully sets a component for an entity,
@@ -64,17 +64,17 @@
  *   Variable whose type is the same as struct
  *   component
  */
-#define JEL_ENTITY_SET_STRUCT(entity, component, var) \
+#define JEL_SET_STRUCT(entity, component, var) \
   switch (0) { \
   case 0: { \
     JEL_Type etype; \
-    JEL_type_set(etype, JEL_CTX->entity_manager->types[JEL_entity_index(entity)]); \
+    JEL_type_set(etype, JEL_CTX->entity_manager.types[JEL_entity_index(entity)]); \
     JEL_TypeIndex ti = JEL_component_map_get(&JEL_CTX->component_map, #component); \
     if (!ti) break; \
     struct JEL_Table *table = JEL_table_stack_get(&JEL_CTX->table_stack, etype); \
     if (!JEL_type_index_check(etype, ti)) { \
       JEL_type_add(etype, ti); \
-      JEL_type_add(JEL_CTX->entity_manager->types[JEL_entity_index(entity)], ti); \
+      JEL_type_add(JEL_CTX->entity_manager.types[JEL_entity_index(entity)], ti); \
       struct JEL_Table *new_table = JEL_table_stack_get(&JEL_CTX->table_stack, etype); \
       if (!new_table) { \
         new_table = JEL_table_stack_push(&JEL_CTX->table_stack, etype); \
@@ -97,17 +97,25 @@
   }
 
 /*
- * JEL_ENTITY_SET_PROP
+ * JEL_SET_PROP
  *
  * @desc
  *   Sets member (regular set must
  *   have been called first)
+ * @param entity
+ *   Entity to set
+ * @param component
+ *   Name of the component (no struct)
+ * @param member
+ *   Name of the member/property
+ * @param data
+ *   Varaible or literal data to set
  */
-#define JEL_ENTITY_SET_PROP(entity, component, member, data) \
+#define JEL_SET_PROP(entity, component, member, data) \
   switch (0) { \
   case 0: { \
     JEL_Type etype; \
-    JEL_type_set(etype, JEL_CTX->entity_manager->types[JEL_entity_index(entity)]); \
+    JEL_type_set(etype, JEL_CTX->entity_manager.types[JEL_entity_index(entity)]); \
     JEL_TypeIndex ti = JEL_component_map_get(&JEL_CTX->component_map, #component); \
     if (!ti) break; \
     struct JEL_Table *table = JEL_table_stack_get(&JEL_CTX->table_stack, etype); \
@@ -117,13 +125,25 @@
   }
 
 /*
- * JEL_ENTITY_GET
+ * JEL_GET
+ *
+ * @desc
+ *   Gets all data from a component
+ *   (associated with an entity ofc)
+ * @param entity
+ *   The entity
+ * @param component
+ *   Name of the component (no struct)
+ * @param var
+ *   Where to put the data (void * buffer
+ *   or address of a struct, most of the
+ *   times you will use address of struct)
  */
-#define JEL_ENTITY_GET(entity, component, var) \
+#define JEL_GET(entity, component, var) \
   switch (0) { \
   case 0: { \
     JEL_Type etype; \
-    JEL_type_set(etype, JEL_CTX->entity_manager->types[JEL_entity_index(entity)]); \
+    JEL_type_set(etype, JEL_CTX->entity_manager.types[JEL_entity_index(entity)]); \
     JEL_TypeIndex ti = JEL_component_map_get(&JEL_CTX->component_map, #component); \
     if (!ti) break; \
     struct JEL_Table *table = JEL_table_stack_get(&JEL_CTX->table_stack, etype); \

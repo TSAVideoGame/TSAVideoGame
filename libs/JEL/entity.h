@@ -55,6 +55,14 @@ struct JEL_EntityManager {
 };
 
 /*
+ * Entity Manager functions
+ */
+int  JEL_entity_manager_create               (struct JEL_EntityManager *);
+void JEL_entity_manager_destroy              (struct JEL_EntityManager *);
+int  JEL_entity_manager_allocate             (struct JEL_EntityManager *, JEL_EntityInt);
+int  JEL_entity_manager_free_indices_allocate(struct JEL_EntityManager *, JEL_EntityInt);
+
+/*
  * Entity functions
  *
  * create  | Create an entity

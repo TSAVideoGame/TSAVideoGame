@@ -35,6 +35,12 @@ struct JEL_Component {
   size_t       offsets[JEL_MAX_PROPS];
 };
 
+/*
+ * Component Functions
+ *
+ * create | Creates a component given data
+ * size   | The total size of all members/properties of the component
+ */
 void   JEL_component_create(struct JEL_Component *component, unsigned int props, size_t *sizes, size_t *offsets);
 size_t JEL_component_size(struct JEL_Component *component);
 
@@ -92,7 +98,7 @@ struct JEL_ComponentMap {
 };
 
 /*
- * Component functions
+ * Component Map functions
  */
 void          JEL_component_map_create (struct JEL_ComponentMap *map);
 void          JEL_component_map_destroy(struct JEL_ComponentMap *map);

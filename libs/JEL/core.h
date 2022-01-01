@@ -17,7 +17,7 @@
 #include "table.h"
 
 struct JEL_Context {
-  struct JEL_EntityManager *entity_manager;
+  struct JEL_EntityManager  entity_manager;
   struct JEL_ComponentTable component_table;
   struct JEL_ComponentMap   component_map;
   struct JEL_TableStack     table_stack;
