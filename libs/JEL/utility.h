@@ -12,7 +12,7 @@
 #include "type.h"
 
 #ifdef _WIN32
-  #define TYPEOF(x) typeid(x)
+  #define TYPEOF(x) __typeof__(x)
 #else
   #define TYPEOF(x) typeof(x)
 #endif
