@@ -66,7 +66,6 @@ elseif (UNIX)
 # Assuming WIN32 is MSVC, need to fix that
 elseif (WIN32)
   set(CORE_LIBS "opengl32")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Zc:preprocessor")
   add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif ()
 

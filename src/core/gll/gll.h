@@ -69,7 +69,7 @@ int JIN_gll(void);
 
 #define GLFN(ret, name, ...) \
   typedef ret GLDECL name##proc(__VA_ARGS__); \
-  name##proc *name;
+  extern name##proc *name;
 
 JIN_GL_PROCS
 #undef GLFN
