@@ -1,10 +1,11 @@
 #ifndef JIN_GLL_H
 #define JIN_GLL_H
 
-
 #ifdef __EMSCRIPTEN__
-
+  #include <GL/gl.h>
+  #include <GLES3/gl3.h>
 #elif __linux__
+  #include <GL/gl.h>
   #define GLDECL
 #elif _WIN32
   #include <Windows.h>
@@ -13,11 +14,6 @@
   #include <GL/glext.h>
 #else
   #error Platform not supported (JIN GL Loader)
-#endif
-
-#include <GL/gl.h>
-#ifdef __EMSCRIPTEN__
-  #include <GLES3/gl3.h>
 #endif
 
 /*
