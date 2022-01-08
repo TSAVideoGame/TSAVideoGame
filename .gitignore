@@ -12,13 +12,12 @@ cmake_install.cmake
 CMakeCache.txt
 compile_commands.json
 
-# Build
-bin/jin
-
 # Build (Linux)
+bin/jin
 Makefile
+*.a
 
-# Windows
+# Build (Windows)
 *.vcxproj
 *.filters
 *.sln
@@ -30,3 +29,8 @@ Debug/
 Release/
 *.lib
 *.dll
+
+# Build (Web)
+*.data
+*.wasm
+*.js
