@@ -28,10 +28,16 @@
 
 int JIN_gll(void);
 
+/* For some reason linux and windows are inconsistent with glActiveTexture */
+#ifdef _WIN32
+  #define JIN_GL_PROCS_WINDOWS \
+    GLFN(void, glActiveTexture, GLenum)
+#else
+  #define JIN_GL_PROCS_WINDOWS
+#endif
 /* Declare the functions */
-/* Windows needs glActiveTexture but linux does not */
 #define JIN_GL_PROCS \
-  /* GLFN(void,            glActiveTexture,           GLenum) */ \
+  JIN_GL_PROCS_WINDOWS \
   GLFN(void,            glAttachShader,            GLuint, GLuint) \
   GLFN(void,            glBindBuffer,              GLenum, GLuint) \
   GLFN(void,            glBindVertexArray,         GLuint) \

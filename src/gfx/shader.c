@@ -56,12 +56,13 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
   if (!(shdr = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open .shdr file file: %s", fpath);
   
   shader_index = 0;
-  while (fread(temp, sizeof(char), 4, shdr) == 4) {
+  while (fread(temp, sizeof(char), 5, shdr) == 5) {
     GLenum shader_type;
     char   shader_name[64];
     char   shader_path[128];
     char  *shader_src;
-    
+   
+    /* The fifth char is ':', only check first 4 */
     if (!strncmp(temp, "VRTX", 4)) {
       shader_type = GL_VERTEX_SHADER;
     }
@@ -73,9 +74,6 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
       continue;
     }
 
-    /* Read the ':' */
-    if (fseek(shdr, 1, SEEK_CUR)) ERR_EXIT(-1, "Could not skip past ':' in file");
-   
     /* Figure out the path of the shader */
     if (fgets(shader_name, 64, shdr) != shader_name) ERR_EXIT(-1, "Could not read file (fgets)");
     int endpt;
