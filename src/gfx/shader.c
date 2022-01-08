@@ -48,7 +48,7 @@ int file_to_str(const char *fpath, char **str)
 int JIN_shader_create(unsigned int *shader, const char *fpath)
 {
   FILE        *shdr;
-  char         temp[4];
+  char         type[5];
   unsigned int shaders[2];
   int          shader_index;
   int          success;
@@ -56,17 +56,17 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
   if (!(shdr = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open .shdr file file: %s", fpath);
   
   shader_index = 0;
-  while (fread(temp, sizeof(char), 5, shdr) == 5) {
+  while (fread(type, sizeof(char), 5, shdr) == 5) {
     GLenum shader_type;
     char   shader_name[64];
     char   shader_path[128];
     char  *shader_src;
    
     /* The fifth char is ':', only check first 4 */
-    if (!strncmp(temp, "VRTX", 4)) {
+    if (!strncmp(type, "VRTX", 4)) {
       shader_type = GL_VERTEX_SHADER;
     }
-    else if (!strncmp(temp, "FGMT", 4)) {
+    else if (!strncmp(type, "FGMT", 4)) {
       shader_type = GL_FRAGMENT_SHADER;
     }
     else {
@@ -79,6 +79,7 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
     int endpt;
     endpt = -1;
     while (shader_name[++endpt] != '\n');
+    shader_name[endpt] = '\0';
     shader_name[endpt] = '\0';
     endpt = -1;
     while (fpath[++endpt] != '\0');
