@@ -7,7 +7,7 @@ set(WINDOWS_LIBRARIES_DIRECTORIES "C:/cpplib")
 set(LINUX_LIBRARIES_DIRECTORIES "/usr/local/include")
 
 # Binary
-project(jin)
+project(jin C)
 
 set(DRIVER "${CMAKE_CURRENT_LIST_DIR}/src/driver.c")
 if (EMSCRIPTEN)
