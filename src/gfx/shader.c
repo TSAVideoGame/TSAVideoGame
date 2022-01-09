@@ -19,6 +19,7 @@ int file_to_str(const char *fpath, char **str)
   FILE  *file;
   size_t size;
   
+  LOG(LOG, "String is %s\nLength is %zu", fpath, strlen(fpath));
   if (!(file = fopen(fpath, "r"))) ERR_EXIT(-1, "Couldn't open file: %s", fpath);
 
   size = 1; /* Account for '\0' */
@@ -48,7 +49,7 @@ int file_to_str(const char *fpath, char **str)
 int JIN_shader_create(unsigned int *shader, const char *fpath)
 {
   FILE        *shdr;
-  char         type[5];
+  char         temp[4];
   unsigned int shaders[2];
   int          shader_index;
   int          success;
@@ -56,32 +57,30 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
   if (!(shdr = fopen(fpath, "rb"))) ERR_EXIT(-1, "Could not open .shdr file file: %s", fpath);
   
   shader_index = 0;
-  while (fread(type, sizeof(char), 5, shdr) == 5) {
+  while (fread(temp, sizeof(char), 5, shdr) == 5) { /* Reads name and ':' */
     GLenum shader_type;
     char   shader_name[64];
     char   shader_path[128];
     char  *shader_src;
-   
-    /* The fifth char is ':', only check first 4 */
-    if (!strncmp(type, "VRTX", 4)) {
+    
+    if (!strncmp(temp, "VRTX", 4)) {
       shader_type = GL_VERTEX_SHADER;
     }
-    else if (!strncmp(type, "FGMT", 4)) {
+    else if (!strncmp(temp, "FGMT", 4)) {
       shader_type = GL_FRAGMENT_SHADER;
     }
     else {
       LOG(ERR, "Unhandled shader type");
       continue;
     }
-
+   
     /* Figure out the path of the shader */
-    if (fgets(shader_name, 64, shdr) != shader_name) ERR_EXIT(-1, "Could not read file (fgets)");
     int endpt;
     endpt = -1;
-    while (shader_name[++endpt] != '\n');
-    shader_name[endpt] = '\0';
+    while ((shader_name[++endpt] = fgetc(shdr)) != '\n') if (shader_name[endpt] == '\r') --endpt;
     shader_name[endpt] = '\0';
     endpt = -1;
+    /* Find the last '/' in the path */
     while (fpath[++endpt] != '\0');
     while (fpath[--endpt] != '/');
     shader_path[0] = '\0';
