@@ -18,7 +18,7 @@ int file_to_str(const char *fpath, char **str)
 {
   FILE  *file;
   size_t size;
-  
+  LOG(LOG, "Str length: %zu", fpath, strlen(fpath));
   if (!(file = fopen(fpath, "r"))) ERR_EXIT(-1, "Couldn't open file: %s", fpath);
 
   size = 1; /* Account for '\0' */
@@ -78,10 +78,14 @@ int JIN_shader_create(unsigned int *shader, const char *fpath)
     if (fgets(shader_name, 64, shdr) != shader_name) ERR_EXIT(-1, "Could not read file (fgets)");
     int endpt;
     endpt = -1;
-    while (shader_name[++endpt] != '\n');
+    int i = 0;
+    while ((shader_name[++endpt] = getc(shdr)) != '\n') ++i;
+    LOG(LOG, "iterations %d", i);
     shader_name[endpt] = '\0';
     shader_name[endpt] = '\0';
     endpt = -1;
+    LOG(LOG, "shader name: %s", shader_name);
+    LOG(LOG, "shader name: %zu", shader_name, strlen(shader_name));
     while (fpath[++endpt] != '\0');
     while (fpath[--endpt] != '/');
     shader_path[0] = '\0';
