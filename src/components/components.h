@@ -15,6 +15,7 @@ struct Position {
   int y;
 };
 JEL_COMPONENT(Position, x, y);
+
 struct Physics {
   float x_vel;
   float y_vel;
@@ -22,12 +23,12 @@ struct Physics {
   float y_accel;
 };
 JEL_COMPONENT(Physics, x_vel, y_vel, x_accel, y_accel);
+
 struct AABB {
-  int x;
-  int y;
-  int w;
-  int h;
+  int    w;
+  int    h;
+  void (*on_collision)(JEL_Entity, JEL_Entity);
 };
-JEL_COMPONENT(AABB, x, y, w, h);
+JEL_COMPONENT(AABB, w, h, on_collision);
 
 #endif
