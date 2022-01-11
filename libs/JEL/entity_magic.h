@@ -151,4 +151,6 @@
   } \
   }
 
+#define JEL_CHECK(entity, component) JEL_type_index_check(JEL_CTX->entity_manager.types[JEL_entity_index(entity)], JEL_component_map_get(&JEL_CTX->component_map, #component))
+
 #endif

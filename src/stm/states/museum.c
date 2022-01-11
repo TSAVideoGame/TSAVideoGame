@@ -174,9 +174,11 @@ static int player_collisions(void)
   indices[3] = (tile_y + 1) * map_x + tile_x + 1;
 
   for (int i = 0; i < 4; ++i) {
-    struct AABB col;
-    JEL_GET(tiles[indices[i]], AABB, &col);
-    col.on_collision(tiles[indices[i]], player);
+    if (JEL_CHECK(tiles[indices[i]], AABB)) {
+      struct AABB col;
+      JEL_GET(tiles[indices[i]], AABB, &col);
+      col.on_collision(tiles[indices[i]], player);
+    }
   }
 
   return 0;
