@@ -15,9 +15,9 @@
  * as it works it's all good
  */
 
-static void to_museum(void)
+static void to_lvlsel(void)
 {
-  JIN_stm_queue("MUSEUM", 0);
+  JIN_stm_queue("LVL_SEL", 0);
 }
 
 static void to_quit(void)
@@ -27,11 +27,10 @@ static void to_quit(void)
 
 #define MAIN_MENU_BTNS 2
 JEL_Entity btns[MAIN_MENU_BTNS];
-JEL_Entity btn_ptr;
 
 #define MAIN_MENU_LIST \
-  X(0, 48, 0, 64, 32, to_museum, "buttons", 0, 16, 64, 32, 1, 0) \
-  X(1, 48,48, 64, 32, to_quit, "buttons", 64, 16, 64, 32, 0, 0)
+  X(0, 448, 320, 64, 32, to_lvlsel, "buttons", 0, 16, 64, 32, 1, 0) \
+  X(1, 448, 368, 64, 32, to_quit, "buttons", 64, 16, 64, 32, 0, 0)
 
 JEL_Entity cursor;
 static int menu_hovered = 0;
@@ -48,7 +47,7 @@ static int main_menu_fn_create(struct STM_S *state)
   #undef X
 
   cursor = JEL_entity_create();
-  JEL_SET(cursor, Position, 0, 0);
+  JEL_SET(cursor, Position, 400, 320);
   JEL_SET(cursor, Sprite, 0, 32, 32, 0, 0, 16, 16, 1);
 
   return 0;
@@ -87,7 +86,7 @@ static int main_menu_fn_update(struct STM_S *state)
       JEL_SET_PROP(cursor, Position, y, cp.y);
     }
   }
-  if (JIN_input.keys.d == 1) {
+  if (JIN_input.keys.o == 1) {
     struct UI_btn btn;
     JEL_GET(btns[menu_hovered], UI_btn, &btn);
     btn.fn();
