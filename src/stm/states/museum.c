@@ -16,17 +16,15 @@
  * This is a museum level, whether
  * it's an actual level or procedurally
  * generated shouldn't matter
+ *
+ * Make sure you set these variables below before
+ * you queue/push this state
  */
-static int test_map_meta[] = {7, 7};
-static char *test_map = 
-  "001 001 001 001 001 001 001 "
-  "001 101 101 101 101 101 001 "
-  "001 100 100 100 100 100 001 "
-  "001 200 200 200 200 200 001 "
-  "001 200 210 200 200 200 001 "
-  "001 200 200 200 200 200 001 "
-  "001 001 001 001 001 001 001 "
-;
+int  *map_meta;
+char *map_tiles;
+char *map_items;
+char *map_collisions;
+
 static int map_x, map_y;
 static JEL_Entity *tiles;
 static JEL_Entity player;
@@ -40,8 +38,8 @@ static void tile_collision_fn(JEL_Entity tile, JEL_Entity other)
 
 static int museum_fn_create(struct STM_S *state)
 {
-  map_x = test_map_meta[0];
-  map_y = test_map_meta[1];
+  map_x = map_meta[0];
+  map_y = map_meta[1];
 
   tiles = malloc(sizeof(JEL_Entity) * map_x * map_y);
  
@@ -50,9 +48,10 @@ static int museum_fn_create(struct STM_S *state)
   for (int i = 0; i < map_x * map_y; ++i) {
     tiles[i] = JEL_entity_create();
     JEL_SET(tiles[i], Position, (i % map_y) * TILE_SIZE, (i / map_y) * TILE_SIZE);
-    JEL_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, (test_map[0] - ASCII_0) * 32, 16, 32, 32, 0);
+    LOG(LOG, "Tile is %d, value is %d", map_tiles[i] * 32, (int) map_tiles[i]);
+    JEL_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, map_tiles[i] * 32, 16, 32, 32, 0);
     /* Collision */
-    int coltype = test_map[2] - ASCII_0;
+    int coltype = map_collisions[i];
     if (coltype) {
       void (*col_fn)(JEL_Entity, JEL_Entity);
       switch (coltype) {
@@ -66,17 +65,14 @@ static int museum_fn_create(struct STM_S *state)
       JEL_SET(tiles[i], AABB, TILE_SIZE, TILE_SIZE, col_fn);
     }
     /* Item */
-    switch (test_map[1] - ASCII_0) {
+    switch (map_items[i]) {
       case 1:
         spawn_x = i % map_y * TILE_SIZE;
         spawn_y = i / map_y * TILE_SIZE;
         break;
       default: break;
     }
-
-    test_map += 4;
   }
-  test_map -= (map_x * map_y - 1) * 4;
 
   player = JEL_entity_create();
   JEL_SET(player, Position, spawn_x, spawn_y);
@@ -212,6 +208,10 @@ static int museum_fn_update(struct STM_S *state)
   JEL_query_destroy(&q);
  
   player_collisions();
+
+  if (JIN_input.keys.o == 1) {
+    JIN_stm_queue("PAUSE", STM_PERSIST_PREV);
+  }
 
   return 0;
 }
