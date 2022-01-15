@@ -204,7 +204,7 @@ JIN_THREAD_FN JIN_game_thread(void *data)
 
   JIN_stm_queue("MAIN_MENU", 0);
 
-  JIN_sndbgm_play();
+  //JIN_sndbgm_play();
   /* GAME LOOP */
   while (1) {
     if (JIN_input.quit) break;

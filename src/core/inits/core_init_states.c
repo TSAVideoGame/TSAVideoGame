@@ -7,11 +7,12 @@
  */
 
 #define INIT_STATE_LIST \
-  X("IMG", JIN_states_create_img) \
+  X("IMG",       JIN_states_create_img) \
   X("ANIMATION", JIN_states_create_animation) \
-  X("3D", JIN_states_create_3d) \
+  X("3D",        JIN_states_create_3d) \
   X("MAIN_MENU", JIN_states_create_main_menu) \
-  X("MUSEUM", JIN_states_create_museum) \
+  X("LVL_SEL",   JIN_states_create_lvlsel) \
+  X("MUSEUM",    JIN_states_create_museum) \
 
 static int init_states(void)
 {
