@@ -76,7 +76,7 @@ static int museum_fn_create(struct STM_S *state)
 
     test_map += 4;
   }
-  test_map -= (map_x * map_y - 1) * 4;
+  test_map -= (map_x * map_y) * 4;
 
   player = JEL_entity_create();
   JEL_SET(player, Position, spawn_x, spawn_y);
@@ -212,6 +212,10 @@ static int museum_fn_update(struct STM_S *state)
   JEL_query_destroy(&q);
  
   player_collisions();
+
+  if (JIN_input.keys.o == 1) {
+    JIN_stm_queue("PAUSE", STM_PERSIST_PREV);
+  }
 
   return 0;
 }

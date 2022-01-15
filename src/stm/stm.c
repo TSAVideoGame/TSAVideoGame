@@ -416,6 +416,7 @@ int STM_m_update(struct STM_M *manager)
  * @return
  *   Success
  */
+#include "core/logger/logger.h"
 int STM_m_draw(struct STM_M *manager)
 {
   if (manager->states[manager->count - 1].flags & STM_DRAW_PREV) {

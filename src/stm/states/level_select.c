@@ -35,16 +35,16 @@ static void to_museum()
 
 #define LVL_SEL_LIST \
   X( 0,  80, 32, 64, 32, to_menu, 0, 16, 64, 32, 0, 1) \
-  X( 1, 256, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X( 2, 384, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X( 3, 512, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X( 4, 640, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X( 5, 768, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X( 6, 256, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X( 7, 384, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X( 8, 512, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X( 9, 640, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
-  X(10, 768, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 1) \
+  X( 1, 256, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 2, 384, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 3, 512, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 4, 640, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 5, 768, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 6, 256, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 7, 384, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 8, 512, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 9, 640, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X(10, 768, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
 
 static int lvlsel_fn_create(struct STM_S *state)
 {
@@ -63,6 +63,7 @@ static int lvlsel_fn_create(struct STM_S *state)
   lvlsel_vars.l.y = 0;
   lvlsel_vars.r.x = 0;
   lvlsel_vars.r.y = 0;
+  lvlsel_vars.group = 0;
 
   return 0;
 }

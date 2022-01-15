@@ -8,6 +8,8 @@
 #include "core/logger/logger.h"
 
 #define MAX_SPRITES 1000
+#define MAX_Z  10000.0f
+#define MIN_Z -10000.0f
 
 /*
  * SPRITE
@@ -53,7 +55,7 @@ int JIN_gfx_sprite_init(void)
   glUseProgram(*shader);
 
   mat4 projection;
-  glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, -1.0f, 1.0f, projection);
+  glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, MIN_Z, MAX_Z, projection);
   glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
   
   /* GL objects */
