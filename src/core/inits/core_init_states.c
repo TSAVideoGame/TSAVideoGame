@@ -13,6 +13,7 @@
   X("MAIN_MENU", JIN_states_create_main_menu) \
   X("LVL_SEL",   JIN_states_create_lvlsel) \
   X("MUSEUM",    JIN_states_create_museum) \
+  X("PAUSE",     JIN_states_create_pause) \
 
 static int init_states(void)
 {
