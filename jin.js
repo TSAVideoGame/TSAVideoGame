@@ -131,10 +131,10 @@ var objAssign = Object.assign;
         if (!check) throw msg + new Error().stack;
       }
   Module['FS_createPath']("/", "res", true, true);
-Module['FS_createPath']("/res", "images", true, true);
 Module['FS_createPath']("/res", "animations", true, true);
-Module['FS_createPath']("/res", "models", true, true);
 Module['FS_createPath']("/res", "shaders", true, true);
+Module['FS_createPath']("/res", "models", true, true);
+Module['FS_createPath']("/res", "images", true, true);
 Module['FS_createPath']("/res", "sounds", true, true);
 
           /** @constructor */
@@ -208,7 +208,7 @@ Module['FS_createPath']("/res", "sounds", true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/res/images/test_image.png", "start": 0, "end": 42567}, {"filename": "/res/images/spritesheet.png", "start": 42567, "end": 43241}, {"filename": "/res/images/dodger.png", "start": 43241, "end": 43915}, {"filename": "/res/images/tiles.png", "start": 43915, "end": 44589}, {"filename": "/res/images/buttons.png", "start": 44589, "end": 45068}, {"filename": "/res/animations/player.animd.txt", "start": 45068, "end": 45143}, {"filename": "/res/animations/player.animd", "start": 45143, "end": 45231}, {"filename": "/res/models/square.mdld.txt", "start": 45231, "end": 45840}, {"filename": "/res/models/space_ship.mdld", "start": 45840, "end": 48692}, {"filename": "/res/models/square.mdld", "start": 48692, "end": 48820}, {"filename": "/res/models/space_ship.mdld.txt", "start": 48820, "end": 54231}, {"filename": "/res/shaders/3d_f.glsl", "start": 54231, "end": 54740}, {"filename": "/res/shaders/sprite_f.glsl", "start": 54740, "end": 55055}, {"filename": "/res/shaders/sprite.shdr", "start": 55055, "end": 55093}, {"filename": "/res/shaders/3d.shdr", "start": 55093, "end": 55123}, {"filename": "/res/shaders/sprite_v.glsl", "start": 55123, "end": 55363}, {"filename": "/res/shaders/3d_v.glsl", "start": 55363, "end": 55784}, {"filename": "/res/sounds/L.wav", "start": 55784, "end": 28586622, "audio": 1}, {"filename": "/res/sounds/nujabes.wav", "start": 28586622, "end": 75001488, "audio": 1}], "remote_package_size": 75001488, "package_uuid": "0225b5e4-fb77-4cbb-978d-7da24b43f3a6"});
+   loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/dodger.png", "start": 10716, "end": 11390}, {"filename": "/res/images/tiles.png", "start": 11390, "end": 12064}, {"filename": "/res/images/test_image.png", "start": 12064, "end": 54631}, {"filename": "/res/images/spritesheet.png", "start": 54631, "end": 55305}, {"filename": "/res/images/buttons.png", "start": 55305, "end": 55784}, {"filename": "/res/sounds/nujabes.wav", "start": 55784, "end": 46470650, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46470650, "end": 75001488, "audio": 1}], "remote_package_size": 75001488, "package_uuid": "3c8b66fe-6d96-449d-937d-e89fa2073c38"});
   
   })();
   
@@ -1923,8 +1923,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  10772: function() {alert("Confirm to begin")},  
- 10798: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
+  11268: function() {alert("Confirm to begin")},  
+ 11294: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
 };
 
 
