@@ -85,7 +85,8 @@ static int lvlsel_fn_update(struct STM_S *state)
     if (!lvlsel_vars.group) {
       lvlsel_vars.group = 1;
       pos.x += 176;
-      JEL_SET_PROP(lvlsel_vars.cursor, Position, x, pos.x);
+      pos.y = 32 + lvlsel_vars.r.y * 64;
+      JEL_SET_STRUCT(lvlsel_vars.cursor, Position, pos);
     }
     else {
       if (lvlsel_vars.r.x < LVL_SEL_R_COLS - 1) {
@@ -103,7 +104,8 @@ static int lvlsel_fn_update(struct STM_S *state)
       if (!lvlsel_vars.r.x) {
         lvlsel_vars.group = 0;
         pos.x -= 176;
-        JEL_SET_PROP(lvlsel_vars.cursor, Position, x, pos.x);
+        pos.y = 32 + lvlsel_vars.l.y * 64;
+        JEL_SET_STRUCT(lvlsel_vars.cursor, Position, pos);
       }
       else {
         --lvlsel_vars.r.x;
@@ -119,7 +121,7 @@ static int lvlsel_fn_update(struct STM_S *state)
     if (!lvlsel_vars.group) {
       if (lvlsel_vars.l.y < LVL_SEL_L_BTNS - 1) {
         ++lvlsel_vars.l.y;
-        pos.y += 128;
+        pos.y += 64;
         JEL_SET_PROP(lvlsel_vars.cursor, Position, y, pos.y);
       }
     }
@@ -127,6 +129,25 @@ static int lvlsel_fn_update(struct STM_S *state)
       if (lvlsel_vars.r.y < (LVL_SEL_BTNS - LVL_SEL_L_BTNS - 1) / LVL_SEL_R_COLS) {
         ++lvlsel_vars.r.y;
         pos.y += 64;
+        JEL_SET_PROP(lvlsel_vars.cursor, Position, y, pos.y);
+      }
+    }
+  }
+  
+  if (JIN_input.keys.w == 1) {
+    struct Position pos;
+    JEL_GET(lvlsel_vars.cursor, Position, &pos);
+    if (!lvlsel_vars.group) {
+      if (lvlsel_vars.l.y > 0) {
+        --lvlsel_vars.l.y;
+        pos.y -= 64;
+        JEL_SET_PROP(lvlsel_vars.cursor, Position, y, pos.y);
+      }
+    }
+    else {
+      if (lvlsel_vars.r.y > 0) {
+        --lvlsel_vars.r.y;
+        pos.y -= 64;
         JEL_SET_PROP(lvlsel_vars.cursor, Position, y, pos.y);
       }
     }
