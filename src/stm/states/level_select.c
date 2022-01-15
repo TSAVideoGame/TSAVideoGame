@@ -28,8 +28,14 @@ static void to_menu(void)
   JIN_stm_queue("MAIN_MENU", 0);
 }
 
+#include "maps/map.c"
 static void to_museum()
 {
+  map_meta = test_meta;
+  map_tiles = test_tiles;
+  map_items = test_items;
+  map_collisions = test_collisions;
+
   JIN_stm_queue("MUSEUM", 0);
 }
 
