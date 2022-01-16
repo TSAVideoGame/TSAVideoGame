@@ -47,8 +47,7 @@ static int museum_fn_create(struct STM_S *state)
 
   for (int i = 0; i < map_x * map_y; ++i) {
     tiles[i] = JEL_entity_create();
-    JEL_SET(tiles[i], Position, (i % map_y) * TILE_SIZE, (i / map_y) * TILE_SIZE);
-    LOG(LOG, "Tile is %d, value is %d", map_tiles[i] * 32, (int) map_tiles[i]);
+    JEL_SET(tiles[i], Position, (i % map_x) * TILE_SIZE, (i / map_x) * TILE_SIZE);
     JEL_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, map_tiles[i] * 32, 16, 32, 32, 0);
     /* Collision */
     int coltype = map_collisions[i];
