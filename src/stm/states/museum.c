@@ -78,7 +78,7 @@ static int museum_fn_create(struct STM_S *state)
   JEL_SET(player, Position, spawn_x, spawn_y);
   JEL_SET(player, Physics, 0, 0, 0, 0);
   JEL_SET(player, Sprite, 1, TILE_SIZE, TILE_SIZE, 0, 0, 16, 16, 0);
-  JEL_SET(player, Animation, (struct JIN_Animd *) JIN_resm_get("player_animation"), 1, 0, 0,);
+  JEL_SET(player, Animation, (struct JIN_Animd *) JIN_resm_get("player_animation"), 1, 0, 0);
   JEL_SET(player, AABB, TILE_SIZE, TILE_SIZE, dummy_collision_fn);
 
   return 0;
@@ -93,12 +93,32 @@ static int museum_fn_destroy(struct STM_S *state)
   free(tiles);
 
   JEL_entity_destroy(player);
-  
+
   return 0;
 }
 
 /*
- * Probably put player movement into a different function
+void handleAlarm(int sig) { // Handles the signal alarm
+    if (mv >= 5) {
+        seconds = 0;
+    }
+    seconds++;
+    //printf("\rElapsed time : %f", seconds);
+    alarm(1); // Sends alarm signal after one second 
+}
+int player_time(float mv) {
+    float seconds = 0;
+    setbuf(stdout, NULL);
+
+    //printf("\rElapsed time : %f", seconds);
+    signal(SIGALRM, handle); // Assigns a handler for the alarm signal 
+    alarm(1); // Sends alarm signal after one second 
+    while (1); // Prevents the process from terminating 
+    return seconds;
+}
+*/
+
+/*
  * Figure out a 'friction' for the player
  *
  * Equation is a - a(v^2 / vT^2)
@@ -114,12 +134,16 @@ static int player_movement(void)
     if (JIN_input.keys.a) {
       JEL_SET_PROP(player, Sprite, dir, 1);
       phys.x_accel = -1 * accel + accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel));
+      //phys.x_vel = -1 * player_time(max_vel) * phys.x_accel;
       JEL_SET_PROP(player, Physics, x_accel, phys.x_accel);
+      JEL_SET_PROP(player, Physics, x_vel, phys.x_vel);
     }
-    else {
-      JEL_SET_PROP(player, Sprite, dir, 0);
-      phys.x_accel = accel - accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel));
-      JEL_SET_PROP(player, Physics, x_accel, phys.x_accel);
+    if (JIN_input.keys.d) {
+        JEL_SET_PROP(player, Sprite, dir, 0);
+        phys.x_accel = accel - accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel));
+        //phys.x_vel = player_time(max_vel) * phys.x_accel;
+        JEL_SET_PROP(player, Physics, x_accel, phys.x_accel);
+        JEL_SET_PROP(player, Physics, x_vel, phys.x_vel);
     }
   }
   else {
@@ -130,11 +154,15 @@ static int player_movement(void)
   if (JIN_input.keys.w || JIN_input.keys.s) {
     if (JIN_input.keys.w) {
       phys.y_accel = -1 * accel + accel * ((phys.y_vel * phys.y_vel) / (max_vel * max_vel));
+      //phys.y_vel = player_time(max_vel) * phys.y_accel;
       JEL_SET_PROP(player, Physics, y_accel, phys.y_accel);
+      JEL_SET_PROP(player, Physics, y_vel, phys.y_vel);
     }
-    else {
+    if (JIN_input.keys.s) {
       phys.y_accel = accel - accel * ((phys.y_vel * phys.y_vel) / (max_vel * max_vel));
+      //phys.y_vel = player_time(max_vel) * phys.y_accel;
       JEL_SET_PROP(player, Physics, y_accel, phys.y_accel);
+      JEL_SET_PROP(player, Physics, y_vel, phys.y_vel);
     }
   }
   else {
@@ -207,16 +235,17 @@ static int museum_fn_update(struct STM_S *state)
       /* Explicit Euler Integration ;) */
       phys.x_vel[j] += phys.x_accel[j];
       pos.x[j] += phys.x_vel[j];
-      
+
       phys.y_vel[j] += phys.y_accel[j];
       pos.y[j] += phys.y_vel[j];
     }
   }
 
-  JEL_query_destroy(&q);
- 
-  player_collisions();
 
+  JEL_query_destroy(&q);
+  
+  player_collisions();
+  
   update_camera();
 
   if (JIN_input.keys.o == 1) {
