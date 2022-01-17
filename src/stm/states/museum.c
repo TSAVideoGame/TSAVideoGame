@@ -28,6 +28,7 @@ char *map_collisions;
 static int map_x, map_y;
 static JEL_Entity *tiles;
 static JEL_Entity player;
+static struct { int x; int y; } camera;
 
 /* Collision functions */
 static void dummy_collision_fn(JEL_Entity self, JEL_Entity other) { return; }
@@ -47,8 +48,7 @@ static int museum_fn_create(struct STM_S *state)
 
   for (int i = 0; i < map_x * map_y; ++i) {
     tiles[i] = JEL_entity_create();
-    JEL_SET(tiles[i], Position, (i % map_y) * TILE_SIZE, (i / map_y) * TILE_SIZE);
-    LOG(LOG, "Tile is %d, value is %d", map_tiles[i] * 32, (int) map_tiles[i]);
+    JEL_SET(tiles[i], Position, (i % map_x) * TILE_SIZE, (i / map_x) * TILE_SIZE);
     JEL_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, map_tiles[i] * 32, 16, 32, 32, 0);
     /* Collision */
     int coltype = map_collisions[i];
@@ -180,6 +180,14 @@ static int player_collisions(void)
   return 0;
 }
 
+static void update_camera(void)
+{
+  struct Position pos;
+  JEL_GET(player, Position, &pos);
+  camera.x = pos.x + TILE_SIZE / 2 - WINDOW_WIDTH / 2;
+  camera.y = pos.y + TILE_SIZE / 2 - WINDOW_HEIGHT / 2;
+}
+
 static int museum_fn_update(struct STM_S *state)
 {
   JIN_anim_update();
@@ -209,6 +217,8 @@ static int museum_fn_update(struct STM_S *state)
  
   player_collisions();
 
+  update_camera();
+
   if (JIN_input.keys.o == 1) {
     JIN_stm_queue("PAUSE", STM_PERSIST_PREV);
   }
@@ -218,7 +228,7 @@ static int museum_fn_update(struct STM_S *state)
 
 static int museum_fn_draw(struct STM_S *state)
 {
-  JIN_gfx_sprite_draw();
+  JIN_gfx_sprite_draw(camera.x, camera.y);
 
   return 0;
 }

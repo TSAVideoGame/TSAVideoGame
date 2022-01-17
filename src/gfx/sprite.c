@@ -7,7 +7,7 @@
 
 #include "core/logger/logger.h"
 
-#define MAX_SPRITES 1000
+#define MAX_SPRITES 1000000
 #define MAX_Z  10000.0f
 #define MIN_Z -10000.0f
 
@@ -29,7 +29,6 @@
 unsigned int sprite_vao;
 unsigned int sprite_vbo;
 unsigned int sprite_ebo;
-float        sprite_buffer[MAX_SPRITES * 4 * VERTEX_ATTRIBS];
 unsigned int sprite_indices[MAX_SPRITES * 6];
 
 int JIN_gfx_sprite_init(void)
@@ -45,8 +44,6 @@ int JIN_gfx_sprite_init(void)
   }
 
   /* Resources */
-  JIN_resm_add("GFX_sprite_model", "res/models/square.mdld", RESM_MODEL);
-  // model not needed
   JIN_resm_add("sprite_shader", "res/shaders/sprite.shdr", RESM_SHADER);
   JIN_resm_add("spritesheet", "res/images/spritesheet.png", RESM_PNG);
 
@@ -63,9 +60,9 @@ int JIN_gfx_sprite_init(void)
   glGenBuffers(1, &sprite_vbo);
   glGenBuffers(1, &sprite_ebo);
 
+  /* Orphaning/Buffer re-specification used */
   glBindVertexArray(sprite_vao);
   glBindBuffer(GL_ARRAY_BUFFER, sprite_vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, sprite_buffer, GL_DYNAMIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sprite_ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_SPRITES * 6 * sizeof(unsigned int), sprite_indices, GL_STATIC_DRAW);
@@ -105,11 +102,8 @@ int JIN_gfx_sprite_quit(void)
  * @return
  *   Success
  */
-int JIN_gfx_sprite_draw(void)
+static int prepare_buffer(void *buffer, int x, int y)
 {
-  unsigned int *shader = JIN_resm_get("sprite_shader");
-  unsigned int *texture = JIN_resm_get("spritesheet");
-
   struct JEL_Query q;
   JEL_QUERY(q, Position, Sprite);
   
@@ -128,31 +122,35 @@ int JIN_gfx_sprite_draw(void)
 
     // TODO: Skip sprites outside of the screen
     for (JEL_EntityInt i = 1; i < q.tables[t]->count; ++i) {
-      #define SPRITE_BUFFER_IDX(index) sprite_buffer[(sprite_num * VERTEX_ATTRIBS * 4) + index]
+      if (pos.x[i] + sprite.w[i] < x || pos.x[i] > x + WINDOW_WIDTH ||
+          pos.y[i] + sprite.h[i] < y || pos.y[i] > y + WINDOW_HEIGHT)
+        continue;
+
+      #define SPRITE_BUFFER_IDX(index) ((float *) buffer)[(sprite_num * VERTEX_ATTRIBS * 4) + index]
       /* Top right */
-      SPRITE_BUFFER_IDX( 0) = pos.x[i] + sprite.w[i];
-      SPRITE_BUFFER_IDX( 1) = pos.y[i];
+      SPRITE_BUFFER_IDX( 0) = pos.x[i] + sprite.w[i] - x;
+      SPRITE_BUFFER_IDX( 1) = pos.y[i]               - y;
       SPRITE_BUFFER_IDX( 2) = sprite.z[i];
       SPRITE_BUFFER_IDX( 3) = sprite.tx[i] + sprite.tw[i] - sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX( 4) = sprite.ty[i];
 
       /* Bottom right */
-      SPRITE_BUFFER_IDX( 5) = pos.x[i] + sprite.w[i];
-      SPRITE_BUFFER_IDX( 6) = pos.y[i] + sprite.h[i];
+      SPRITE_BUFFER_IDX( 5) = pos.x[i] + sprite.w[i] - x;
+      SPRITE_BUFFER_IDX( 6) = pos.y[i] + sprite.h[i] - y;
       SPRITE_BUFFER_IDX( 7) = sprite.z[i];
       SPRITE_BUFFER_IDX( 8) = sprite.tx[i] + sprite.tw[i] - sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX( 9) = sprite.ty[i] + sprite.th[i];
 
       /* Bottom left */
-      SPRITE_BUFFER_IDX(10) = pos.x[i];
-      SPRITE_BUFFER_IDX(11) = pos.y[i] + sprite.h[i];
+      SPRITE_BUFFER_IDX(10) = pos.x[i]               - x;
+      SPRITE_BUFFER_IDX(11) = pos.y[i] + sprite.h[i] - y;
       SPRITE_BUFFER_IDX(12) = sprite.z[i];
       SPRITE_BUFFER_IDX(13) = sprite.tx[i] + sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX(14) = sprite.ty[i] + sprite.th[i];
 
       /* Top left */
-      SPRITE_BUFFER_IDX(15) = pos.x[i];
-      SPRITE_BUFFER_IDX(16) = pos.y[i];
+      SPRITE_BUFFER_IDX(15) = pos.x[i] - x;
+      SPRITE_BUFFER_IDX(16) = pos.y[i] - y;
       SPRITE_BUFFER_IDX(17) = sprite.z[i];
       SPRITE_BUFFER_IDX(18) = sprite.tx[i] + sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX(19) = sprite.ty[i];
@@ -164,7 +162,15 @@ int JIN_gfx_sprite_draw(void)
   }
 
   JEL_query_destroy(&q);
- 
+
+  return sprite_num;
+}
+
+int JIN_gfx_sprite_draw(int x, int y)
+{
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  unsigned int *texture = JIN_resm_get("spritesheet");
+
   /* OpenGL Drawing stuff */
   glUseProgram(*shader);
 
@@ -172,7 +178,14 @@ int JIN_gfx_sprite_draw(void)
   glBindTexture(GL_TEXTURE_2D, *texture);
 
   glBindVertexArray(sprite_vao);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, sprite_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, sprite_vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, NULL, GL_DYNAMIC_DRAW);
+  GLfloat *buffer = (GLfloat *) glMapBufferRange(GL_ARRAY_BUFFER, 0, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+
+  int sprite_num = prepare_buffer(buffer, x, y);
+
+  glUnmapBuffer(GL_ARRAY_BUFFER);
+
   glDrawElements(GL_TRIANGLES, sprite_num * 6, GL_UNSIGNED_INT, 0);
 
   glBindVertexArray(0);
