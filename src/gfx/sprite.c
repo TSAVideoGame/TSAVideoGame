@@ -180,7 +180,7 @@ int JIN_gfx_sprite_draw(int x, int y)
   glBindVertexArray(sprite_vao);
   glBindBuffer(GL_ARRAY_BUFFER, sprite_vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, NULL, GL_DYNAMIC_DRAW);
-  GLfloat *buffer = (GLfloat *) glMapBufferRange(GL_ARRAY_BUFFER, 0, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+  GLfloat *buffer = (GLfloat *) glMapBufferRange(GL_ARRAY_BUFFER, 0, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
   int sprite_num = prepare_buffer(buffer, x, y);
 
