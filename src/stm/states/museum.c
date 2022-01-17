@@ -10,13 +10,15 @@
 
 #define TILE_SIZE 32
 
-
 /*
  * MUSEUM
  *
  * This is a museum level, whether
  * it's an actual level or procedurally
  * generated shouldn't matter
+ *
+ * Make sure you set these variables below before
+ * you queue/push this state
  */
 int  *map_meta;
 char *map_tiles;
@@ -24,7 +26,7 @@ char *map_items;
 char *map_collisions;
 
 static int map_x, map_y;
-static JEL_Entity* tiles;
+static JEL_Entity *tiles;
 static JEL_Entity player;
 static struct { int x; int y; } camera;
 
@@ -73,7 +75,7 @@ static int museum_fn_create(struct STM_S *state)
   }
 
   player = JEL_entity_create();
-  JEL_SET(player, Position, 256, 256);
+  JEL_SET(player, Position, spawn_x, spawn_y);
   JEL_SET(player, Physics, 0, 0, 0, 0);
   JEL_SET(player, Sprite, 1, TILE_SIZE, TILE_SIZE, 0, 0, 16, 16, 0);
   JEL_SET(player, Animation, (struct JIN_Animd *) JIN_resm_get("player_animation"), 1, 0, 0);
@@ -82,7 +84,7 @@ static int museum_fn_create(struct STM_S *state)
   return 0;
 }
 
-static int museum_fn_destroy(struct STM_S* state)
+static int museum_fn_destroy(struct STM_S *state)
 {
   for (int i = 0; i < map_x * map_y; ++i) {
     JEL_entity_destroy(tiles[i]);
@@ -170,10 +172,10 @@ static int player_movement(void)
 
   /* Animation */
   if (JIN_input.keys.w || JIN_input.keys.a || JIN_input.keys.s || JIN_input.keys.d) {
-      JIN_anim_set(player, "RUN");
+    JIN_anim_set(player, "RUN");
   }
   else {
-      JIN_anim_set(player, "IDLE");
+    JIN_anim_set(player, "IDLE");
   }
 
   return 0;
@@ -253,14 +255,14 @@ static int museum_fn_update(struct STM_S *state)
   return 0;
 }
 
-static int museum_fn_draw(struct STM_S* state)
+static int museum_fn_draw(struct STM_S *state)
 {
   JIN_gfx_sprite_draw(camera.x, camera.y);
 
   return 0;
 }
 
-int JIN_states_create_museum(struct STM_S* state)
+int JIN_states_create_museum(struct STM_S *state)
 {
   if (STM_s_create(state, 0, museum_fn_create, museum_fn_destroy, museum_fn_update, museum_fn_draw)) return -1;
   return 0;
