@@ -166,6 +166,36 @@ static int prepare_buffer(void *buffer, int x, int y)
   return sprite_num;
 }
 
+/* Some ugly emscripten stuff */
+#ifdef __EMSCRIPTEN__
+float buffer[VERTEX_ATTRIBS * MAX_SPRITES * 4];
+
+int JIN_gfx_sprite_draw(int x, int y)
+{
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  unsigned int *texture = JIN_resm_get("spritesheet");
+
+  /* OpenGL Drawing stuff */
+  glUseProgram(*shader);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, *texture);
+
+  int sprite_num = prepare_buffer(buffer, x, y);
+  
+  glBindVertexArray(sprite_vao);
+  glBindBuffer(GL_ARRAY_BUFFER, sprite_vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, buffer, GL_DYNAMIC_DRAW);
+
+  glDrawElements(GL_TRIANGLES, sprite_num * 6, GL_UNSIGNED_INT, 0);
+
+  glBindVertexArray(0);
+
+  return 0;  
+}
+
+#else
+
 int JIN_gfx_sprite_draw(int x, int y)
 {
   unsigned int *shader = JIN_resm_get("sprite_shader");
@@ -192,3 +222,5 @@ int JIN_gfx_sprite_draw(int x, int y)
 
   return 0;  
 }
+
+#endif
