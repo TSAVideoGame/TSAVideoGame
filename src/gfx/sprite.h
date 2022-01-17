@@ -18,6 +18,6 @@ JEL_COMPONENT(Sprite, z, w, h, tx, ty, tw, th, dir);
 int JIN_gfx_sprite_init(void);
 int JIN_gfx_sprite_quit(void);
 
-int JIN_gfx_sprite_draw(void);
+int JIN_gfx_sprite_draw(int x, int y);
 
 #endif
