@@ -1,6 +1,10 @@
 #include "stm/stm.h"
 #include <JEL/jel.h>
+#include <signal.h> 
+#include <unistd.h> 
 #include "resm/resm.h"
+#include <time.h>
+#include <stdio.h>
 #include "gfx/gfx.h"
 #include "components/components.h"
 #include "core/core.h"
@@ -9,6 +13,7 @@
 #define ASCII_0 48
 
 #define TILE_SIZE 32
+
 
 /*
  * MUSEUM
@@ -69,6 +74,25 @@ static int museum_fn_destroy(struct STM_S *state)
   return 0;
 }
 
+ int player_time(float mv) {
+     float seconds = 0;
+     void handleAlarm(int sig) { // Handles the signal alarm
+         if (mv >= 5) {
+             seconds = 0;
+         }
+         seconds++;
+         //printf("\rElapsed time : %f", seconds);
+         alarm(1); // Sends alarm signal after one second 
+     }
+     setbuf(stdout, NULL);
+
+     //printf("\rElapsed time : %f", seconds);
+     signal(SIGALRM, handle); // Assigns a handler for the alarm signal 
+     alarm(1); // Sends alarm signal after one second 
+     while (1); // Prevents the process from terminating 
+     return seconds;
+}
+
 /*
  * Probably put player movement into a different function
  * Figure out a 'friction' for the player
@@ -83,16 +107,22 @@ static int player_movement(void)
   struct Physics phys;
   JEL_GET(player, Physics, &phys);
   if (JIN_input.keys.a || JIN_input.keys.d) {
+
     if (JIN_input.keys.a) {
       JEL_SET_PROP(player, Sprite, dir, 1);
-      phys.x_accel = -1 * accel + accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel));
+      phys.x_accel = -1 * accel + accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel)); 
+      phys.x_vel = -1 * player_time(max_vel) * phys.x_accel;
       JEL_SET_PROP(player, Physics, x_accel, phys.x_accel);
+      JEL_SET_PROP(player, Physics, x_vel, phys.x_vel);
     }
-    else {
+    if (JIN_input.keys.d) {
       JEL_SET_PROP(player, Sprite, dir, 0);
       phys.x_accel = accel - accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel));
+      phys.x_vel = player_time(max_vel) * phys.x_accel;
       JEL_SET_PROP(player, Physics, x_accel, phys.x_accel);
+      JEL_SET_PROP(player, Physics, x_vel, phys.x_vel);
     }
+    
   }
   else {
     phys.x_accel = phys.x_vel / -2;
@@ -102,11 +132,15 @@ static int player_movement(void)
   if (JIN_input.keys.w || JIN_input.keys.s) {
     if (JIN_input.keys.w) {
       phys.y_accel = -1 * accel + accel * ((phys.y_vel * phys.y_vel) / (max_vel * max_vel));
+      phys.y_vel = player_time(max_vel) * phys.y_accel;
       JEL_SET_PROP(player, Physics, y_accel, phys.y_accel);
+      JEL_SET_PROP(player, Physics, y_vel, phys.y_vel);
     }
-    else {
+    if (JIN_input.keys.s) {
       phys.y_accel = accel - accel * ((phys.y_vel * phys.y_vel) / (max_vel * max_vel));
+      phys.y_vel = player_time(max_vel) * phys.y_accel;
       JEL_SET_PROP(player, Physics, y_accel, phys.y_accel);
+      JEL_SET_PROP(player, Physics, y_vel, phys.y_vel);
     }
   }
   else {
