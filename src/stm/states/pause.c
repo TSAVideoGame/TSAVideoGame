@@ -98,7 +98,7 @@ static int pause_fn_update(struct STM_S *state)
 
 static int pause_fn_draw(struct STM_S *state)
 {
-  JIN_gfx_sprite_draw();
+  JIN_gfx_sprite_draw(0, 0);
   
   return 0;
 }

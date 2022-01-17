@@ -60,10 +60,12 @@ int JIN_gll(void);
   GLFN(const GLubyte *, glGetStringi,              GLenum, GLuint) \
   GLFN(GLint,           glGetUniformLocation,      GLuint, const GLchar *) \
   GLFN(void,            glLinkProgram,             GLuint) \
+  GLFN(void *,          glMapBufferRange,          GLenum, GLintptr, GLsizeiptr, GLbitfield) \
   GLFN(void,            glShaderSource,            GLuint, GLsizei, const GLchar **, const GLint *) \
   GLFN(void,            glUniform2f,               GLint, GLfloat, GLfloat) \
   GLFN(void,            glUniform3f,               GLint, GLfloat, GLfloat, GLfloat) \
   GLFN(void,            glUniformMatrix4fv,        GLint, GLsizei, GLboolean, const GLfloat *) \
+  GLFN(GLboolean,       glUnmapBuffer,             GLenum) \
   GLFN(void,            glUseProgram,              GLuint) \
   GLFN(void,            glVertexAttribPointer,     GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid *) \
 
