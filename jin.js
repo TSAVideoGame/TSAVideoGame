@@ -208,7 +208,7 @@ Module['FS_createPath']("/res", "sounds", true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/dodger.png", "start": 10716, "end": 11390}, {"filename": "/res/images/tiles.png", "start": 11390, "end": 12064}, {"filename": "/res/images/test_image.png", "start": 12064, "end": 54631}, {"filename": "/res/images/spritesheet.png", "start": 54631, "end": 55305}, {"filename": "/res/images/buttons.png", "start": 55305, "end": 55784}, {"filename": "/res/sounds/nujabes.wav", "start": 55784, "end": 46470650, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46470650, "end": 75001488, "audio": 1}], "remote_package_size": 75001488, "package_uuid": "78f09a0f-3420-4bf0-ab6c-e0351f83c8f5"});
+   loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/dodger.png", "start": 10716, "end": 11390}, {"filename": "/res/images/tiles.png", "start": 11390, "end": 12064}, {"filename": "/res/images/test_image.png", "start": 12064, "end": 54631}, {"filename": "/res/images/spritesheet.png", "start": 54631, "end": 55305}, {"filename": "/res/images/buttons.png", "start": 55305, "end": 55784}, {"filename": "/res/sounds/nujabes.wav", "start": 55784, "end": 46470650, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46470650, "end": 75001488, "audio": 1}], "remote_package_size": 75001488, "package_uuid": "cd65bc57-b902-42bc-ad70-ed1cc9bf7d1a"});
   
   })();
   
@@ -1435,7 +1435,7 @@ function updateGlobalBufferAndViews(buf) {
 var TOTAL_STACK = 5242880;
 if (Module['TOTAL_STACK']) assert(TOTAL_STACK === Module['TOTAL_STACK'], 'the stack size can no longer be determined at runtime')
 
-var INITIAL_MEMORY = Module['INITIAL_MEMORY'] || 33554432;
+var INITIAL_MEMORY = Module['INITIAL_MEMORY'] || 134217728;
 if (!Object.getOwnPropertyDescriptor(Module, 'INITIAL_MEMORY')) {
   Object.defineProperty(Module, 'INITIAL_MEMORY', {
     configurable: true,
@@ -1453,7 +1453,7 @@ assert(typeof Int32Array !== 'undefined' && typeof Float64Array !== 'undefined' 
 
 // If memory is defined in wasm, the user can't provide it.
 assert(!Module['wasmMemory'], 'Use of `wasmMemory` detected.  Use -s IMPORTED_MEMORY to define wasmMemory externally');
-assert(INITIAL_MEMORY == 33554432, 'Detected runtime INITIAL_MEMORY setting.  Use -s IMPORTED_MEMORY to define wasmMemory dynamically');
+assert(INITIAL_MEMORY == 134217728, 'Detected runtime INITIAL_MEMORY setting.  Use -s IMPORTED_MEMORY to define wasmMemory dynamically');
 
 // include: runtime_init_table.js
 // In regular non-RELOCATABLE mode the table is exported
@@ -1830,7 +1830,7 @@ function createWasm() {
     // This assertion doesn't hold when emscripten is run in --post-link
     // mode.
     // TODO(sbc): Read INITIAL_MEMORY out of the wasm file in post-link mode.
-    //assert(wasmMemory.buffer.byteLength === 33554432);
+    //assert(wasmMemory.buffer.byteLength === 134217728);
     updateGlobalBufferAndViews(wasmMemory.buffer);
 
     wasmTable = Module['asm']['__indirect_function_table'];
@@ -8492,63 +8492,6 @@ var ASM_CONSTS = {
   
     }
 
-  function emscriptenWebGLGetBufferBinding(target) {
-      switch (target) {
-        case 0x8892 /*GL_ARRAY_BUFFER*/: target = 0x8894 /*GL_ARRAY_BUFFER_BINDING*/; break;
-        case 0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/: target = 0x8895 /*GL_ELEMENT_ARRAY_BUFFER_BINDING*/; break;
-        case 0x88EB /*GL_PIXEL_PACK_BUFFER*/: target = 0x88ED /*GL_PIXEL_PACK_BUFFER_BINDING*/; break;
-        case 0x88EC /*GL_PIXEL_UNPACK_BUFFER*/: target = 0x88EF /*GL_PIXEL_UNPACK_BUFFER_BINDING*/; break;
-        case 0x8C8E /*GL_TRANSFORM_FEEDBACK_BUFFER*/: target = 0x8C8F /*GL_TRANSFORM_FEEDBACK_BUFFER_BINDING*/; break;
-        case 0x8F36 /*GL_COPY_READ_BUFFER*/: target = 0x8F36 /*GL_COPY_READ_BUFFER_BINDING*/; break;
-        case 0x8F37 /*GL_COPY_WRITE_BUFFER*/: target = 0x8F37 /*GL_COPY_WRITE_BUFFER_BINDING*/; break;
-        case 0x8A11 /*GL_UNIFORM_BUFFER*/: target = 0x8A28 /*GL_UNIFORM_BUFFER_BINDING*/; break;
-        // In default case, fall through and assume passed one of the _BINDING enums directly.
-      }
-      var buffer = GLctx.getParameter(target);
-      if (buffer) return buffer.name|0;
-      else return 0;
-    }
-  
-  function emscriptenWebGLValidateMapBufferTarget(target) {
-      switch (target) {
-        case 0x8892: // GL_ARRAY_BUFFER
-        case 0x8893: // GL_ELEMENT_ARRAY_BUFFER
-        case 0x8F36: // GL_COPY_READ_BUFFER
-        case 0x8F37: // GL_COPY_WRITE_BUFFER
-        case 0x88EB: // GL_PIXEL_PACK_BUFFER
-        case 0x88EC: // GL_PIXEL_UNPACK_BUFFER
-        case 0x8C2A: // GL_TEXTURE_BUFFER
-        case 0x8C8E: // GL_TRANSFORM_FEEDBACK_BUFFER
-        case 0x8A11: // GL_UNIFORM_BUFFER
-          return true;
-        default:
-          return false;
-      }
-    }
-  function _glMapBufferRange(target, offset, length, access) {
-      if (access != 0x1A && access != 0xA) {
-        err("glMapBufferRange is only supported when access is MAP_WRITE|INVALIDATE_BUFFER");
-        return 0;
-      }
-  
-      if (!emscriptenWebGLValidateMapBufferTarget(target)) {
-        GL.recordError(0x500/*GL_INVALID_ENUM*/);
-        err('GL_INVALID_ENUM in glMapBufferRange');
-        return 0;
-      }
-  
-      var mem = _malloc(length);
-      if (!mem) return 0;
-  
-      GL.mappedBuffers[emscriptenWebGLGetBufferBinding(target)] = {
-        offset: offset,
-        length: length,
-        mem: mem,
-        access: access,
-      };
-      return mem;
-    }
-
   function _glShaderSource(shader, count, string, length) {
       var source = GL.getSource(shader, count, string, length);
   
@@ -8706,32 +8649,6 @@ var ASM_CONSTS = {
         var view = HEAPF32.subarray((value)>>2, (value+count*64)>>2);
       }
       GLctx.uniformMatrix4fv(webglGetUniformLocation(location), !!transpose, view);
-    }
-
-  function _glUnmapBuffer(target) {
-      if (!emscriptenWebGLValidateMapBufferTarget(target)) {
-        GL.recordError(0x500/*GL_INVALID_ENUM*/);
-        err('GL_INVALID_ENUM in glUnmapBuffer');
-        return 0;
-      }
-  
-      var buffer = emscriptenWebGLGetBufferBinding(target);
-      var mapping = GL.mappedBuffers[buffer];
-      if (!mapping) {
-        GL.recordError(0x502 /* GL_INVALID_OPERATION */);
-        err('buffer was never mapped in glUnmapBuffer');
-        return 0;
-      }
-      GL.mappedBuffers[buffer] = null;
-  
-      if (!(mapping.access & 0x10)) /* GL_MAP_FLUSH_EXPLICIT_BIT */
-        if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
-          GLctx.bufferSubData(target, mapping.offset, HEAPU8, mapping.mem, mapping.length);
-        } else {
-          GLctx.bufferSubData(target, mapping.offset, HEAPU8.subarray(mapping.mem, mapping.mem+mapping.length));
-        }
-      _free(mapping.mem);
-      return 1;
     }
 
   function _glUseProgram(program) {
@@ -9115,14 +9032,12 @@ var asmLibraryArg = {
   "glGetShaderiv": _glGetShaderiv,
   "glGetUniformLocation": _glGetUniformLocation,
   "glLinkProgram": _glLinkProgram,
-  "glMapBufferRange": _glMapBufferRange,
   "glShaderSource": _glShaderSource,
   "glTexImage2D": _glTexImage2D,
   "glTexParameteri": _glTexParameteri,
   "glUniform2f": _glUniform2f,
   "glUniform3f": _glUniform3f,
   "glUniformMatrix4fv": _glUniformMatrix4fv,
-  "glUnmapBuffer": _glUnmapBuffer,
   "glUseProgram": _glUseProgram,
   "glVertexAttribPointer": _glVertexAttribPointer,
   "setTempRet0": _setTempRet0
