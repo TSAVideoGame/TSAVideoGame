@@ -102,7 +102,7 @@ int JIN_gfx_sprite_quit(void)
  * @return
  *   Success
  */
-static int prepare_buffer(void *buffer)
+static int prepare_buffer(void *buffer, int x, int y)
 {
   struct JEL_Query q;
   JEL_QUERY(q, Position, Sprite);
@@ -122,35 +122,35 @@ static int prepare_buffer(void *buffer)
 
     // TODO: Skip sprites outside of the screen
     for (JEL_EntityInt i = 1; i < q.tables[t]->count; ++i) {
-      if (pos.x[i] + sprite.w[i] < 0 || pos.x[i] > WINDOW_WIDTH ||
-          pos.y[i] + sprite.h[i] < 0 || pos.y[i] > WINDOW_HEIGHT)
+      if (pos.x[i] + sprite.w[i] < x || pos.x[i] > x + WINDOW_WIDTH ||
+          pos.y[i] + sprite.h[i] < y || pos.y[i] > y + WINDOW_HEIGHT)
         continue;
 
       #define SPRITE_BUFFER_IDX(index) ((float *) buffer)[(sprite_num * VERTEX_ATTRIBS * 4) + index]
       /* Top right */
-      SPRITE_BUFFER_IDX( 0) = pos.x[i] + sprite.w[i];
-      SPRITE_BUFFER_IDX( 1) = pos.y[i];
+      SPRITE_BUFFER_IDX( 0) = pos.x[i] + sprite.w[i] - x;
+      SPRITE_BUFFER_IDX( 1) = pos.y[i]               - y;
       SPRITE_BUFFER_IDX( 2) = sprite.z[i];
       SPRITE_BUFFER_IDX( 3) = sprite.tx[i] + sprite.tw[i] - sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX( 4) = sprite.ty[i];
 
       /* Bottom right */
-      SPRITE_BUFFER_IDX( 5) = pos.x[i] + sprite.w[i];
-      SPRITE_BUFFER_IDX( 6) = pos.y[i] + sprite.h[i];
+      SPRITE_BUFFER_IDX( 5) = pos.x[i] + sprite.w[i] - x;
+      SPRITE_BUFFER_IDX( 6) = pos.y[i] + sprite.h[i] - y;
       SPRITE_BUFFER_IDX( 7) = sprite.z[i];
       SPRITE_BUFFER_IDX( 8) = sprite.tx[i] + sprite.tw[i] - sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX( 9) = sprite.ty[i] + sprite.th[i];
 
       /* Bottom left */
-      SPRITE_BUFFER_IDX(10) = pos.x[i];
-      SPRITE_BUFFER_IDX(11) = pos.y[i] + sprite.h[i];
+      SPRITE_BUFFER_IDX(10) = pos.x[i]               - x;
+      SPRITE_BUFFER_IDX(11) = pos.y[i] + sprite.h[i] - y;
       SPRITE_BUFFER_IDX(12) = sprite.z[i];
       SPRITE_BUFFER_IDX(13) = sprite.tx[i] + sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX(14) = sprite.ty[i] + sprite.th[i];
 
       /* Top left */
-      SPRITE_BUFFER_IDX(15) = pos.x[i];
-      SPRITE_BUFFER_IDX(16) = pos.y[i];
+      SPRITE_BUFFER_IDX(15) = pos.x[i] - x;
+      SPRITE_BUFFER_IDX(16) = pos.y[i] - y;
       SPRITE_BUFFER_IDX(17) = sprite.z[i];
       SPRITE_BUFFER_IDX(18) = sprite.tx[i] + sprite.tw[i] * sprite.dir[i];
       SPRITE_BUFFER_IDX(19) = sprite.ty[i];
@@ -166,7 +166,7 @@ static int prepare_buffer(void *buffer)
   return sprite_num;
 }
 
-int JIN_gfx_sprite_draw(void)
+int JIN_gfx_sprite_draw(int x, int y)
 {
   unsigned int *shader = JIN_resm_get("sprite_shader");
   unsigned int *texture = JIN_resm_get("spritesheet");
@@ -182,7 +182,7 @@ int JIN_gfx_sprite_draw(void)
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, NULL, GL_DYNAMIC_DRAW);
   GLfloat *buffer = (GLfloat *) glMapBufferRange(GL_ARRAY_BUFFER, 0, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 
-  int sprite_num = prepare_buffer(buffer);
+  int sprite_num = prepare_buffer(buffer, x, y);
 
   glUnmapBuffer(GL_ARRAY_BUFFER);
 
