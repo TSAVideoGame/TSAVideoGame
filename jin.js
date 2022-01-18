@@ -208,7 +208,7 @@ Module['FS_createPath']("/res", "sounds", true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/dodger.png", "start": 10716, "end": 11390}, {"filename": "/res/images/tiles.png", "start": 11390, "end": 12064}, {"filename": "/res/images/test_image.png", "start": 12064, "end": 54631}, {"filename": "/res/images/spritesheet.png", "start": 54631, "end": 55305}, {"filename": "/res/images/buttons.png", "start": 55305, "end": 55784}, {"filename": "/res/sounds/nujabes.wav", "start": 55784, "end": 46470650, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46470650, "end": 75001488, "audio": 1}], "remote_package_size": 75001488, "package_uuid": "7a9bcde4-6b78-41be-abd4-9c8c0d7eb7a6"});
+   loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/spritesheet.png", "start": 10716, "end": 11612}, {"filename": "/res/sounds/nujabes.wav", "start": 11612, "end": 46426478, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46426478, "end": 74957316, "audio": 1}], "remote_package_size": 74957316, "package_uuid": "e8a745be-dd8f-4ef9-ad77-d5eaa812c63c"});
   
   })();
   
@@ -1923,8 +1923,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  14804: function() {alert("Confirm to begin")},  
- 14830: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
+  11220: function() {alert("Confirm to begin")},  
+ 11246: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
 };
 
 
@@ -8250,15 +8250,6 @@ var ASM_CONSTS = {
       }
     }
 
-  function _glDrawArrays(mode, first, count) {
-      // bind any client-side buffers
-      GL.preDrawHandleClientVertexAttribBindings(first + count);
-  
-      GLctx.drawArrays(mode, first, count);
-  
-      GL.postDrawHandleClientVertexAttribBindings();
-    }
-
   function _glDrawElements(mode, count, type, indices) {
       var buf;
       if (!GLctx.currentElementArrayBufferBinding) {
@@ -8611,14 +8602,7 @@ var ASM_CONSTS = {
         GL.recordError(0x502/*GL_INVALID_OPERATION*/);
       }
     }
-  function _glUniform2f(location, v0, v1) {
-      GLctx.uniform2f(webglGetUniformLocation(location), v0, v1);
-    }
-
-  function _glUniform3f(location, v0, v1, v2) {
-      GLctx.uniform3f(webglGetUniformLocation(location), v0, v1, v2);
-    }
-
+  
   var miniTempWebGLFloatBuffers = [];
   function _glUniformMatrix4fv(location, count, transpose, value) {
   
@@ -9029,7 +9013,6 @@ var asmLibraryArg = {
   "glDeleteShader": _glDeleteShader,
   "glDeleteTextures": _glDeleteTextures,
   "glDeleteVertexArrays": _glDeleteVertexArrays,
-  "glDrawArrays": _glDrawArrays,
   "glDrawElements": _glDrawElements,
   "glEnable": _glEnable,
   "glEnableVertexAttribArray": _glEnableVertexAttribArray,
@@ -9044,8 +9027,6 @@ var asmLibraryArg = {
   "glShaderSource": _glShaderSource,
   "glTexImage2D": _glTexImage2D,
   "glTexParameteri": _glTexParameteri,
-  "glUniform2f": _glUniform2f,
-  "glUniform3f": _glUniform3f,
   "glUniformMatrix4fv": _glUniformMatrix4fv,
   "glUseProgram": _glUseProgram,
   "glVertexAttribPointer": _glVertexAttribPointer,
