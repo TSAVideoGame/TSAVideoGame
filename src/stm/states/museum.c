@@ -31,12 +31,24 @@ static JEL_Entity player;
 static struct { int x; int y; } camera;
 
 /* Collision functions */
+static int  check_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
+{
+  return (x1 < x2 + w2 &&
+          x1 + w1 > x2 &&
+          y1 < y2 + h2 &&
+          y1 + h1 > y2);
+}
 static void dummy_collision_fn(JEL_Entity self, JEL_Entity other) { return; }
 static void tile_collision_fn(JEL_Entity tile, JEL_Entity other)
 {
 
 }
-
+static void door_collision_fn(JEL_Entity tile, JEL_Entity other)
+{
+  if (JIN_input.keys.o) {
+    JIN_stm_queue("LVL_SEL", 0);
+  }
+}
 static int museum_fn_create(struct STM_S *state)
 {
   map_x = map_meta[0];
@@ -58,11 +70,16 @@ static int museum_fn_create(struct STM_S *state)
         case 1:
           col_fn = tile_collision_fn;
           break;
+        case 2:
+          col_fn = door_collision_fn;
+          break;
         default:
-          col_fn = dummy_collision_fn;
+          col_fn = NULL;
           break;
       }
-      JEL_SET(tiles[i], AABB, TILE_SIZE, TILE_SIZE, col_fn);
+      if (col_fn) {
+        JEL_SET(tiles[i], AABB, TILE_SIZE, TILE_SIZE, col_fn);
+      }
     }
     /* Item */
     switch (map_items[i]) {
@@ -181,6 +198,7 @@ static int player_movement(void)
   return 0;
 }
 
+enum tflags {TL = 1, TR = 2, BL = 4, BR = 8};
 static int player_collisions(void)
 {
   struct Position player_pos;
@@ -197,12 +215,77 @@ static int player_collisions(void)
   indices[2] = (tile_y + 1) * map_x + tile_x;
   indices[3] = (tile_y + 1) * map_x + tile_x + 1;
 
+  char flag = 0;
+
+  struct Position pos_p, pos_t;
+  struct AABB     col_p, col_t;
+  JEL_GET(player, Position, &pos_p);
+  JEL_GET(player, AABB, &col_p);
   for (int i = 0; i < 4; ++i) {
     if (JEL_CHECK(tiles[indices[i]], AABB)) {
-      struct AABB col;
-      JEL_GET(tiles[indices[i]], AABB, &col);
-      col.on_collision(tiles[indices[i]], player);
+      JEL_GET(tiles[indices[i]], Position, &pos_t);
+      JEL_GET(tiles[indices[i]], AABB, &col_t);
+      int collision = check_collision(pos_p.x, pos_p.y, col_p.w, col_p.h, pos_t.x, pos_t.y, col_t.w, col_t.h);
+      if (col_t.on_collision == tile_collision_fn) {
+        flag |= (1 << i);
+      }
+      else {
+        if (collision) col_t.on_collision(tiles[indices[i]], player);
+      }
     }
+  }
+
+  if (flag) {
+    struct Physics phys_p;
+    JEL_GET(player, Physics, &phys_p);
+    
+    switch (flag) {
+      /* Two tile cases */
+      case TL + TR:
+        pos_p.y = (tile_y + 1) * TILE_SIZE;
+        phys_p.y_vel = 0;
+        break;
+      case TL + BL:
+        pos_p.x = (tile_x + 1) * TILE_SIZE;
+        phys_p.x_vel = 0;
+        break;
+      case BL + BR:
+        pos_p.y = tile_y * TILE_SIZE;
+        phys_p.y_vel = 0;
+        break;
+      case TR + BR:
+        pos_p.x = tile_x * TILE_SIZE;
+        phys_p.x_vel = 0;
+        break;
+      /* Three tile cases */
+      case TL + TR + BL:
+        pos_p.x = (tile_x + 1) * TILE_SIZE;
+        pos_p.y = (tile_y + 1) * TILE_SIZE;
+        phys_p.x_vel = 0;
+        phys_p.y_vel = 0;
+        break;
+      case TL + TR + BR:
+        pos_p.x = tile_x * TILE_SIZE;
+        pos_p.y = (tile_y + 1) * TILE_SIZE;
+        phys_p.x_vel = 0;
+        phys_p.y_vel = 0;
+        break;
+      case TL + BL + BR:
+        pos_p.x = (tile_x + 1) * TILE_SIZE;
+        pos_p.y = tile_y * TILE_SIZE;
+        phys_p.x_vel = 0;
+        phys_p.y_vel = 0;
+        break;
+      case TR + BL + BR:
+        pos_p.x = tile_x * TILE_SIZE;
+        pos_p.y = tile_y * TILE_SIZE;
+        phys_p.x_vel = 0;
+        phys_p.y_vel = 0;
+        break;
+    }
+
+    JEL_SET_STRUCT(player, Position, pos_p);
+    JEL_SET_STRUCT(player, Physics, phys_p);
   }
 
   return 0;
@@ -248,7 +331,7 @@ static int museum_fn_update(struct STM_S *state)
   
   update_camera();
 
-  if (JIN_input.keys.o == 1) {
+  if (JIN_input.keys.p == 1) {
     JIN_stm_queue("PAUSE", STM_PERSIST_PREV);
   }
 
