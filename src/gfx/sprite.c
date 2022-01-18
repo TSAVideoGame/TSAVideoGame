@@ -63,6 +63,9 @@ int JIN_gfx_sprite_init(void)
   /* Orphaning/Buffer re-specification used */
   glBindVertexArray(sprite_vao);
   glBindBuffer(GL_ARRAY_BUFFER, sprite_vbo);
+  #ifdef __EMSCRIPTEN__
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, buffer, GL_DYNAMIC_DRAW);
+  #endif
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sprite_ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_SPRITES * 6 * sizeof(unsigned int), sprite_indices, GL_STATIC_DRAW);
@@ -185,7 +188,7 @@ int JIN_gfx_sprite_draw(int x, int y)
   
   glBindVertexArray(sprite_vao);
   glBindBuffer(GL_ARRAY_BUFFER, sprite_vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, buffer, GL_DYNAMIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * VERTEX_ATTRIBS * MAX_SPRITES * 4, buffer);
 
   glDrawElements(GL_TRIANGLES, sprite_num * 6, GL_UNSIGNED_INT, 0);
 
