@@ -14,6 +14,7 @@
   X(a) \
   X(d) \
   X(o) \
+  X(p) \
   X(s) \
   X(w) \
 
@@ -39,6 +40,7 @@ struct JIN_Input {
   input.keys.a  = 0; \
   input.keys.d  = 0; \
   input.keys.o  = 0; \
+  input.keys.p  = 0; \
   input.keys.s  = 0; \
   input.keys.w  = 0; \
 
