@@ -208,7 +208,7 @@ Module['FS_createPath']("/res", "sounds", true, true);
     }
   
    }
-   loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/dodger.png", "start": 10716, "end": 11390}, {"filename": "/res/images/tiles.png", "start": 11390, "end": 12064}, {"filename": "/res/images/test_image.png", "start": 12064, "end": 54631}, {"filename": "/res/images/spritesheet.png", "start": 54631, "end": 55305}, {"filename": "/res/images/buttons.png", "start": 55305, "end": 55784}, {"filename": "/res/sounds/nujabes.wav", "start": 55784, "end": 46470650, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46470650, "end": 75001488, "audio": 1}], "remote_package_size": 75001488, "package_uuid": "cd65bc57-b902-42bc-ad70-ed1cc9bf7d1a"});
+   loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/dodger.png", "start": 10716, "end": 11390}, {"filename": "/res/images/tiles.png", "start": 11390, "end": 12064}, {"filename": "/res/images/test_image.png", "start": 12064, "end": 54631}, {"filename": "/res/images/spritesheet.png", "start": 54631, "end": 55305}, {"filename": "/res/images/buttons.png", "start": 55305, "end": 55784}, {"filename": "/res/sounds/nujabes.wav", "start": 55784, "end": 46470650, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46470650, "end": 75001488, "audio": 1}], "remote_package_size": 75001488, "package_uuid": "7a9bcde4-6b78-41be-abd4-9c8c0d7eb7a6"});
   
   })();
   
@@ -8165,6 +8165,14 @@ var ASM_CONSTS = {
       }
     }
 
+  function _glBufferSubData(target, offset, size, data) {
+      if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
+        GLctx.bufferSubData(target, offset, HEAPU8, data, size);
+        return;
+      }
+      GLctx.bufferSubData(target, offset, HEAPU8.subarray(data, data+size));
+    }
+
   function _glClear(x0) { GLctx['clear'](x0) }
 
   function _glClearColor(x0, x1, x2, x3) { GLctx['clearColor'](x0, x1, x2, x3) }
@@ -9011,6 +9019,7 @@ var asmLibraryArg = {
   "glBindTexture": _glBindTexture,
   "glBindVertexArray": _glBindVertexArray,
   "glBufferData": _glBufferData,
+  "glBufferSubData": _glBufferSubData,
   "glClear": _glClear,
   "glClearColor": _glClearColor,
   "glCompileShader": _glCompileShader,
