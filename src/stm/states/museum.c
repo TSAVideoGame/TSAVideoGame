@@ -49,6 +49,10 @@ static void door_collision_fn(JEL_Entity tile, JEL_Entity other)
     JIN_stm_queue("LVL_SEL", 0);
   }
 }
+static void artifact_collision_fn(JEL_Entity item, JEL_Entity other)
+{
+  JEL_entity_destroy(item);
+}
 static int museum_fn_create(struct STM_S *state)
 {
   map_x = map_meta[0];
@@ -81,11 +85,18 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(tiles[i], AABB, TILE_SIZE, TILE_SIZE, col_fn);
       }
     }
+    JEL_Entity new_item;
     /* Item */
     switch (map_items[i]) {
       case 1:
-        spawn_x = i % map_y * TILE_SIZE;
-        spawn_y = i / map_y * TILE_SIZE;
+        spawn_x = i % map_x * TILE_SIZE;
+        spawn_y = i / map_x * TILE_SIZE;
+        break;
+      case 2:
+        new_item = JEL_entity_create();
+        JEL_SET(new_item, Position, i % map_x * TILE_SIZE, i / map_x * TILE_SIZE);
+        JEL_SET(new_item, Sprite, 1, TILE_SIZE, TILE_SIZE, 160, 16, 32, 32, 0);
+        JEL_SET(new_item, AABB, TILE_SIZE, TILE_SIZE, artifact_collision_fn);
         break;
       default: break;
     }
@@ -110,6 +121,20 @@ static int museum_fn_destroy(struct STM_S *state)
   free(tiles);
 
   JEL_entity_destroy(player);
+
+  /* Not ideal but it works for now */
+  struct JEL_Query q;
+  JEL_QUERY(q, Sprite);
+  for (unsigned int t = 0; t < q.count; ++t) {
+    struct JEL_EntityCIt e;
+    JEL_IT(e, q.tables[t], JEL_EntityC);
+
+    int i = q.tables[t]->count;
+    while (i > 1) {
+      JEL_entity_destroy(e.entity[i--]);
+    }
+  }
+  JEL_query_destroy(&q);
 
   return 0;
 }
@@ -288,6 +313,27 @@ static int player_collisions(void)
     JEL_SET_STRUCT(player, Physics, phys_p);
   }
 
+  /* Non tile collisions (like items and guards) */
+  struct JEL_Query q;
+  JEL_QUERY(q, Position, AABB);
+  for (unsigned int t = 0; t < q.count; ++t) {
+    struct JEL_EntityCIt e;
+    struct PositionIt pos;
+    struct AABBIt col;
+    JEL_IT(e,   q.tables[t], JEL_EntityC);
+    JEL_IT(pos, q.tables[t], Position);
+    JEL_IT(col, q.tables[t], AABB);
+
+    unsigned int count = q.tables[t]->count; /* Count will change */
+    for (unsigned int i = 0; i < count; ++i) {
+      if (check_collision(pos_p.x, pos_p.y, col_p.w, col_p.h, pos.x[i], pos.y[i], col.w[i], col.h[i])) {
+        col.on_collision[i](e.entity[i], player);
+        if (q.tables[t]->count < count) --i;
+      }
+    }
+  }
+  JEL_query_destroy(&q);
+
   return 0;
 }
 
@@ -324,11 +370,10 @@ static int museum_fn_update(struct STM_S *state)
     }
   }
 
-
   JEL_query_destroy(&q);
   
   player_collisions();
-  
+
   update_camera();
 
   if (JIN_input.keys.p == 1) {
