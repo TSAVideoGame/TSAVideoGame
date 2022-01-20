@@ -7,7 +7,7 @@
 
 #include "core/logger/logger.h"
 
-#define MAX_SPRITES 1000000
+#define MAX_SPRITES 100000
 #define MAX_Z  10000.0f
 #define MIN_Z -10000.0f
 
