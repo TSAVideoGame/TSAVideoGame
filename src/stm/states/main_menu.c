@@ -19,18 +19,11 @@ static void to_lvlsel(void)
 {
   JIN_stm_queue("LVL_SEL", 0);
 }
-
-static void to_quit(void)
-{
-  LOG(LOG, "Hi!");
-}
-
-#define MAIN_MENU_BTNS 2
+#define MAIN_MENU_BTNS 1
 JEL_Entity btns[MAIN_MENU_BTNS];
 
 #define MAIN_MENU_LIST \
-  X(0, 448, 320, 64, 32, to_lvlsel, "buttons", 0, 16, 64, 32, 1, 0) \
-  X(1, 448, 368, 64, 32, to_quit, "buttons", 64, 16, 64, 32, 0, 0)
+  X(0, 448, 320, 64, 32, to_lvlsel, "buttons", 64, 112, 64, 32, 1, 0) \
 
 JEL_Entity cursor;
 static int menu_hovered = 0;
@@ -48,7 +41,7 @@ static int main_menu_fn_create(struct STM_S *state)
 
   cursor = JEL_entity_create();
   JEL_SET(cursor, Position, 400, 320);
-  JEL_SET(cursor, Sprite, 0, 32, 32, 0, 0, 16, 16, 1);
+  JEL_SET(cursor, Sprite, 0, 32, 32, 64, 0, 16, 16, 0);
 
   return 0;
 }

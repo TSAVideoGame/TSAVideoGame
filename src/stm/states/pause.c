@@ -26,8 +26,8 @@ static void to_back_lvlsel()
 }
 
 #define PAUSE_LIST \
-  X(0, 448, 320, 64, 32, to_back_museum, 0, 16, 64, 32, 0, 1) \
-  X(1, 448, 368, 64, 32, to_back_lvlsel, 0, 16, 64, 32, 0, 0) \
+  X(0, 448, 320, 64, 32, to_back_museum, 128, 112, 64, 32, 0, 1) \
+  X(1, 448, 368, 64, 32, to_back_lvlsel, 192, 112, 64, 32, 0, 0) \
 
 static int pause_fn_create(struct STM_S *state)
 {
@@ -42,7 +42,7 @@ static int pause_fn_create(struct STM_S *state)
 
   pause_vars.cursor = JEL_entity_create();
   JEL_SET(pause_vars.cursor, Position, 400, 320);
-  JEL_SET(pause_vars.cursor, Sprite, 1001, 32, 32, 0, 0, 16, 16, 0);
+  JEL_SET(pause_vars.cursor, Sprite, 1001, 32, 32, 64, 0, 16, 16, 0);
   
   pause_vars.screen = JEL_entity_create();
   JEL_SET(pause_vars.screen, Position, 0, 0);
