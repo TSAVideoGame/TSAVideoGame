@@ -33,10 +33,11 @@ JEL_COMPONENT(AABB, w, h, on_collision);
 
 struct Guard {
   int state;
+  int ticks;
   void (*patrol)(JEL_Entity, JEL_Entity);
   void (*chase)(JEL_Entity, JEL_Entity);
   void (*search)(JEL_Entity, JEL_Entity);
 };
-JEL_COMPONENT(Guard, state, patrol, chase, search);
+JEL_COMPONENT(Guard, state, ticks, patrol, chase, search);
 
 #endif
