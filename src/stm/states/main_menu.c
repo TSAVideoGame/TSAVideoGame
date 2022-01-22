@@ -28,6 +28,10 @@ JEL_Entity btns[MAIN_MENU_BTNS];
 JEL_Entity cursor;
 static int menu_hovered = 0;
 
+struct {
+  JEL_Entity title;
+} main_menu_vars;
+
 static int main_menu_fn_create(struct STM_S *state)
 {
   #define X(n, xp, yp, wp, hp, fnp, txtp, txtx, txty, txtw, txth, hovp, dir) \
@@ -43,6 +47,10 @@ static int main_menu_fn_create(struct STM_S *state)
   JEL_SET(cursor, Position, 400, 320);
   JEL_SET(cursor, Sprite, 0, 32, 32, 64, 0, 16, 16, 0);
 
+  main_menu_vars.title = JEL_entity_create();
+  JEL_SET(main_menu_vars.title, Position, 352, 32);
+  JEL_SET(main_menu_vars.title, Sprite, 0, 256, 256, 0, 144, 128, 128, 0);
+
   return 0;
 }
 
@@ -53,6 +61,7 @@ static int main_menu_fn_destroy(struct STM_S *state)
   }
 
   JEL_entity_destroy(cursor);
+  JEL_entity_destroy(main_menu_vars.title);
   
   return 0;
 }
