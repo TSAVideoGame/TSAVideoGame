@@ -20,7 +20,7 @@
  * Make sure you set these variables below before
  * you queue/push this state
  */
-int  *map_meta;
+int   map_meta[2];
 char *map_tiles;
 char *map_items;
 char *map_collisions;
@@ -217,6 +217,10 @@ static int museum_fn_destroy(struct STM_S *state)
   }
   JEL_query_destroy(&q);
 
+  free(map_tiles);
+  free(map_items);
+  free(map_collisions);
+
   return 0;
 }
 
@@ -407,7 +411,7 @@ static int player_collisions(void)
     JEL_IT(col, q.tables[t], AABB);
 
     unsigned int count = q.tables[t]->count; /* Count will change */
-    for (unsigned int i = 0; i < q.tables[t]->count; ++i) {
+    for (unsigned int i = 1; i < q.tables[t]->count; ++i) {
       if (e.entity[i] == player) continue;
       if (check_collision(pos_p.x, pos_p.y, col_p.w, col_p.h, pos.x[i], pos.y[i], col.w[i], col.h[i])) {
         col.on_collision[i](e.entity[i], player);
