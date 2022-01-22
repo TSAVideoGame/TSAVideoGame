@@ -134,6 +134,7 @@ Module['FS_createPath']("/res", "animations", true, true);
 Module['FS_createPath']("/res", "shaders", true, true);
 Module['FS_createPath']("/res", "models", true, true);
 Module['FS_createPath']("/res", "images", true, true);
+Module['FS_createPath']("/res", "maps", true, true);
 Module['FS_createPath']("/res", "sounds", true, true);
 
       /** @constructor */
@@ -202,7 +203,7 @@ Module['FS_createPath']("/res", "sounds", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/spritesheet_backup.png", "start": 10716, "end": 11612}, {"filename": "/res/images/spritesheet.png", "start": 11612, "end": 12508}, {"filename": "/res/sounds/nujabes.wav", "start": 12508, "end": 46427374, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46427374, "end": 74958212, "audio": 1}], "remote_package_size": 74958212, "package_uuid": "511bf22f-fd4a-4b30-acd3-5f57a553051f"});
+    loadPackage({"files": [{"filename": "/res/animations/player.animd", "start": 0, "end": 88}, {"filename": "/res/animations/player.animd.txt", "start": 88, "end": 163}, {"filename": "/res/shaders/sprite.shdr", "start": 163, "end": 201}, {"filename": "/res/shaders/3d_v.glsl", "start": 201, "end": 622}, {"filename": "/res/shaders/3d_f.glsl", "start": 622, "end": 1131}, {"filename": "/res/shaders/sprite_f.glsl", "start": 1131, "end": 1446}, {"filename": "/res/shaders/3d.shdr", "start": 1446, "end": 1476}, {"filename": "/res/shaders/sprite_v.glsl", "start": 1476, "end": 1716}, {"filename": "/res/models/square.mdld", "start": 1716, "end": 1844}, {"filename": "/res/models/space_ship.mdld", "start": 1844, "end": 4696}, {"filename": "/res/models/square.mdld.txt", "start": 4696, "end": 5305}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5305, "end": 10716}, {"filename": "/res/images/spritesheet_backup.png", "start": 10716, "end": 11612}, {"filename": "/res/images/spritesheet.png", "start": 11612, "end": 13370}, {"filename": "/res/maps/lvl2.tgmf", "start": 13370, "end": 15178}, {"filename": "/res/maps/lvl3.tgmf", "start": 15178, "end": 16986}, {"filename": "/res/maps/lvl6.tgmf", "start": 16986, "end": 18794}, {"filename": "/res/maps/test_map.tgmf", "start": 18794, "end": 22402}, {"filename": "/res/maps/lvl1.tgmf", "start": 22402, "end": 24210}, {"filename": "/res/maps/lvl10.tgmf", "start": 24210, "end": 26018}, {"filename": "/res/maps/lvl9.tgmf", "start": 26018, "end": 27826}, {"filename": "/res/maps/lvl5.tgmf", "start": 27826, "end": 29634}, {"filename": "/res/maps/lvl4.tgmf", "start": 29634, "end": 31442}, {"filename": "/res/maps/lvl8.tgmf", "start": 31442, "end": 33250}, {"filename": "/res/maps/lvl7.tgmf", "start": 33250, "end": 35058}, {"filename": "/res/sounds/nujabes.wav", "start": 35058, "end": 46449924, "audio": 1}, {"filename": "/res/sounds/L.wav", "start": 46449924, "end": 74980762, "audio": 1}], "remote_package_size": 74980762, "package_uuid": "30e1afa5-dae5-4a3e-921f-c49ebedb75cb"});
 
   })();
 
@@ -1909,8 +1910,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  11496: function() {alert("Confirm to begin")},  
- 11522: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
+  7912: function() {alert("Confirm to begin")},  
+ 7938: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window)}
 };
 
 
