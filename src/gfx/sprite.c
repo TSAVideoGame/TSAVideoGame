@@ -7,7 +7,7 @@
 
 #include "core/logger/logger.h"
 
-#define MAX_SPRITES 1000000
+#define MAX_SPRITES 100000
 #define MAX_Z  10000.0f
 #define MIN_Z -10000.0f
 
@@ -30,6 +30,10 @@ unsigned int sprite_vao;
 unsigned int sprite_vbo;
 unsigned int sprite_ebo;
 unsigned int sprite_indices[MAX_SPRITES * 6];
+
+#ifdef __EMSCRIPTEN__
+float buffer[VERTEX_ATTRIBS * MAX_SPRITES * 4];
+#endif
 
 int JIN_gfx_sprite_init(void)
 {
@@ -171,7 +175,6 @@ static int prepare_buffer(void *buffer, int x, int y)
 
 /* Some ugly emscripten stuff */
 #ifdef __EMSCRIPTEN__
-float buffer[VERTEX_ATTRIBS * MAX_SPRITES * 4];
 
 int JIN_gfx_sprite_draw(int x, int y)
 {
