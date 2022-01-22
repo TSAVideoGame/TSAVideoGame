@@ -16,6 +16,7 @@
   X(AABB) \
   X(Animation) \
   X(UI_btn) \
+  X(Guard) \
 
 static int init_components(void)
 {
