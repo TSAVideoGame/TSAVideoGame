@@ -129,9 +129,8 @@ static int museum_fn_destroy(struct STM_S *state)
     struct JEL_EntityCIt e;
     JEL_IT(e, q.tables[t], JEL_EntityC);
 
-    int i = q.tables[t]->count;
-    while (i > 1) {
-      JEL_entity_destroy(e.entity[i--]);
+    for (unsigned int i = 1; q.tables[t]->count > 1;) {
+      JEL_entity_destroy(e.entity[i]);
     }
   }
   JEL_query_destroy(&q);
@@ -157,6 +156,7 @@ int player_time(float mv) {
     alarm(1); // Sends alarm signal after one second 
     while (1); // Prevents the process from terminating 
     return seconds;
+
 }
 */
 
@@ -325,10 +325,14 @@ static int player_collisions(void)
     JEL_IT(col, q.tables[t], AABB);
 
     unsigned int count = q.tables[t]->count; /* Count will change */
-    for (unsigned int i = 0; i < count; ++i) {
+    for (unsigned int i = 0; i < q.tables[t]->count; ++i) {
+      if (e.entity[i] == player) continue;
       if (check_collision(pos_p.x, pos_p.y, col_p.w, col_p.h, pos.x[i], pos.y[i], col.w[i], col.h[i])) {
         col.on_collision[i](e.entity[i], player);
-        if (q.tables[t]->count < count) --i;
+        if (q.tables[t]->count < count) {
+          --i; /* Stay on i because last record swaps with the just deleted record */
+          count = q.tables[t]->count;
+        }
       }
     }
   }
