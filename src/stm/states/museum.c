@@ -55,7 +55,7 @@ static void artifact_collision_fn(JEL_Entity item, JEL_Entity other)
 }
 static void guard_collision_fn(JEL_Entity guard, JEL_Entity player)
 {
-  JIN_stm_queue("LVL_SEL", 0);
+  //JIN_stm_queue("LVL_SEL", 0);
 }
 static void guard_patrol_vertical(JEL_Entity guard, JEL_Entity player)
 {
@@ -249,8 +249,8 @@ int player_time(float mv) {
  */
 static int player_movement(void)
 {
-  float accel = .5;
-  float max_vel = 5;
+  float accel = 1;
+  float max_vel = 7;
 
   struct Physics phys;
   JEL_GET(player, Physics, &phys);
@@ -258,39 +258,31 @@ static int player_movement(void)
     if (JIN_input.keys.a) {
       JEL_SET_PROP(player, Sprite, dir, 1);
       phys.x_accel = -1 * accel + accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel));
-      //phys.x_vel = -1 * player_time(max_vel) * phys.x_accel;
       JEL_SET_PROP(player, Physics, x_accel, phys.x_accel);
-      JEL_SET_PROP(player, Physics, x_vel, phys.x_vel);
     }
     if (JIN_input.keys.d) {
         JEL_SET_PROP(player, Sprite, dir, 0);
         phys.x_accel = accel - accel * ((phys.x_vel * phys.x_vel) / (max_vel * max_vel));
-        //phys.x_vel = player_time(max_vel) * phys.x_accel;
         JEL_SET_PROP(player, Physics, x_accel, phys.x_accel);
-        JEL_SET_PROP(player, Physics, x_vel, phys.x_vel);
     }
   }
   else {
-    phys.x_accel = phys.x_vel / -2;
+    phys.x_accel = -(phys.x_vel / max_vel) * accel;
     JEL_SET_PROP(player, Physics, x_accel, phys.x_accel);
   }
 
   if (JIN_input.keys.w || JIN_input.keys.s) {
     if (JIN_input.keys.w) {
       phys.y_accel = -1 * accel + accel * ((phys.y_vel * phys.y_vel) / (max_vel * max_vel));
-      //phys.y_vel = player_time(max_vel) * phys.y_accel;
       JEL_SET_PROP(player, Physics, y_accel, phys.y_accel);
-      JEL_SET_PROP(player, Physics, y_vel, phys.y_vel);
     }
     if (JIN_input.keys.s) {
       phys.y_accel = accel - accel * ((phys.y_vel * phys.y_vel) / (max_vel * max_vel));
-      //phys.y_vel = player_time(max_vel) * phys.y_accel;
       JEL_SET_PROP(player, Physics, y_accel, phys.y_accel);
-      JEL_SET_PROP(player, Physics, y_vel, phys.y_vel);
     }
   }
   else {
-    phys.y_accel = phys.y_vel / -2;
+      phys.y_accel = -(phys.y_vel / max_vel) * accel;
     JEL_SET_PROP(player, Physics, y_accel, phys.y_accel);
   }
 
