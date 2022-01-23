@@ -78,7 +78,7 @@ static void guard_patrol_vertical(JEL_Entity guard, JEL_Entity player)
   indices[3] = (tile_y + 1) * map_x + tile_x + 1;
 
   if (map_collisions[indices[2]]) {
-    guard_phys.y_vel -= 5; 
+    guard_phys.y_vel -= 5;
   }
   if (map_collisions[indices[0]]) {
     guard_phys.y_vel += 5; 
@@ -90,6 +90,7 @@ static void guard_patrol_horizontal(JEL_Entity guard, JEL_Entity player)
 {
   struct Position guard_pos; JEL_GET(guard, Position, &guard_pos);
   struct Physics guard_phys; JEL_GET(guard, Physics, &guard_phys);
+  struct Sprite guard_sprite; JEL_GET(guard, Sprite, &guard_sprite);
 
   int tile_x = guard_pos.x / TILE_SIZE;
   int tile_y = guard_pos.y / TILE_SIZE;
@@ -104,9 +105,15 @@ static void guard_patrol_horizontal(JEL_Entity guard, JEL_Entity player)
 
   if (map_collisions[indices[1]]) {
     guard_phys.x_vel -= 5; 
+    if (guard_sprite.dir != 1) {
+      JEL_SET_PROP(guard, Sprite, dir, 1);
+    }
   }
   if (map_collisions[indices[0]]) {
     guard_phys.x_vel += 5; 
+    if (guard_sprite.dir != 0) {
+      JEL_SET_PROP(guard, Sprite, dir, 0);
+    }
   }
 
   JEL_SET_STRUCT(guard, Physics, guard_phys);
@@ -167,6 +174,7 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(new_item, AABB, TILE_SIZE, TILE_SIZE, guard_collision_fn);
         JEL_SET(new_item, Physics, 0, 5, 0, 0);
         JEL_SET(new_item, Guard, 0, 0, guard_patrol_vertical, dummy_collision_fn, dummy_collision_fn);
+        JEL_SET(new_item, Animation, (struct JIN_Animd *) JIN_resm_get("guard_animation"), 0, 0, 0);
         break;
       case 4: /* Guard */
         new_item = JEL_entity_create();
@@ -175,6 +183,7 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(new_item, AABB, TILE_SIZE, TILE_SIZE, guard_collision_fn);
         JEL_SET(new_item, Physics, 5, 0, 0, 0);
         JEL_SET(new_item, Guard, 0, 0, guard_patrol_horizontal, dummy_collision_fn, dummy_collision_fn);
+        JEL_SET(new_item, Animation, (struct JIN_Animd *) JIN_resm_get("guard_animation"), 0, 0, 0);
         break;
       default: break;
     }
