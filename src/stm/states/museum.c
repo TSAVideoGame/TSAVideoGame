@@ -366,8 +366,62 @@ static int player_collisions(void)
   if (flag) {
     struct Physics phys_p;
     JEL_GET(player, Physics, &phys_p);
-    
+    struct Position one_t;
+
     switch (flag) {
+      /* One tile cases */
+      case TL:
+        JEL_GET(tiles[indices[0]], Position, &one_t);
+        if ((one_t.x + TILE_SIZE) - pos_p.x > (one_t.y + TILE_SIZE) - pos_p.y) {
+          /* Y push */
+          pos_p.y = (tile_y + 1) * TILE_SIZE;
+          phys_p.y_vel = 0;
+        }
+        else {
+          /* X push */
+          pos_p.x = (tile_x + 1) * TILE_SIZE;
+          phys_p.x_vel = 0;
+        }
+        break;
+      case TR:
+        JEL_GET(tiles[indices[1]], Position, &one_t);
+        if ((pos_p.x + TILE_SIZE) - one_t.x > (one_t.y + TILE_SIZE) - pos_p.y) {
+          /* Y push */
+          pos_p.y = (tile_y + 1) * TILE_SIZE;
+          phys_p.y_vel = 0;
+        }
+        else {
+          /* X push */
+          pos_p.x = tile_x * TILE_SIZE;
+          phys_p.x_vel = 0;
+        }
+        break;
+      case BL:
+        JEL_GET(tiles[indices[2]], Position, &one_t);
+        if ((one_t.x + TILE_SIZE) - pos_p.x > (pos_p.y + TILE_SIZE) - one_t.y) {
+          /* Y push */
+          pos_p.y = tile_y * TILE_SIZE;
+          phys_p.y_vel = 0;
+        }
+        else {
+          /* X push */
+          pos_p.x = (tile_x + 1) * TILE_SIZE;
+          phys_p.x_vel = 0;
+        }
+        break;
+      case BR:
+        JEL_GET(tiles[indices[3]], Position, &one_t);
+        if ((pos_p.x + TILE_SIZE) - one_t.x > (pos_p.y + TILE_SIZE) - one_t.y) {
+          /* Y push */
+          pos_p.y = tile_y* TILE_SIZE;
+          phys_p.y_vel = 0;
+        }
+        else {
+          /* X push */
+          pos_p.x = tile_x * TILE_SIZE;
+          phys_p.x_vel = 0;
+        }
+        break;
       /* Two tile cases */
       case TL + TR:
         pos_p.y = (tile_y + 1) * TILE_SIZE;

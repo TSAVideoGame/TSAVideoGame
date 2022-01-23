@@ -55,7 +55,7 @@ int JIN_init(void)
   if (RESM_create(&JIN_resm))                             ERR_EXIT(0, "Could not create a resource manager");
   if (STM_t_create(&JIN_stmt))                            ERR_EXIT(0, "Could not create a state table");
   if (STM_m_create(&JIN_stmm, &JIN_stmt))                 ERR_EXIT(0, "Could not create a state stack");
-  if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/L.wav")) ERR_EXIT(0, "Could not create background music");
+  if (JIN_sndbgm_create(&JIN_sndbgm, "res/sounds/title.wav")) ERR_EXIT(0, "Could not create background music");
 
   return 0;
 }
