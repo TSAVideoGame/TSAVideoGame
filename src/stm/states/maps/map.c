@@ -1,8 +1,8 @@
-#include "test_map.c"
-#include "lvl_1.c"
-#include "lvl_2.c"
+//#include "test_map.c"
+//#include "lvl_1.c"
+//#include "lvl_2.c"
 #include "lvl_3.c"
-#include "lvl_4.c"
+//include "lvl_4.c"
 
 
 

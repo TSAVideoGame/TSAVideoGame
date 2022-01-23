@@ -55,7 +55,7 @@ static void artifact_collision_fn(JEL_Entity item, JEL_Entity other)
 }
 static void guard_collision_fn(JEL_Entity guard, JEL_Entity player)
 {
-  //JIN_stm_queue("LVL_SEL", 0);
+  JIN_stm_queue("LVL_SEL", 0);
 }
 static void guard_patrol_vertical(JEL_Entity guard, JEL_Entity player)
 {
