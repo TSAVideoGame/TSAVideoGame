@@ -30,6 +30,9 @@ static JEL_Entity *tiles;
 static JEL_Entity player;
 static struct { int x; int y; } camera;
 
+extern int artifacts_total;
+extern int artifacts_collected;
+
 /* Collision functions */
 static int  check_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
@@ -46,11 +49,12 @@ static void tile_collision_fn(JEL_Entity tile, JEL_Entity other)
 static void door_collision_fn(JEL_Entity tile, JEL_Entity other)
 {
   if (JIN_input.keys.o) {
-    JIN_stm_queue("LVL_SEL", 0);
+    JIN_stm_queue("GAME_WIN", 0);
   }
 }
 static void artifact_collision_fn(JEL_Entity item, JEL_Entity other)
 {
+  ++artifacts_collected;
   JEL_entity_destroy(item);
 }
 static void guard_collision_fn(JEL_Entity guard, JEL_Entity player)
@@ -112,6 +116,9 @@ static int museum_fn_create(struct STM_S *state)
   map_x = map_meta[0];
   map_y = map_meta[1];
 
+  artifacts_collected = 0;
+  artifacts_total = 0;
+
   tiles = malloc(sizeof(JEL_Entity) * map_x * map_y);
  
   int spawn_x, spawn_y;
@@ -151,6 +158,7 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(new_item, Position, i % map_x * TILE_SIZE, i / map_x * TILE_SIZE);
         JEL_SET(new_item, Sprite, 1, TILE_SIZE, TILE_SIZE, 160, 16, 32, 32, 0);
         JEL_SET(new_item, AABB, TILE_SIZE, TILE_SIZE, artifact_collision_fn);
+        ++artifacts_total;
         break;
       case 3: /* Guard */
         new_item = JEL_entity_create();
