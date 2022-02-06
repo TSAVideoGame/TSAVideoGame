@@ -195,7 +195,9 @@ JIN_THREAD_FN JIN_game_thread(void *data)
   //glEnable(GL_DEBUG_OUTPUT);
   //glDebugMessageCallback(gl_err_callback, 0);
   glEnable(GL_DEPTH_TEST);
- 
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   init_components();
   init_resources();
   init_states();
@@ -228,6 +230,8 @@ int JIN_web_loop(void)
 
   /* INITIALIZE */
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   init_components();
   init_resources();

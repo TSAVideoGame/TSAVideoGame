@@ -53,6 +53,7 @@ static int tgmf_to_map(const char *fpath)
 
   return 0;
 }
+#undef READ
 #include <string.h>
 static void to_museum()
 {
