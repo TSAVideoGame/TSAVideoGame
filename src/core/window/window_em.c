@@ -24,6 +24,7 @@ struct JIN_Window * JIN_window_create(void)
   emscripten_webgl_init_context_attributes(&attribs);
   attribs.renderViaOffscreenBackBuffer = EM_TRUE;
   attribs.explicitSwapControl = EM_TRUE;
+  attribs.premultipliedAlpha = EM_FALSE;
   attribs.majorVersion = 2;
   attribs.minorVersion = 0;
   window->gl_ctx = emscripten_webgl_create_context("#JIN_WINDOW", &attribs);
