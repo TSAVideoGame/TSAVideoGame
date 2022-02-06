@@ -58,7 +58,7 @@ int JIN_gfx_sprite_init(void)
   mat4 projection;
   glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, MIN_Z, MAX_Z, projection);
   glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
-  
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 0.0f);
   /* GL objects */
   glGenVertexArrays(1, &sprite_vao);
   glGenBuffers(1, &sprite_vbo);

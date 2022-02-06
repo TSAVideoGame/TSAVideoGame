@@ -5,6 +5,7 @@
 #include "gfx/sprite.h"
 #include "gfx/gfx.h"
 #include "resm/resm.h"
+#include "core/gll/gll.h"
 
 /* Max of three digits */
 #define DIGITS 3
@@ -20,6 +21,10 @@ int artifacts_collected;
 
 static int game_win_fn_create(struct STM_S *state)
 {
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 0.0f);
+  
   game_win_vars.img = JEL_entity_create();
   JEL_SET(game_win_vars.img, Position, 352, 32);
   JEL_SET(game_win_vars.img, Sprite, 0, 256, 256, 128, 144, 128, 128, 0);

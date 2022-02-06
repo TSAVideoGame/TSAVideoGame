@@ -5,6 +5,7 @@
 #include "components/components.h"
 #include "core/core.h"
 #include "anim/anim.h"
+#include "core/gll/gll.h"
 
 #define ASCII_0 48
 
@@ -133,6 +134,18 @@ static void guard_patrol_horizontal(JEL_Entity guard, JEL_Entity player)
 }
 static int museum_fn_create(struct STM_S *state)
 {
+  /* GL stuff */
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 1.0f);
+  glUniform1f(glGetUniformLocation(*shader, "ambience"), 0.6f);
+  glUniform2f(glGetUniformLocation(*shader, "light.position"), 480.0f, 320.0f);
+  glUniform1f(glGetUniformLocation(*shader, "light.constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(*shader, "light.linear"), 0.001f);
+  glUniform1f(glGetUniformLocation(*shader, "light.quadratic"), 0.0001f);
+
+
+  /* Map stuff */
   map_x = map_meta[0];
   map_y = map_meta[1];
 
@@ -216,6 +229,10 @@ static int museum_fn_create(struct STM_S *state)
 
 static int museum_fn_destroy(struct STM_S *state)
 {
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform1f(glGetUniformLocation(*shader, "ambience"), 1.0f);
+  
   for (int i = 0; i < map_x * map_y; ++i) {
     JEL_entity_destroy(tiles[i]);
   }
@@ -224,6 +241,10 @@ static int museum_fn_destroy(struct STM_S *state)
 
   JEL_entity_destroy(player);
 
+  if (tooltip) {
+    JEL_entity_destroy(tooltip);
+    tooltip = 0;
+  }
 
   struct JEL_Query q;
   JEL_QUERY(q, Guard);
@@ -548,6 +569,16 @@ static void update_guard(void)
   JEL_query_destroy(&q);
 }
 
+static void update_player_light(void)
+{
+  struct Position pos;
+  JEL_GET(player, Position, &pos);
+
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform2f(glGetUniformLocation(*shader, "light.position"), (float) (pos.x - camera.x + 16), (float) (pos.y - camera.y + 16));
+}
+
 static int museum_fn_update(struct STM_S *state)
 {
   JIN_anim_update();
@@ -584,6 +615,7 @@ static int museum_fn_update(struct STM_S *state)
   }
 
   update_camera();
+  update_player_light();
 
   if (JIN_input.keys.p == 1) {
     JIN_stm_queue("PAUSE", STM_PERSIST_PREV);
