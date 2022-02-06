@@ -20,7 +20,7 @@
  * Make sure you set these variables below before
  * you queue/push this state
  */
-int  *map_meta;
+int   map_meta[2];
 char *map_tiles;
 char *map_items;
 char *map_collisions;
@@ -29,6 +29,9 @@ static int map_x, map_y;
 static JEL_Entity *tiles;
 static JEL_Entity player;
 static struct { int x; int y; } camera;
+
+extern int artifacts_total;
+extern int artifacts_collected;
 
 /* Collision functions */
 static int  check_collision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
@@ -46,16 +49,17 @@ static void tile_collision_fn(JEL_Entity tile, JEL_Entity other)
 static void door_collision_fn(JEL_Entity tile, JEL_Entity other)
 {
   if (JIN_input.keys.o) {
-    JIN_stm_queue("LVL_SEL", 0);
+    JIN_stm_queue("GAME_WIN", 0);
   }
 }
 static void artifact_collision_fn(JEL_Entity item, JEL_Entity other)
 {
+  ++artifacts_collected;
   JEL_entity_destroy(item);
 }
 static void guard_collision_fn(JEL_Entity guard, JEL_Entity player)
 {
-  JIN_stm_queue("LVL_SEL", 0);
+  JIN_stm_queue("GAME_OVER", 0);
 }
 static void guard_patrol_vertical(JEL_Entity guard, JEL_Entity player)
 {
@@ -74,7 +78,7 @@ static void guard_patrol_vertical(JEL_Entity guard, JEL_Entity player)
   indices[3] = (tile_y + 1) * map_x + tile_x + 1;
 
   if (map_collisions[indices[2]]) {
-    guard_phys.y_vel -= 5; 
+    guard_phys.y_vel -= 5;
   }
   if (map_collisions[indices[0]]) {
     guard_phys.y_vel += 5; 
@@ -86,6 +90,7 @@ static void guard_patrol_horizontal(JEL_Entity guard, JEL_Entity player)
 {
   struct Position guard_pos; JEL_GET(guard, Position, &guard_pos);
   struct Physics guard_phys; JEL_GET(guard, Physics, &guard_phys);
+  struct Sprite guard_sprite; JEL_GET(guard, Sprite, &guard_sprite);
 
   int tile_x = guard_pos.x / TILE_SIZE;
   int tile_y = guard_pos.y / TILE_SIZE;
@@ -100,9 +105,15 @@ static void guard_patrol_horizontal(JEL_Entity guard, JEL_Entity player)
 
   if (map_collisions[indices[1]]) {
     guard_phys.x_vel -= 5; 
+    if (guard_sprite.dir != 1) {
+      JEL_SET_PROP(guard, Sprite, dir, 1);
+    }
   }
   if (map_collisions[indices[0]]) {
     guard_phys.x_vel += 5; 
+    if (guard_sprite.dir != 0) {
+      JEL_SET_PROP(guard, Sprite, dir, 0);
+    }
   }
 
   JEL_SET_STRUCT(guard, Physics, guard_phys);
@@ -111,6 +122,9 @@ static int museum_fn_create(struct STM_S *state)
 {
   map_x = map_meta[0];
   map_y = map_meta[1];
+
+  artifacts_collected = 0;
+  artifacts_total = 0;
 
   tiles = malloc(sizeof(JEL_Entity) * map_x * map_y);
  
@@ -151,6 +165,7 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(new_item, Position, i % map_x * TILE_SIZE, i / map_x * TILE_SIZE);
         JEL_SET(new_item, Sprite, 1, TILE_SIZE, TILE_SIZE, 160, 16, 32, 32, 0);
         JEL_SET(new_item, AABB, TILE_SIZE, TILE_SIZE, artifact_collision_fn);
+        ++artifacts_total;
         break;
       case 3: /* Guard */
         new_item = JEL_entity_create();
@@ -159,6 +174,7 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(new_item, AABB, TILE_SIZE, TILE_SIZE, guard_collision_fn);
         JEL_SET(new_item, Physics, 0, 5, 0, 0);
         JEL_SET(new_item, Guard, 0, 0, guard_patrol_vertical, dummy_collision_fn, dummy_collision_fn);
+        JEL_SET(new_item, Animation, (struct JIN_Animd *) JIN_resm_get("guard_animation"), 0, 0, 0);
         break;
       case 4: /* Guard */
         new_item = JEL_entity_create();
@@ -167,6 +183,7 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(new_item, AABB, TILE_SIZE, TILE_SIZE, guard_collision_fn);
         JEL_SET(new_item, Physics, 5, 0, 0, 0);
         JEL_SET(new_item, Guard, 0, 0, guard_patrol_horizontal, dummy_collision_fn, dummy_collision_fn);
+        JEL_SET(new_item, Animation, (struct JIN_Animd *) JIN_resm_get("guard_animation"), 0, 0, 0);
         break;
       default: break;
     }
@@ -216,6 +233,10 @@ static int museum_fn_destroy(struct STM_S *state)
     }
   }
   JEL_query_destroy(&q);
+
+  free(map_tiles);
+  free(map_items);
+  free(map_collisions);
 
   return 0;
 }
@@ -337,8 +358,62 @@ static int player_collisions(void)
   if (flag) {
     struct Physics phys_p;
     JEL_GET(player, Physics, &phys_p);
-    
+    struct Position one_t;
+
     switch (flag) {
+      /* One tile cases */
+      case TL:
+        JEL_GET(tiles[indices[0]], Position, &one_t);
+        if ((one_t.x + TILE_SIZE) - pos_p.x > (one_t.y + TILE_SIZE) - pos_p.y) {
+          /* Y push */
+          pos_p.y = (tile_y + 1) * TILE_SIZE;
+          phys_p.y_vel = 0;
+        }
+        else {
+          /* X push */
+          pos_p.x = (tile_x + 1) * TILE_SIZE;
+          phys_p.x_vel = 0;
+        }
+        break;
+      case TR:
+        JEL_GET(tiles[indices[1]], Position, &one_t);
+        if ((pos_p.x + TILE_SIZE) - one_t.x > (one_t.y + TILE_SIZE) - pos_p.y) {
+          /* Y push */
+          pos_p.y = (tile_y + 1) * TILE_SIZE;
+          phys_p.y_vel = 0;
+        }
+        else {
+          /* X push */
+          pos_p.x = tile_x * TILE_SIZE;
+          phys_p.x_vel = 0;
+        }
+        break;
+      case BL:
+        JEL_GET(tiles[indices[2]], Position, &one_t);
+        if ((one_t.x + TILE_SIZE) - pos_p.x > (pos_p.y + TILE_SIZE) - one_t.y) {
+          /* Y push */
+          pos_p.y = tile_y * TILE_SIZE;
+          phys_p.y_vel = 0;
+        }
+        else {
+          /* X push */
+          pos_p.x = (tile_x + 1) * TILE_SIZE;
+          phys_p.x_vel = 0;
+        }
+        break;
+      case BR:
+        JEL_GET(tiles[indices[3]], Position, &one_t);
+        if ((pos_p.x + TILE_SIZE) - one_t.x > (pos_p.y + TILE_SIZE) - one_t.y) {
+          /* Y push */
+          pos_p.y = tile_y* TILE_SIZE;
+          phys_p.y_vel = 0;
+        }
+        else {
+          /* X push */
+          pos_p.x = tile_x * TILE_SIZE;
+          phys_p.x_vel = 0;
+        }
+        break;
       /* Two tile cases */
       case TL + TR:
         pos_p.y = (tile_y + 1) * TILE_SIZE;
@@ -399,7 +474,7 @@ static int player_collisions(void)
     JEL_IT(col, q.tables[t], AABB);
 
     unsigned int count = q.tables[t]->count; /* Count will change */
-    for (unsigned int i = 0; i < q.tables[t]->count; ++i) {
+    for (unsigned int i = 1; i < q.tables[t]->count; ++i) {
       if (e.entity[i] == player) continue;
       if (check_collision(pos_p.x, pos_p.y, col_p.w, col_p.h, pos.x[i], pos.y[i], col.w[i], col.h[i])) {
         col.on_collision[i](e.entity[i], player);

@@ -29,28 +29,56 @@ static void to_menu(void)
 }
 
 #include "maps/map.c"
+#include <stdio.h>
+#define READ(data, count) if (fread(data, sizeof(*data), count, file) != count) { ERR_EXIT(-1, "Could not read from file %s", fpath) }
+static int tgmf_to_map(const char *fpath)
+{
+  FILE *file;
+  
+  if (!(file = fopen(fpath, "rb"))) {
+    ERR_EXIT(-1, "Cannot open file %s", fpath);
+  }
+
+  READ(map_meta, 2);
+  /* TODO error check these mallocs */
+  map_tiles = malloc(map_meta[0] * map_meta[1]);
+  map_items = malloc(map_meta[0] * map_meta[1]);
+  map_collisions = malloc(map_meta[0] * map_meta[1]);
+
+  READ(map_tiles, map_meta[0] * map_meta[1]);
+  READ(map_items, map_meta[0] * map_meta[1]);
+  READ(map_collisions, map_meta[0] * map_meta[1]);
+
+  fclose(file);
+
+  return 0;
+}
+#undef READ
+#include <string.h>
 static void to_museum()
 {
-  map_meta = test_meta;
-  map_tiles = test_tiles;
-  map_items = test_items;
-  map_collisions = test_collisions;
+  int selected = lvlsel_vars.r.y * LVL_SEL_R_COLS + lvlsel_vars.r.x + 1;
+
+  char fpath[32];
+  sprintf(fpath, "res/maps/lvl%d.tgmf", selected);
+
+  tgmf_to_map(fpath);
 
   JIN_stm_queue("MUSEUM", 0);
 }
 
 #define LVL_SEL_LIST \
-  X( 0,  80, 32, 64, 32, to_menu, 0, 16, 64, 32, 0, 1) \
-  X( 1, 256, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X( 2, 384, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X( 3, 512, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X( 4, 640, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X( 5, 768, 32, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X( 6, 256, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X( 7, 384, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X( 8, 512, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X( 9, 640, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
-  X(10, 768, 96, 64, 32, to_museum, 0, 16, 64, 32, 0, 0) \
+  X( 0,  80, 32, 64, 32, to_menu,     0, 112, 64, 32, 0, 1) \
+  X( 1, 256, 32, 64, 32, to_museum,   0,  48, 64, 32, 0, 0) \
+  X( 2, 384, 32, 64, 32, to_museum,  64,  48, 64, 32, 0, 0) \
+  X( 3, 512, 32, 64, 32, to_museum, 128,  48, 64, 32, 0, 0) \
+  X( 4, 640, 32, 64, 32, to_museum, 192,  48, 64, 32, 0, 0) \
+  X( 5, 768, 32, 64, 32, to_museum, 256,  48, 64, 32, 0, 0) \
+  X( 6, 256, 96, 64, 32, to_museum,   0,  80, 64, 32, 0, 0) \
+  X( 7, 384, 96, 64, 32, to_museum,  64,  80, 64, 32, 0, 0) \
+  X( 8, 512, 96, 64, 32, to_museum, 128,  80, 64, 32, 0, 0) \
+  X( 9, 640, 96, 64, 32, to_museum, 192,  80, 64, 32, 0, 0) \
+  X(10, 768, 96, 64, 32, to_museum, 256,  80, 64, 32, 0, 0) \
 
 static int lvlsel_fn_create(struct STM_S *state)
 {
@@ -65,7 +93,7 @@ static int lvlsel_fn_create(struct STM_S *state)
 
   lvlsel_vars.cursor = JEL_entity_create();
   JEL_SET(lvlsel_vars.cursor, Position, 32, 32);
-  JEL_SET(lvlsel_vars.cursor, Sprite, 0, 32, 32, 0, 0, 16, 16, 1);
+  JEL_SET(lvlsel_vars.cursor, Sprite, 0, 32, 32, 64, 0, 16, 16, 0);
   lvlsel_vars.l.y = 0;
   lvlsel_vars.r.x = 0;
   lvlsel_vars.r.y = 0;

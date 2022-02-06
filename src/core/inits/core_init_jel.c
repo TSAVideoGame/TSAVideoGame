@@ -17,6 +17,7 @@
   X(Animation) \
   X(UI_btn) \
   X(Guard) \
+  X(Fixed)
 
 static int init_components(void)
 {

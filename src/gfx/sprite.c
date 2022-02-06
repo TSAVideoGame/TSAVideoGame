@@ -173,6 +173,24 @@ static int prepare_buffer(void *buffer, int x, int y)
   return sprite_num;
 }
 
+static void update_fixed(int x, int y)
+{
+  struct JEL_Query q;
+  JEL_QUERY(q, Position, Fixed);
+
+  for (unsigned int t = 0; t < q.count; ++t) {
+    struct PositionIt pos; JEL_IT(pos, q.tables[t], Position);
+    struct FixedIt cam; JEL_IT(cam, q.tables[t], Fixed);
+
+    for (unsigned int i = 0; i < q.tables[t]->count; ++i) {
+      pos.x[i] = cam.x[i] + x;
+      pos.y[i] = cam.y[i] + y;
+    }
+  }
+
+  JEL_query_destroy(&q);
+}
+
 /* Some ugly emscripten stuff */
 #ifdef __EMSCRIPTEN__
 
@@ -180,6 +198,8 @@ int JIN_gfx_sprite_draw(int x, int y)
 {
   unsigned int *shader = JIN_resm_get("sprite_shader");
   unsigned int *texture = JIN_resm_get("spritesheet");
+
+  update_fixed(x, y);
 
   /* OpenGL Drawing stuff */
   glUseProgram(*shader);
@@ -206,6 +226,8 @@ int JIN_gfx_sprite_draw(int x, int y)
 {
   unsigned int *shader = JIN_resm_get("sprite_shader");
   unsigned int *texture = JIN_resm_get("spritesheet");
+
+  update_fixed(x, y);
 
   /* OpenGL Drawing stuff */
   glUseProgram(*shader);
