@@ -29,6 +29,8 @@ static int map_x, map_y;
 static JEL_Entity *tiles;
 static JEL_Entity player;
 static struct { int x; int y; } camera;
+static int colliding_door;
+static JEL_Entity tooltip;
 
 extern int artifacts_total;
 extern int artifacts_collected;
@@ -48,6 +50,17 @@ static void tile_collision_fn(JEL_Entity tile, JEL_Entity other)
 }
 static void door_collision_fn(JEL_Entity tile, JEL_Entity other)
 {
+  struct Position pos;
+  JEL_GET(tile, Position, &pos);
+
+  colliding_door = 1;
+  
+  if (tooltip == 0) {
+    tooltip = JEL_entity_create();
+    JEL_SET(tooltip, Position, pos.x - 16, pos.y - 32);
+    JEL_SET(tooltip, Sprite, 3, 64, 32, 256, 112, 64, 32)
+  }
+
   if (JIN_input.keys.o) {
     JIN_stm_queue("GAME_WIN", 0);
   }
@@ -126,6 +139,8 @@ static int museum_fn_create(struct STM_S *state)
   artifacts_collected = 0;
   artifacts_total = 0;
 
+  colliding_door = 0;
+
   tiles = malloc(sizeof(JEL_Entity) * map_x * map_y);
  
   int spawn_x, spawn_y;
@@ -133,7 +148,7 @@ static int museum_fn_create(struct STM_S *state)
   for (int i = 0; i < map_x * map_y; ++i) {
     tiles[i] = JEL_entity_create();
     JEL_SET(tiles[i], Position, (i % map_x) * TILE_SIZE, (i / map_x) * TILE_SIZE);
-    JEL_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, map_tiles[i] * 32, 16, 32, 32, 0);
+    JEL_SET(tiles[i], SpriteO, 0, TILE_SIZE, TILE_SIZE, map_tiles[i] * 32, 16, 32, 32, 0);
     /* Collision */
     int coltype = map_collisions[i];
     if (coltype) {
@@ -560,8 +575,13 @@ static int museum_fn_update(struct STM_S *state)
   }
 
   JEL_query_destroy(&q);
-  
+ 
+  colliding_door = 0;
   player_collisions();
+  if (!colliding_door && tooltip) {
+    JEL_entity_destroy(tooltip);
+    tooltip = 0;
+  }
 
   update_camera();
 

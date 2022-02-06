@@ -40,14 +40,14 @@ static int pause_fn_create(struct STM_S *state)
   PAUSE_LIST
   #undef X
 
-  pause_vars.cursor = JEL_entity_create();
-  JEL_SET(pause_vars.cursor, Position, 400, 320);
-  JEL_SET(pause_vars.cursor, Sprite, 1001, 32, 32, 64, 0, 16, 16, 0);
-  
   pause_vars.screen = JEL_entity_create();
   JEL_SET(pause_vars.screen, Position, 0, 0);
   JEL_SET(pause_vars.screen, Sprite, 1000, 960, 640, 7, 6, 1, 1, 0);
  
+  pause_vars.cursor = JEL_entity_create();
+  JEL_SET(pause_vars.cursor, Position, 400, 320);
+  JEL_SET(pause_vars.cursor, Sprite, 1001, 32, 32, 64, 0, 16, 16, 0);
+  
   pause_vars.menu_hovered = 0;
 
   return 0;
