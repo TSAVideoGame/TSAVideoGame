@@ -6,6 +6,7 @@
 #include "gfx/sprite.h"
 #include "gfx/gfx.h"
 #include "resm/resm.h"
+#include "core/gll/gll.h"
 
 #define PAUSE_BTNS 2
 struct {
@@ -31,7 +32,11 @@ static void to_back_lvlsel()
 
 static int pause_fn_create(struct STM_S *state)
 {
-  #define X(n, x, y, w, h, fn, tx, ty, tw, th, dir, hov) \
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 0.0f);
+  
+#define X(n, x, y, w, h, fn, tx, ty, tw, th, dir, hov) \
     pause_vars.btns[n] = JEL_entity_create(); \
     JEL_SET(pause_vars.btns[n], UI_btn, fn, (unsigned int *) JIN_resm_get("spritesheet"), hov); \
     JEL_SET(pause_vars.btns[n], Position, x, y); \
@@ -40,14 +45,14 @@ static int pause_fn_create(struct STM_S *state)
   PAUSE_LIST
   #undef X
 
-  pause_vars.cursor = JEL_entity_create();
-  JEL_SET(pause_vars.cursor, Position, 400, 320);
-  JEL_SET(pause_vars.cursor, Sprite, 1001, 32, 32, 64, 0, 16, 16, 0);
-  
   pause_vars.screen = JEL_entity_create();
   JEL_SET(pause_vars.screen, Position, 0, 0);
   JEL_SET(pause_vars.screen, Sprite, 1000, 960, 640, 7, 6, 1, 1, 0);
  
+  pause_vars.cursor = JEL_entity_create();
+  JEL_SET(pause_vars.cursor, Position, 400, 320);
+  JEL_SET(pause_vars.cursor, Sprite, 1001, 32, 32, 64, 0, 16, 16, 0);
+  
   pause_vars.menu_hovered = 0;
 
   return 0;
@@ -55,6 +60,10 @@ static int pause_fn_create(struct STM_S *state)
 
 static int pause_fn_destroy(struct STM_S *state)
 {
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform1f(glGetUniformLocation(*shader, "ambience"), 0.2f);
+  
   for (JEL_EntityInt i = 0; i < PAUSE_BTNS; ++i) {
     JEL_entity_destroy(pause_vars.btns[i]);
   }

@@ -58,7 +58,7 @@ int JIN_gfx_sprite_init(void)
   mat4 projection;
   glm_ortho(0.0f, (float) WINDOW_WIDTH, (float) WINDOW_HEIGHT, 0.0f, MIN_Z, MAX_Z, projection);
   glUniformMatrix4fv(glGetUniformLocation(*shader, "projection"), 1, GL_FALSE, (float *) projection);
-  
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 0.0f);
   /* GL objects */
   glGenVertexArrays(1, &sprite_vao);
   glGenBuffers(1, &sprite_vbo);
@@ -109,14 +109,75 @@ int JIN_gfx_sprite_quit(void)
  * @return
  *   Success
  */
+static void buffer_add(void *buffer, int num, int cam_x, int cam_y, int x, int y, int w, int h, int tx, int ty, int tw, int th, int z, int dir)
+{
+  #define SPRITE_BUFFER_IDX(index) ((float *) buffer)[(num * VERTEX_ATTRIBS * 4) + index]
+  /* Top right */
+  SPRITE_BUFFER_IDX( 0) = x + w - cam_x;
+  SPRITE_BUFFER_IDX( 1) = y     - cam_y;
+  SPRITE_BUFFER_IDX( 2) = z;
+  SPRITE_BUFFER_IDX( 3) = tx + tw - tw * dir;
+  SPRITE_BUFFER_IDX( 4) = ty;
+
+  /* Bottom right */
+  SPRITE_BUFFER_IDX( 5) = x + w - cam_x;
+  SPRITE_BUFFER_IDX( 6) = y + h - cam_y;
+  SPRITE_BUFFER_IDX( 7) = z;
+  SPRITE_BUFFER_IDX( 8) = tx + tw - tw * dir;
+  SPRITE_BUFFER_IDX( 9) = ty + th;
+
+  /* Bottom left */
+  SPRITE_BUFFER_IDX(10) = x     - cam_x;
+  SPRITE_BUFFER_IDX(11) = y + h - cam_y;
+  SPRITE_BUFFER_IDX(12) = z;
+  SPRITE_BUFFER_IDX(13) = tx + tw * dir;
+  SPRITE_BUFFER_IDX(14) = ty + th;
+
+  /* Top left */
+  SPRITE_BUFFER_IDX(15) = x - cam_x;
+  SPRITE_BUFFER_IDX(16) = y - cam_y;
+  SPRITE_BUFFER_IDX(17) = z;
+  SPRITE_BUFFER_IDX(18) = tx + tw * dir;
+  SPRITE_BUFFER_IDX(19) = ty;
+}
 static int prepare_buffer(void *buffer, int x, int y)
 {
   struct JEL_Query q;
-  JEL_QUERY(q, Position, Sprite);
+  JEL_QUERY(q, Position, SpriteO);
   
   unsigned int sprite_num = 0;
 
   /* Prepare the vbo */
+  for (unsigned int t = 0; t < q.count; ++t) {
+    struct PositionIt pos;
+    struct SpriteOIt sprite;
+    JEL_IT(pos, q.tables[t], Position);
+    JEL_IT(sprite, q.tables[t], SpriteO);
+
+    // TODO: Loop is not parallelized
+    if (sprite_num > MAX_SPRITES)
+      break;
+
+    // TODO: Skip sprites outside of the screen
+    for (JEL_EntityInt i = 1; i < q.tables[t]->count; ++i) {
+      if (pos.x[i] + sprite.w[i] < x || pos.x[i] > x + WINDOW_WIDTH ||
+          pos.y[i] + sprite.h[i] < y || pos.y[i] > y + WINDOW_HEIGHT)
+        continue;
+
+      buffer_add(buffer, sprite_num, x, y, pos.x[i], pos.y[i], sprite.w[i], sprite.h[i],
+          sprite.tx[i], sprite.ty[i], sprite.tw[i], sprite.th[i], sprite.z[i], sprite.dir[i]);
+
+      // TODO: Loop is not parallelized
+      if (++sprite_num > MAX_SPRITES)
+        break;
+    }
+  }
+
+  JEL_query_destroy(&q);
+
+  /* Repeat with transparent objects */
+  JEL_QUERY(q, Position, Sprite);
+  
   for (unsigned int t = 0; t < q.count; ++t) {
     struct PositionIt pos;
     struct SpriteIt sprite;
@@ -133,34 +194,8 @@ static int prepare_buffer(void *buffer, int x, int y)
           pos.y[i] + sprite.h[i] < y || pos.y[i] > y + WINDOW_HEIGHT)
         continue;
 
-      #define SPRITE_BUFFER_IDX(index) ((float *) buffer)[(sprite_num * VERTEX_ATTRIBS * 4) + index]
-      /* Top right */
-      SPRITE_BUFFER_IDX( 0) = pos.x[i] + sprite.w[i] - x;
-      SPRITE_BUFFER_IDX( 1) = pos.y[i]               - y;
-      SPRITE_BUFFER_IDX( 2) = sprite.z[i];
-      SPRITE_BUFFER_IDX( 3) = sprite.tx[i] + sprite.tw[i] - sprite.tw[i] * sprite.dir[i];
-      SPRITE_BUFFER_IDX( 4) = sprite.ty[i];
-
-      /* Bottom right */
-      SPRITE_BUFFER_IDX( 5) = pos.x[i] + sprite.w[i] - x;
-      SPRITE_BUFFER_IDX( 6) = pos.y[i] + sprite.h[i] - y;
-      SPRITE_BUFFER_IDX( 7) = sprite.z[i];
-      SPRITE_BUFFER_IDX( 8) = sprite.tx[i] + sprite.tw[i] - sprite.tw[i] * sprite.dir[i];
-      SPRITE_BUFFER_IDX( 9) = sprite.ty[i] + sprite.th[i];
-
-      /* Bottom left */
-      SPRITE_BUFFER_IDX(10) = pos.x[i]               - x;
-      SPRITE_BUFFER_IDX(11) = pos.y[i] + sprite.h[i] - y;
-      SPRITE_BUFFER_IDX(12) = sprite.z[i];
-      SPRITE_BUFFER_IDX(13) = sprite.tx[i] + sprite.tw[i] * sprite.dir[i];
-      SPRITE_BUFFER_IDX(14) = sprite.ty[i] + sprite.th[i];
-
-      /* Top left */
-      SPRITE_BUFFER_IDX(15) = pos.x[i] - x;
-      SPRITE_BUFFER_IDX(16) = pos.y[i] - y;
-      SPRITE_BUFFER_IDX(17) = sprite.z[i];
-      SPRITE_BUFFER_IDX(18) = sprite.tx[i] + sprite.tw[i] * sprite.dir[i];
-      SPRITE_BUFFER_IDX(19) = sprite.ty[i];
+      buffer_add(buffer, sprite_num, x, y, pos.x[i], pos.y[i], sprite.w[i], sprite.h[i],
+          sprite.tx[i], sprite.ty[i], sprite.tw[i], sprite.th[i], sprite.z[i], sprite.dir[i]);
 
       // TODO: Loop is not parallelized
       if (++sprite_num > MAX_SPRITES)

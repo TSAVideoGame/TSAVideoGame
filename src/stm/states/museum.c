@@ -5,6 +5,7 @@
 #include "components/components.h"
 #include "core/core.h"
 #include "anim/anim.h"
+#include "core/gll/gll.h"
 
 #define ASCII_0 48
 
@@ -29,6 +30,8 @@ static int map_x, map_y;
 static JEL_Entity *tiles;
 static JEL_Entity player;
 static struct { int x; int y; } camera;
+static int colliding_door;
+static JEL_Entity tooltip;
 
 extern int artifacts_total;
 extern int artifacts_collected;
@@ -48,6 +51,17 @@ static void tile_collision_fn(JEL_Entity tile, JEL_Entity other)
 }
 static void door_collision_fn(JEL_Entity tile, JEL_Entity other)
 {
+  struct Position pos;
+  JEL_GET(tile, Position, &pos);
+
+  colliding_door = 1;
+  
+  if (tooltip == 0) {
+    tooltip = JEL_entity_create();
+    JEL_SET(tooltip, Position, pos.x - 16, pos.y - 32);
+    JEL_SET(tooltip, Sprite, 3, 64, 32, 256, 112, 64, 32)
+  }
+
   if (JIN_input.keys.o) {
     JIN_stm_queue("GAME_WIN", 0);
   }
@@ -120,11 +134,25 @@ static void guard_patrol_horizontal(JEL_Entity guard, JEL_Entity player)
 }
 static int museum_fn_create(struct STM_S *state)
 {
+  /* GL stuff */
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 1.0f);
+  glUniform1f(glGetUniformLocation(*shader, "ambience"), 0.6f);
+  glUniform2f(glGetUniformLocation(*shader, "light.position"), 480.0f, 320.0f);
+  glUniform1f(glGetUniformLocation(*shader, "light.constant"), 1.0f);
+  glUniform1f(glGetUniformLocation(*shader, "light.linear"), 0.001f);
+  glUniform1f(glGetUniformLocation(*shader, "light.quadratic"), 0.0001f);
+
+
+  /* Map stuff */
   map_x = map_meta[0];
   map_y = map_meta[1];
 
   artifacts_collected = 0;
   artifacts_total = 0;
+
+  colliding_door = 0;
 
   tiles = malloc(sizeof(JEL_Entity) * map_x * map_y);
  
@@ -133,7 +161,7 @@ static int museum_fn_create(struct STM_S *state)
   for (int i = 0; i < map_x * map_y; ++i) {
     tiles[i] = JEL_entity_create();
     JEL_SET(tiles[i], Position, (i % map_x) * TILE_SIZE, (i / map_x) * TILE_SIZE);
-    JEL_SET(tiles[i], Sprite, 0, TILE_SIZE, TILE_SIZE, map_tiles[i] * 32, 16, 32, 32, 0);
+    JEL_SET(tiles[i], SpriteO, 0, TILE_SIZE, TILE_SIZE, map_tiles[i] * 32, 16, 32, 32, 0);
     /* Collision */
     int coltype = map_collisions[i];
     if (coltype) {
@@ -201,6 +229,10 @@ static int museum_fn_create(struct STM_S *state)
 
 static int museum_fn_destroy(struct STM_S *state)
 {
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform1f(glGetUniformLocation(*shader, "ambience"), 1.0f);
+  
   for (int i = 0; i < map_x * map_y; ++i) {
     JEL_entity_destroy(tiles[i]);
   }
@@ -209,6 +241,10 @@ static int museum_fn_destroy(struct STM_S *state)
 
   JEL_entity_destroy(player);
 
+  if (tooltip) {
+    JEL_entity_destroy(tooltip);
+    tooltip = 0;
+  }
 
   struct JEL_Query q;
   JEL_QUERY(q, Guard);
@@ -533,6 +569,16 @@ static void update_guard(void)
   JEL_query_destroy(&q);
 }
 
+static void update_player_light(void)
+{
+  struct Position pos;
+  JEL_GET(player, Position, &pos);
+
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform2f(glGetUniformLocation(*shader, "light.position"), (float) (pos.x - camera.x + 16), (float) (pos.y - camera.y + 16));
+}
+
 static int museum_fn_update(struct STM_S *state)
 {
   JIN_anim_update();
@@ -560,10 +606,16 @@ static int museum_fn_update(struct STM_S *state)
   }
 
   JEL_query_destroy(&q);
-  
+ 
+  colliding_door = 0;
   player_collisions();
+  if (!colliding_door && tooltip) {
+    JEL_entity_destroy(tooltip);
+    tooltip = 0;
+  }
 
   update_camera();
+  update_player_light();
 
   if (JIN_input.keys.p == 1) {
     JIN_stm_queue("PAUSE", STM_PERSIST_PREV);
