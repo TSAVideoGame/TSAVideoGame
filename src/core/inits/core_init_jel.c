@@ -11,6 +11,7 @@
 
 #define INIT_COMPONENT_LIST \
   X(Position) \
+  X(SpriteO) \
   X(Sprite) \
   X(Physics) \
   X(AABB) \

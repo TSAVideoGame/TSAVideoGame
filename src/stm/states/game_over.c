@@ -5,6 +5,7 @@
 #include "gfx/sprite.h"
 #include "gfx/gfx.h"
 #include "resm/resm.h"
+#include "core/gll/gll.h"
 
 struct {
   JEL_Entity img;
@@ -12,6 +13,10 @@ struct {
 
 static int game_over_fn_create(struct STM_S *state)
 {
+  unsigned int *shader = JIN_resm_get("sprite_shader");
+  glUseProgram(*shader);
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 0.0f);
+  
   game_over_vars.img = JEL_entity_create();
   JEL_SET(game_over_vars.img, Position, 352, 32);
   JEL_SET(game_over_vars.img, Sprite, 0, 256, 256, 256, 144, 128, 128, 0);

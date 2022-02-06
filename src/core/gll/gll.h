@@ -62,6 +62,7 @@ int JIN_gll(void);
   GLFN(void,            glLinkProgram,             GLuint) \
   GLFN(void *,          glMapBufferRange,          GLenum, GLintptr, GLsizeiptr, GLbitfield) \
   GLFN(void,            glShaderSource,            GLuint, GLsizei, const GLchar **, const GLint *) \
+  GLFN(void,            glUniform1f,               GLint, GLfloat) \
   GLFN(void,            glUniform2f,               GLint, GLfloat, GLfloat) \
   GLFN(void,            glUniform3f,               GLint, GLfloat, GLfloat, GLfloat) \
   GLFN(void,            glUniformMatrix4fv,        GLint, GLsizei, GLboolean, const GLfloat *) \
