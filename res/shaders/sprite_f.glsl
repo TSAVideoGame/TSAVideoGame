@@ -13,6 +13,6 @@ void main()
   real_tex_pos /= vec2(textureSize(image, 0));
 
   vec4 tex_color = vec4(texture(image, real_tex_pos));
-  if (tex_color.a < 1.0) discard;
+  //if (tex_color.a < 1.0) discard;
   color = tex_color;
 }

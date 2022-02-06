@@ -40,4 +40,10 @@ struct Guard {
 };
 JEL_COMPONENT(Guard, state, ticks, patrol, chase, search);
 
+struct Fixed {
+  int x;
+  int y;
+};
+JEL_COMPONENT(Fixed, x, y);
+
 #endif
