@@ -6,6 +6,7 @@
 #include "gfx/sprite.h"
 #include "gfx/gfx.h"
 #include "resm/resm.h"
+#include <stdio.h>
 
 /*
  * MAIN MENU
@@ -30,26 +31,63 @@ static int menu_hovered = 0;
 
 struct {
   JEL_Entity title;
+  JEL_Entity overlay;
+  int map_x;
+  int map_y;
+  struct { int x; int y; int dx; int dy; } camera;
 } main_menu_vars;
 
 static int main_menu_fn_create(struct STM_S *state)
 {
+  /* Load the map */
+  FILE *file;
+  if (!(file = fopen("res/maps/title.tgmf", "rb"))) { ERR_EXIT(-1, "Could not open title map file"); }
+  #define READ(data, count) if (fread(data, sizeof(*data), count, file) != count) { ERR_EXIT(-1, "Could not read from file"); }
+  READ(&main_menu_vars.map_x, 1);
+  READ(&main_menu_vars.map_y, 1);
+  char temp;
+  for (unsigned int i = 0; i < main_menu_vars.map_x * main_menu_vars.map_y; ++i) {
+    READ(&temp, 1);
+    JEL_Entity e = JEL_entity_create();
+    JEL_SET(e, Position, (i % main_menu_vars.map_x) * 32, (i / main_menu_vars.map_x) * 32);
+    JEL_SET(e, Sprite, -1, 32, 32, temp * 32, 16, 32, 32, 0);
+  }
+  #undef READ
+  fclose(file);
+
+  /* Main menu stuff */
+
+  main_menu_vars.overlay = JEL_entity_create();
+  JEL_SET(main_menu_vars.overlay, Position, 0, 0);
+  JEL_SET(main_menu_vars.overlay, Sprite, 0, 960, 640, 383, 0, 1, 1, 0);
+  JEL_SET(main_menu_vars.overlay, Fixed, 0, 0);
+
+  /* UI Button stuff */
   #define X(n, xp, yp, wp, hp, fnp, txtp, txtx, txty, txtw, txth, hovp, dir) \
     btns[n] = JEL_entity_create(); \
     JEL_SET(btns[n], UI_btn, fnp, (unsigned int *) JIN_resm_get(txtp), hovp); \
     JEL_SET(btns[n], Position, xp, yp); \
-    JEL_SET(btns[n], Sprite, 0, wp, hp, txtx, txty, txtw, txth, dir); \
+    JEL_SET(btns[n], Sprite, 1, wp, hp, txtx, txty, txtw, txth, dir); \
+    JEL_SET(btns[n], Fixed, xp, yp);
     
   MAIN_MENU_LIST
   #undef X
 
   cursor = JEL_entity_create();
   JEL_SET(cursor, Position, 400, 320);
-  JEL_SET(cursor, Sprite, 0, 32, 32, 64, 0, 16, 16, 0);
+  JEL_SET(cursor, Sprite, 1, 32, 32, 64, 0, 16, 16, 0);
+  JEL_SET(cursor, Fixed, 400, 320);
 
   main_menu_vars.title = JEL_entity_create();
   JEL_SET(main_menu_vars.title, Position, 352, 32);
-  JEL_SET(main_menu_vars.title, Sprite, 0, 256, 256, 0, 144, 128, 128, 0);
+  JEL_SET(main_menu_vars.title, Sprite, 1, 256, 256, 0, 144, 128, 128, 0);
+  JEL_SET(main_menu_vars.title, Fixed, 352, 32);
+
+  main_menu_vars.camera.x = 0;
+  main_menu_vars.camera.y = 0;
+  /* Make sure these are negative */
+  main_menu_vars.camera.dx = -4;
+  main_menu_vars.camera.dy = -8;
 
   return 0;
 }
@@ -60,8 +98,17 @@ static int main_menu_fn_destroy(struct STM_S *state)
     JEL_entity_destroy(btns[i]);
   }
 
-  JEL_entity_destroy(cursor);
-  JEL_entity_destroy(main_menu_vars.title);
+  struct JEL_Query q;
+  JEL_QUERY(q, Sprite);
+  for (unsigned int t = 0; t < q.count; ++t) {
+    struct JEL_EntityCIt e;
+    JEL_IT(e, q.tables[t], JEL_EntityC);
+
+    for (unsigned int i = 1; q.tables[t]->count > 1;) {
+      JEL_entity_destroy(e.entity[i]);
+    }
+  }
+  JEL_query_destroy(&q);
   
   return 0;
 }
@@ -94,12 +141,23 @@ static int main_menu_fn_update(struct STM_S *state)
     btn.fn();
   }
 
+  /* Camera stuff */
+  if (main_menu_vars.camera.x == main_menu_vars.map_x * 32 - 960 || main_menu_vars.camera.x == 0) {
+    main_menu_vars.camera.dx *= -1;
+  }
+  if (main_menu_vars.camera.y == main_menu_vars.map_y * 32 - 640 || main_menu_vars.camera.y == 0) {
+    main_menu_vars.camera.dy *= -1;
+  }
+
+  main_menu_vars.camera.x += main_menu_vars.camera.dx;
+  main_menu_vars.camera.y += main_menu_vars.camera.dy;
+
   return 0;
 }
 
 static int main_menu_fn_draw(struct STM_S *state)
 {
-  JIN_gfx_sprite_draw(0, 0);
+  JIN_gfx_sprite_draw(main_menu_vars.camera.x, main_menu_vars.camera.y);
 
   return 0;
 }
