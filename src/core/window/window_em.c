@@ -10,7 +10,12 @@ struct JIN_Window {
 
 struct JIN_Window * JIN_window_create(void)
 {
-  EM_ASM(var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; document.body.appendChild(window));
+  EM_ASM(
+    var window = document.createElement('canvas');
+    window.id = 'JIN_WINDOW';
+    window.style.backgroundColor = '#000';
+    document.body.appendChild(window)
+  );
 
   struct JIN_Window *window;
 
