@@ -203,7 +203,7 @@ Module['FS_createPath']("/res", "maps", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/res/sounds/title.wav", "start": 0, "end": 5953558, "audio": 1}, {"filename": "/res/models/space_ship.mdld.txt", "start": 5953558, "end": 5958969}, {"filename": "/res/models/square.mdld", "start": 5958969, "end": 5959097}, {"filename": "/res/models/square.mdld.txt", "start": 5959097, "end": 5959706}, {"filename": "/res/models/space_ship.mdld", "start": 5959706, "end": 5962558}, {"filename": "/res/shaders/sprite_v.glsl", "start": 5962558, "end": 5962858}, {"filename": "/res/shaders/3d_f.glsl", "start": 5962858, "end": 5963367}, {"filename": "/res/shaders/sprite_f.glsl", "start": 5963367, "end": 5964429}, {"filename": "/res/shaders/3d_v.glsl", "start": 5964429, "end": 5964850}, {"filename": "/res/shaders/sprite.shdr", "start": 5964850, "end": 5964888}, {"filename": "/res/shaders/3d.shdr", "start": 5964888, "end": 5964918}, {"filename": "/res/animations/player.animd", "start": 5964918, "end": 5965006}, {"filename": "/res/animations/guard.animd", "start": 5965006, "end": 5965062}, {"filename": "/res/images/spritesheet.png", "start": 5965062, "end": 5971568}, {"filename": "/res/images/spritesheet_backup.png", "start": 5971568, "end": 5972464}, {"filename": "/res/maps/lvl4.tgmf", "start": 5972464, "end": 5976072}, {"filename": "/res/maps/lvl5.tgmf", "start": 5976072, "end": 5979680}, {"filename": "/res/maps/lvl9.tgmf", "start": 5979680, "end": 5981488}, {"filename": "/res/maps/lvl10.tgmf", "start": 5981488, "end": 5983296}, {"filename": "/res/maps/lvl2.tgmf", "start": 5983296, "end": 5986904}, {"filename": "/res/maps/lvl7.tgmf", "start": 5986904, "end": 5988712}, {"filename": "/res/maps/lvl3.tgmf", "start": 5988712, "end": 5992320}, {"filename": "/res/maps/title.tgmf", "start": 5992320, "end": 5995928}, {"filename": "/res/maps/lvl6.tgmf", "start": 5995928, "end": 5997736}, {"filename": "/res/maps/lvl1.tgmf", "start": 5997736, "end": 5999544}, {"filename": "/res/maps/lvl8.tgmf", "start": 5999544, "end": 6001352}, {"filename": "/res/maps/test_map.tgmf", "start": 6001352, "end": 6004960}], "remote_package_size": 6004960, "package_uuid": "b101e95b-f295-4798-b482-f0931ca770ec"});
+    loadPackage({"files": [{"filename": "/res/sounds/menu.wav", "start": 0, "end": 10110146, "audio": 1}, {"filename": "/res/sounds/title.wav", "start": 10110146, "end": 18636204, "audio": 1}, {"filename": "/res/models/space_ship.mdld.txt", "start": 18636204, "end": 18641615}, {"filename": "/res/models/square.mdld", "start": 18641615, "end": 18641743}, {"filename": "/res/models/square.mdld.txt", "start": 18641743, "end": 18642352}, {"filename": "/res/models/space_ship.mdld", "start": 18642352, "end": 18645204}, {"filename": "/res/shaders/sprite_v.glsl", "start": 18645204, "end": 18645504}, {"filename": "/res/shaders/3d_f.glsl", "start": 18645504, "end": 18646013}, {"filename": "/res/shaders/sprite_f.glsl", "start": 18646013, "end": 18647075}, {"filename": "/res/shaders/3d_v.glsl", "start": 18647075, "end": 18647496}, {"filename": "/res/shaders/sprite.shdr", "start": 18647496, "end": 18647534}, {"filename": "/res/shaders/3d.shdr", "start": 18647534, "end": 18647564}, {"filename": "/res/animations/player.animd", "start": 18647564, "end": 18647652}, {"filename": "/res/animations/guard.animd", "start": 18647652, "end": 18647708}, {"filename": "/res/images/spritesheet.png", "start": 18647708, "end": 18654214}, {"filename": "/res/images/spritesheet_backup.png", "start": 18654214, "end": 18655110}, {"filename": "/res/maps/lvl4.tgmf", "start": 18655110, "end": 18658718}, {"filename": "/res/maps/lvl5.tgmf", "start": 18658718, "end": 18662326}, {"filename": "/res/maps/lvl9.tgmf", "start": 18662326, "end": 18664134}, {"filename": "/res/maps/lvl10.tgmf", "start": 18664134, "end": 18665942}, {"filename": "/res/maps/lvl2.tgmf", "start": 18665942, "end": 18669550}, {"filename": "/res/maps/lvl7.tgmf", "start": 18669550, "end": 18671358}, {"filename": "/res/maps/lvl3.tgmf", "start": 18671358, "end": 18674966}, {"filename": "/res/maps/title.tgmf", "start": 18674966, "end": 18678574}, {"filename": "/res/maps/lvl6.tgmf", "start": 18678574, "end": 18680382}, {"filename": "/res/maps/lvl1.tgmf", "start": 18680382, "end": 18682190}, {"filename": "/res/maps/lvl8.tgmf", "start": 18682190, "end": 18683998}, {"filename": "/res/maps/test_map.tgmf", "start": 18683998, "end": 18687606}], "remote_package_size": 18687606, "package_uuid": "0d3e3a2e-7596-42d2-815f-f6cb2a440cb7"});
 
   })();
 
@@ -1910,8 +1910,8 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  8712: function() {alert("Confirm to begin")},  
- 8738: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; window.style.backgroundColor = '#000'; document.body.appendChild(window)}
+  8728: function() {alert("Confirm to begin")},  
+ 8754: function() {var window = document.createElement('canvas'); window.id = 'JIN_WINDOW'; window.style.backgroundColor = '#000'; document.body.appendChild(window)}
 };
 
 
@@ -6812,6 +6812,18 @@ var ASM_CONSTS = {
       }
     }
 
+  function _alSourcePause(sourceId) {
+      if (!AL.currentCtx) {
+        return;
+      }
+      var src = AL.currentCtx.sources[sourceId];
+      if (!src) {
+        AL.currentCtx.err = 0xA001 /* AL_INVALID_NAME */;
+        return;
+      }
+      AL.setSourceState(src, 0x1013 /* AL_PAUSED */);
+    }
+
   function _alSourcePlay(sourceId) {
       if (!AL.currentCtx) {
         return;
@@ -8957,6 +8969,7 @@ var asmLibraryArg = {
   "alGenSources": _alGenSources,
   "alGetSourcei": _alGetSourcei,
   "alSource3f": _alSource3f,
+  "alSourcePause": _alSourcePause,
   "alSourcePlay": _alSourcePlay,
   "alSourceQueueBuffers": _alSourceQueueBuffers,
   "alSourceUnqueueBuffers": _alSourceUnqueueBuffers,
