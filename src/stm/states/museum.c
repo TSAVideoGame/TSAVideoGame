@@ -256,7 +256,7 @@ static int museum_fn_destroy(struct STM_S *state)
 {
   unsigned int *shader = JIN_resm_get("sprite_shader");
   glUseProgram(*shader);
-  glUniform1f(glGetUniformLocation(*shader, "ambience"), 1.0f);
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 0.0f);
   
   for (int i = 0; i < map_x * map_y; ++i) {
     JEL_entity_destroy(tiles[i]);
