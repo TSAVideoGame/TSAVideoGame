@@ -46,4 +46,12 @@ struct Fixed {
 };
 JEL_COMPONENT(Fixed, x, y);
 
+struct PointLight {
+  float constant;
+  float linear;
+  float quadratic;
+  float n;
+};
+JEL_COMPONENT(PointLight, constant, linear, quadratic, n);
+
 #endif

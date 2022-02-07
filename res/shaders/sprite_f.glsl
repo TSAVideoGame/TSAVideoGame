@@ -9,14 +9,24 @@ uniform sampler2D image;
 uniform float     ambience;
 uniform float     lighting;
 
-struct Light {
+uniform float     num_points;
+
+struct PointLight {
   vec2 position;
 
   float constant;
   float linear;
   float quadratic;
 };
-uniform Light light;
+#define MAX_POINT_LIGHTS 16
+uniform PointLight point_lights[MAX_POINT_LIGHTS];
+
+float calc_point_light(PointLight light)
+{
+  float distance = length(light.position.xy - pos.xy);
+  float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+  return attenuation;
+}
 
 void main()
 {
@@ -29,9 +39,11 @@ void main()
   color = tex_color;
 
   // Light stuff
-  float distance = length(light.position.xy - pos.xy);
-  float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+  float attenuation = 0.0;
+  for (int i = 0; i < int(num_points); ++i) {
+    attenuation += calc_point_light(point_lights[i]);
+  }
 
   if (lighting > 0.0)
-    color = vec4(color.rgb * (ambience * attenuation * lighting), color.a);
+    color = vec4(color.rgb * min(1.0, attenuation), color.a);
 }
