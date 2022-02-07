@@ -6,6 +6,7 @@
 #include "gfx/sprite.h"
 #include "gfx/gfx.h"
 #include "resm/resm.h"
+#include "snd/snd.h"
 
 #define LVL_SEL_BTNS 11
 #define LVL_SEL_L_BTNS 1
@@ -99,6 +100,10 @@ static int lvlsel_fn_create(struct STM_S *state)
   lvlsel_vars.r.y = 0;
   lvlsel_vars.group = 0;
 
+  JIN_sndbgm_stop();
+  JIN_sndbgm_set("res/sounds/menu.wav");
+  JIN_sndbgm_play();
+
   return 0;
 }
 
@@ -109,6 +114,11 @@ static int lvlsel_fn_destroy(struct STM_S *state)
   }
   
   JEL_entity_destroy(lvlsel_vars.cursor);
+  
+  JIN_sndbgm_stop();
+  JIN_sndbgm_set("res/sounds/title.wav");
+  JIN_sndbgm_play();
+
   return 0;
 }
 
