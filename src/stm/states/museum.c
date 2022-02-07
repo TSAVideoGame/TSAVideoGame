@@ -132,19 +132,38 @@ static void guard_patrol_horizontal(JEL_Entity guard, JEL_Entity player)
 
   JEL_SET_STRUCT(guard, Physics, guard_phys);
 }
+
+#include <stdio.h>
+static void set_point_lights(unsigned int *shader)
+{
+  char buffer[50];
+
+  struct JEL_Query q;
+  JEL_QUERY(q, PointLight);
+  for (unsigned int t = 0; t < q.count; ++t) {
+    struct PointLightIt light;
+    JEL_IT(light, q.tables[t], PointLight);
+
+    for (unsigned int i = 1; i < q.tables[t]->count; ++i) {
+      sprintf(buffer, "point_lights[%d].constant", (int) light.n[i]);
+      glUniform1f(glGetUniformLocation(*shader, buffer), light.constant[i]);
+      sprintf(buffer, "point_lights[%d].linear", (int) light.n[i]); 
+      glUniform1f(glGetUniformLocation(*shader, buffer), light.linear[i]);
+      sprintf(buffer, "point_lights[%d].quadratic", (int) light.n[i]); 
+      glUniform1f(glGetUniformLocation(*shader, buffer), light.quadratic[i]);
+    }
+  }
+  JEL_query_destroy(&q);
+}
+
 static int museum_fn_create(struct STM_S *state)
 {
+  float num_plights = 0;
   /* GL stuff */
   unsigned int *shader = JIN_resm_get("sprite_shader");
   glUseProgram(*shader);
   glUniform1f(glGetUniformLocation(*shader, "lighting"), 1.0f);
-  glUniform1f(glGetUniformLocation(*shader, "ambience"), 0.6f);
-  glUniform2f(glGetUniformLocation(*shader, "light.position"), 480.0f, 320.0f);
-  glUniform1f(glGetUniformLocation(*shader, "light.constant"), 1.0f);
-  glUniform1f(glGetUniformLocation(*shader, "light.linear"), 0.001f);
-  glUniform1f(glGetUniformLocation(*shader, "light.quadratic"), 0.0001f);
-
-
+  glUniform1f(glGetUniformLocation(*shader, "ambience"), 1.0f);
   /* Map stuff */
   map_x = map_meta[0];
   map_y = map_meta[1];
@@ -203,6 +222,7 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(new_item, Physics, 0, 5, 0, 0);
         JEL_SET(new_item, Guard, 0, 0, guard_patrol_vertical, dummy_collision_fn, dummy_collision_fn);
         JEL_SET(new_item, Animation, (struct JIN_Animd *) JIN_resm_get("guard_animation"), 0, 0, 0);
+        JEL_SET(new_item, PointLight, 2.0, 0.001, 0.001, num_plights++);
         break;
       case 4: /* Guard */
         new_item = JEL_entity_create();
@@ -212,6 +232,7 @@ static int museum_fn_create(struct STM_S *state)
         JEL_SET(new_item, Physics, 5, 0, 0, 0);
         JEL_SET(new_item, Guard, 0, 0, guard_patrol_horizontal, dummy_collision_fn, dummy_collision_fn);
         JEL_SET(new_item, Animation, (struct JIN_Animd *) JIN_resm_get("guard_animation"), 0, 0, 0);
+        JEL_SET(new_item, PointLight, 2.0, 0.001, 0.001, num_plights++);
         break;
       default: break;
     }
@@ -223,6 +244,10 @@ static int museum_fn_create(struct STM_S *state)
   JEL_SET(player, Sprite, 1, TILE_SIZE, TILE_SIZE, 0, 0, 16, 16, 0);
   JEL_SET(player, Animation, (struct JIN_Animd *) JIN_resm_get("player_animation"), 1, 0, 0);
   JEL_SET(player, AABB, TILE_SIZE, TILE_SIZE, dummy_collision_fn);
+  JEL_SET(player, PointLight, 1.0, 0.001, 0.000025, num_plights++);
+ 
+  glUniform1f(glGetUniformLocation(*shader, "num_points"), num_plights);
+  set_point_lights(shader);
 
   return 0;
 }
@@ -569,14 +594,29 @@ static void update_guard(void)
   JEL_query_destroy(&q);
 }
 
-static void update_player_light(void)
+static void update_point_lights(void)
 {
   struct Position pos;
   JEL_GET(player, Position, &pos);
 
   unsigned int *shader = JIN_resm_get("sprite_shader");
   glUseProgram(*shader);
-  glUniform2f(glGetUniformLocation(*shader, "light.position"), (float) (pos.x - camera.x + 16), (float) (pos.y - camera.y + 16));
+  char buffer[50];
+
+  struct JEL_Query q;
+  JEL_QUERY(q, Position, PointLight);
+
+  for (unsigned int t = 0; t < q.count; ++t) {
+    struct PositionIt pos; JEL_IT(pos, q.tables[t], Position);
+    struct PointLightIt light; JEL_IT(light, q.tables[t], PointLight);
+
+    for (unsigned int i = 1; i < q.tables[t]->count; ++i) {
+      sprintf(buffer, "point_lights[%d].position", (int) light.n[i]);
+      glUniform2f(glGetUniformLocation(*shader, buffer), (float) (pos.x[i] - camera.x + 16), (float) (pos.y[i] - camera.y + 16));
+    }
+  }
+
+  JEL_query_destroy(&q);
 }
 
 static int museum_fn_update(struct STM_S *state)
@@ -615,7 +655,7 @@ static int museum_fn_update(struct STM_S *state)
   }
 
   update_camera();
-  update_player_light();
+  update_point_lights();
 
   if (JIN_input.keys.p == 1) {
     JIN_stm_queue("PAUSE", STM_PERSIST_PREV);
