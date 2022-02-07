@@ -62,7 +62,7 @@ static int pause_fn_destroy(struct STM_S *state)
 {
   unsigned int *shader = JIN_resm_get("sprite_shader");
   glUseProgram(*shader);
-  glUniform1f(glGetUniformLocation(*shader, "ambience"), 0.2f);
+  glUniform1f(glGetUniformLocation(*shader, "lighting"), 1.0f);
   
   for (JEL_EntityInt i = 0; i < PAUSE_BTNS; ++i) {
     JEL_entity_destroy(pause_vars.btns[i]);
