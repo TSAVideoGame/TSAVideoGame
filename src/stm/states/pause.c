@@ -102,6 +102,10 @@ static int pause_fn_update(struct STM_S *state)
     btn.fn();
   }
 
+  if (JIN_input.keys.p == 1) {
+    to_back_museum();
+  }
+
   return 0;
 }
 

@@ -66,7 +66,10 @@ static void door_collision_fn(JEL_Entity tile, JEL_Entity other)
   }
 
   if (JIN_input.keys.o) {
-    JIN_stm_queue("GAME_WIN", 0);
+    if (artifacts_collected > 0)
+      JIN_stm_queue("GAME_WIN", 0);
+    else
+      JIN_stm_queue("GAME_SUS", 0);
   }
 }
 static void artifact_collision_fn(JEL_Entity item, JEL_Entity other)
