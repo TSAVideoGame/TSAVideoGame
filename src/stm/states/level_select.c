@@ -93,12 +93,17 @@ static int lvlsel_fn_create(struct STM_S *state)
   #undef X
 
   lvlsel_vars.cursor = JEL_entity_create();
-  JEL_SET(lvlsel_vars.cursor, Position, 32, 32);
+  int cursor_x = lvlsel_vars.group ? 32 + 176 + 128 * lvlsel_vars.r.x : 32;
+  int cursor_y = lvlsel_vars.group ? 32 + 64 * lvlsel_vars.r.y : 32;
+  JEL_SET(lvlsel_vars.cursor, Position, cursor_x, cursor_y);
   JEL_SET(lvlsel_vars.cursor, Sprite, 0, 32, 32, 64, 0, 16, 16, 0);
+
+  /*
   lvlsel_vars.l.y = 0;
   lvlsel_vars.r.x = 0;
   lvlsel_vars.r.y = 0;
   lvlsel_vars.group = 0;
+  */
 
   JIN_sndbgm_stop();
   JIN_sndbgm_set("res/sounds/menu.wav");
