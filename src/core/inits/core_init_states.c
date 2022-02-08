@@ -13,6 +13,7 @@
   X("PAUSE",     JIN_states_create_pause) \
   X("GAME_OVER", JIN_states_create_game_over) \
   X("GAME_WIN",  JIN_states_create_game_win) \
+  X("GAME_SUS",  JIN_states_create_game_sus) \
 
 static int init_states(void)
 {
