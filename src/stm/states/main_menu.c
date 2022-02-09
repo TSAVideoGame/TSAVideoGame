@@ -32,6 +32,7 @@ static int menu_hovered = 0;
 struct {
   JEL_Entity title;
   JEL_Entity overlay;
+  JEL_Entity instructions;
   int map_x;
   int map_y;
   struct { int x; int y; int dx; int dy; } camera;
@@ -83,6 +84,11 @@ static int main_menu_fn_create(struct STM_S *state)
   JEL_SET(main_menu_vars.title, Sprite, 1, 256, 256, 0, 144, 128, 128, 0);
   JEL_SET(main_menu_vars.title, Fixed, 352, 32);
 
+  main_menu_vars.instructions = JEL_entity_create();
+  JEL_SET(main_menu_vars.instructions, Position, 352, 32);
+  JEL_SET(main_menu_vars.instructions, Sprite, 1, 256, 144, 384, 128, 256, 144, 0);
+  JEL_SET(main_menu_vars.instructions, Fixed, 352, 464);
+
   main_menu_vars.camera.x = 0;
   main_menu_vars.camera.y = 0;
   /* Make sure these are negative */
@@ -97,6 +103,7 @@ static int main_menu_fn_destroy(struct STM_S *state)
   for (JEL_EntityInt i = 0; i < MAIN_MENU_BTNS; ++i) {
     JEL_entity_destroy(btns[i]);
   }
+  JEL_entity_destroy(main_menu_vars.instructions);
 
   struct JEL_Query q;
   JEL_QUERY(q, Sprite);

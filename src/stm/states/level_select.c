@@ -12,6 +12,7 @@
 #define LVL_SEL_L_BTNS 1
 #define LVL_SEL_R_COLS 5
 struct {
+  JEL_Entity instructions;
   JEL_Entity cursor;
   JEL_Entity btns[LVL_SEL_BTNS];
   int        group;
@@ -104,6 +105,11 @@ static int lvlsel_fn_create(struct STM_S *state)
   lvlsel_vars.r.y = 0;
   lvlsel_vars.group = 0;
   */
+  lvlsel_vars.instructions = JEL_entity_create();
+  JEL_SET(lvlsel_vars.instructions, Position, 352, 32);
+  JEL_SET(lvlsel_vars.instructions, Sprite, 1, 224, 96, 416, 16, 224, 96, 0);
+  JEL_SET(lvlsel_vars.instructions, Fixed, 352, 464);
+
 
   JIN_sndbgm_stop();
   JIN_sndbgm_set("res/sounds/menu.wav");
@@ -119,6 +125,7 @@ static int lvlsel_fn_destroy(struct STM_S *state)
   }
   
   JEL_entity_destroy(lvlsel_vars.cursor);
+  JEL_entity_destroy(lvlsel_vars.instructions);
   
   JIN_sndbgm_stop();
   JIN_sndbgm_set("res/sounds/title.wav");
