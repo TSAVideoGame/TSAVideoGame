@@ -9,6 +9,7 @@
 
 struct {
   JEL_Entity img;
+  JEL_Entity instruction;
 } game_over_vars;
 
 static int game_over_fn_create(struct STM_S *state)
@@ -19,7 +20,11 @@ static int game_over_fn_create(struct STM_S *state)
   
   game_over_vars.img = JEL_entity_create();
   JEL_SET(game_over_vars.img, Position, 352, 32);
-  JEL_SET(game_over_vars.img, Sprite, 0, 256, 256, 256, 144, 128, 128, 0);
+  JEL_SET(game_over_vars.img, Sprite, 0, 256, 128, 192, 176, 64, 32, 0);
+
+  game_over_vars.instruction = JEL_entity_create();
+  JEL_SET(game_over_vars.instruction, Position, 448, 512);
+  JEL_SET(game_over_vars.instruction, Sprite, 0, 64, 32, 256, 112, 64, 32, 0);
 
   return 0;
 }
@@ -27,6 +32,7 @@ static int game_over_fn_create(struct STM_S *state)
 static int game_over_fn_destroy(struct STM_S *state)
 {
   JEL_entity_destroy(game_over_vars.img);
+  JEL_entity_destroy(game_over_vars.instruction);
 
   return 0;
 }

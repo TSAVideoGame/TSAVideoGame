@@ -81,7 +81,7 @@ static int main_menu_fn_create(struct STM_S *state)
 
   main_menu_vars.title = JEL_entity_create();
   JEL_SET(main_menu_vars.title, Position, 352, 32);
-  JEL_SET(main_menu_vars.title, Sprite, 1, 256, 256, 0, 144, 128, 128, 0);
+  JEL_SET(main_menu_vars.title, Sprite, 1, 288, 256, 0, 144, 144, 128, 0);
   JEL_SET(main_menu_vars.title, Fixed, 352, 32);
 
   main_menu_vars.instructions = JEL_entity_create();
