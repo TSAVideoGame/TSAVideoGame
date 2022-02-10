@@ -62,7 +62,7 @@ static void door_collision_fn(JEL_Entity tile, JEL_Entity other)
   if (tooltip == 0) {
     tooltip = JEL_entity_create();
     JEL_SET(tooltip, Position, pos.x - 16, pos.y - 32);
-    JEL_SET(tooltip, Sprite, 3, 64, 32, 256, 112, 64, 32)
+    JEL_SET(tooltip, Sprite, 3, 64, 32, 256, 112, 64, 32, 0);
   }
 
   if (JIN_input.keys.o) {
