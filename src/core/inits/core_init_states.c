@@ -7,9 +7,13 @@
  */
 
 #define INIT_STATE_LIST \
-  X("IMG", JIN_states_create_img) \
-  X("ANIMATION", JIN_states_create_animation) \
-  X("3D", JIN_states_create_3d) \
+  X("MAIN_MENU", JIN_states_create_main_menu) \
+  X("LVL_SEL",   JIN_states_create_lvlsel) \
+  X("MUSEUM",    JIN_states_create_museum) \
+  X("PAUSE",     JIN_states_create_pause) \
+  X("GAME_OVER", JIN_states_create_game_over) \
+  X("GAME_WIN",  JIN_states_create_game_win) \
+  X("GAME_SUS",  JIN_states_create_game_sus) \
 
 static int init_states(void)
 {

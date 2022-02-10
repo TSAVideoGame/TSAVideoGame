@@ -1,4 +1,7 @@
 #include "anim/anim.h"
+#include "ui/ui.h"
+#include "components/components.h"
+#include "gfx/sprite.h"
 
 /*
  * CORE INIT STATE
@@ -7,11 +10,20 @@
  */
 
 #define INIT_COMPONENT_LIST \
-  X(Sprite)
+  X(Position) \
+  X(SpriteO) \
+  X(Sprite) \
+  X(Physics) \
+  X(AABB) \
+  X(Animation) \
+  X(UI_btn) \
+  X(Guard) \
+  X(Fixed) \
+  X(PointLight)
 
 static int init_components(void)
 {
-  #define X(component) JEL_COMPONENT_REGISTER(component);
+  #define X(component) JEL_REGISTER(component);
   INIT_COMPONENT_LIST
   #undef X
   return 0;

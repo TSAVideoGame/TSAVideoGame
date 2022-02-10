@@ -1,13 +1,10 @@
-# Res folder
-res/
-res/images/
-res/sounds/
-
-# Libraries
-libs/
-
 # Editor Stuff
 .clangd
+
+# Libs emscripten provides
+libs/AL
+libs/GL
+libs/KHR
 
 # CMake Stuff
 CMakeFiles/
@@ -15,13 +12,12 @@ cmake_install.cmake
 CMakeCache.txt
 compile_commands.json
 
-# Build
-bin/
-
 # Build (Linux)
+bin/jin
 Makefile
+*.a
 
-# Windows
+# Build (Windows)
 *.vcxproj
 *.filters
 *.sln
@@ -32,3 +28,9 @@ x64
 Debug/
 Release/
 *.lib
+*.dll
+
+# Build (Web)
+*.data
+*.wasm
+*.js

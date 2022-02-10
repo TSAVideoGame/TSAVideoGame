@@ -1,9 +1,0 @@
-[SIZE]
-X:1
-Y:1
-[ANIMATIONS]
-RUN
->0, 4
->0, 4
-IDLE
->0, 4
