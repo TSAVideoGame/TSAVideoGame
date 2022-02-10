@@ -14,6 +14,7 @@ struct {
   JEL_Entity img;
   JEL_Entity collected;
   JEL_Entity total;
+  JEL_Entity instruction;
 } game_win_vars;
 
 int artifacts_total;
@@ -26,12 +27,12 @@ static int game_win_fn_create(struct STM_S *state)
   glUniform1f(glGetUniformLocation(*shader, "lighting"), 0.0f);
   
   game_win_vars.img = JEL_entity_create();
-  JEL_SET(game_win_vars.img, Position, 352, 32);
-  JEL_SET(game_win_vars.img, Sprite, 0, 256, 256, 128, 144, 128, 128, 0);
+  JEL_SET(game_win_vars.img, Position, 384, 32);
+  JEL_SET(game_win_vars.img, Sprite, 0, 256, 128, 192, 144, 64, 32, 0);
 
   game_win_vars.collected = JEL_entity_create();
-  JEL_SET(game_win_vars.collected, Position, 352, 320);
-  JEL_SET(game_win_vars.collected, Sprite, 0, 128, 64, 320, 48, 64, 32, 0);
+  JEL_SET(game_win_vars.collected, Position, 320, 320);
+  JEL_SET(game_win_vars.collected, Sprite, 0, 160, 64, 320, 48, 80, 32, 0);
 
   for (int i = 0; i < DIGITS; ++i) {
     int digit = artifacts_collected % 10;
@@ -43,8 +44,8 @@ static int game_win_fn_create(struct STM_S *state)
   }
 
   game_win_vars.total = JEL_entity_create();
-  JEL_SET(game_win_vars.total, Position, 352, 384);
-  JEL_SET(game_win_vars.total, Sprite, 0, 128, 64, 320, 80, 64, 32, 0);
+  JEL_SET(game_win_vars.total, Position, 320, 384);
+  JEL_SET(game_win_vars.total, Sprite, 0, 160, 64, 320, 80, 80, 32, 0);
   
   for (int i = 0; i < DIGITS; ++i) {
     int digit = artifacts_total % 10;
@@ -54,6 +55,10 @@ static int game_win_fn_create(struct STM_S *state)
     JEL_SET(d, Position, 496 + 64 * (DIGITS - 1) - 64 * i, 384);
     JEL_SET(d, Sprite, 0, 64, 64, 80 + digit * 16, 0, 16, 16, 0);
   }
+
+  game_win_vars.instruction = JEL_entity_create();
+  JEL_SET(game_win_vars.instruction, Position, 448, 512);
+  JEL_SET(game_win_vars.instruction, Sprite, 0, 64, 32, 256, 112, 64, 32, 0);
 
   return 0;
 }

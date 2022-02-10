@@ -15,6 +15,8 @@ struct {
   JEL_Entity instructions;
   JEL_Entity cursor;
   JEL_Entity btns[LVL_SEL_BTNS];
+  JEL_Entity bkg;
+  JEL_Entity overlay;
   int        group;
   struct {
     int y;
@@ -84,11 +86,19 @@ static void to_museum()
 
 static int lvlsel_fn_create(struct STM_S *state)
 {
+  lvlsel_vars.bkg = JEL_entity_create();
+  JEL_SET(lvlsel_vars.bkg, Position, 0, 0);
+  JEL_SET(lvlsel_vars.bkg, SpriteO, -1, 960, 640, 640, 0, 960, 640, 0);
+
+  lvlsel_vars.overlay = JEL_entity_create();
+  JEL_SET(lvlsel_vars.overlay, Position, 0, 0);
+  JEL_SET(lvlsel_vars.overlay, Sprite, 0, 960, 640, 383, 0, 1, 1, 0);
+  
   #define X(n, x, y, w, h, fn, tx, ty, tw, th, dir, hov) \
     lvlsel_vars.btns[n] = JEL_entity_create(); \
     JEL_SET(lvlsel_vars.btns[n], UI_btn, fn, (unsigned int *) JIN_resm_get("spritesheet"), hov); \
     JEL_SET(lvlsel_vars.btns[n], Position, x, y); \
-    JEL_SET(lvlsel_vars.btns[n], Sprite, 0, w, h, tx, ty, tw, th, dir);
+    JEL_SET(lvlsel_vars.btns[n], Sprite, 1, w, h, tx, ty, tw, th, dir);
   
   LVL_SEL_LIST
   #undef X
@@ -97,7 +107,7 @@ static int lvlsel_fn_create(struct STM_S *state)
   int cursor_x = lvlsel_vars.group ? 32 + 176 + 128 * lvlsel_vars.r.x : 32;
   int cursor_y = lvlsel_vars.group ? 32 + 64 * lvlsel_vars.r.y : 32;
   JEL_SET(lvlsel_vars.cursor, Position, cursor_x, cursor_y);
-  JEL_SET(lvlsel_vars.cursor, Sprite, 0, 32, 32, 64, 0, 16, 16, 0);
+  JEL_SET(lvlsel_vars.cursor, Sprite, 1, 32, 32, 64, 0, 16, 16, 0);
 
   /*
   lvlsel_vars.l.y = 0;
@@ -109,7 +119,6 @@ static int lvlsel_fn_create(struct STM_S *state)
   JEL_SET(lvlsel_vars.instructions, Position, 352, 32);
   JEL_SET(lvlsel_vars.instructions, Sprite, 1, 224, 96, 416, 16, 224, 96, 0);
   JEL_SET(lvlsel_vars.instructions, Fixed, 352, 464);
-
 
   JIN_sndbgm_stop();
   JIN_sndbgm_set("res/sounds/menu.wav");
@@ -126,6 +135,8 @@ static int lvlsel_fn_destroy(struct STM_S *state)
   
   JEL_entity_destroy(lvlsel_vars.cursor);
   JEL_entity_destroy(lvlsel_vars.instructions);
+  JEL_entity_destroy(lvlsel_vars.bkg);
+  JEL_entity_destroy(lvlsel_vars.overlay);
   
   JIN_sndbgm_stop();
   JIN_sndbgm_set("res/sounds/title.wav");
